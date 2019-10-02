@@ -142,20 +142,23 @@ MenuType Menu_Stats::draw(u64 kDown){
             struct tm * t = localtime(&timestamp);
             char buf[100];
             strftime(buf, 100, "%d %B %Y %I:%M %p", t);
-            std::cout << "First played: " << buf;
+            std::cout << "First played: " << ((titles[i]->getFirstPlayed() > 0)? buf: "never");
 
             moveCursor(2, 6+((i%6)*6));
 
             timestamp = pdmPlayTimestampToPosix(titles[i]->getLastPlayed());
             t = localtime(&timestamp);
             strftime(buf, 100, "%d %B %Y %I:%M %p", t);
-            std::cout << "Last played: " << buf;
+            std::cout << "Last played:  " << ((titles[i]->getFirstPlayed() > 0)? buf: "never");
 
             moveCursor(2, 7+((i%6)*6));
-            std::cout << "Playtime: " << titles[i]->getPlaytime()/60 << " hours, "<< titles[i]->getPlaytime()%60 << " minutes";
+            std::cout << "Playtime:     ";
+            if(titles[i]->getPlaytime()/60)
+                std::cout << titles[i]->getPlaytime()/60 << " hours, ";
+            std::cout << titles[i]->getPlaytime()%60 << " minutes";
 
             moveCursor(2, 8+((i%6)*6));
-            std::cout << "Launched: " << titles[i]->getLaunches() << " times";
+            std::cout << "Launched:     " << titles[i]->getLaunches() << " times";
         }
 
         // Page indicator
