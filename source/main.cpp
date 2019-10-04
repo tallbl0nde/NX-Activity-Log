@@ -38,7 +38,7 @@ void getUserPlayStats(int titleCount, u128 userID, NsApplicationRecord * titleRe
             NsApplicationControlData data;
             NacpLanguageEntry * lang = nullptr;
 
-            rc = nsGetApplicationControlData(1, titleRecord[i].titleID, &data, sizeof(NsApplicationControlData), NULL);
+            rc = nsGetApplicationControlData(NsApplicationControlSource_Storage, titleRecord[i].titleID, &data, sizeof(NsApplicationControlData), NULL);
             if (R_FAILED(rc)){
                 moveCursor(0, CONSOLE_HEIGHT-1);
                 std::cout << TEXT_RED << "Error: " << TEXT_RESET << "nsGetApplicationControlData() failed: " << rc;
@@ -71,7 +71,7 @@ int main(int argc, char * argv[]){
 
     NsApplicationRecord * titleRecord = new NsApplicationRecord[MAX_TITLES];
     std::vector<Title *> titles;
-    size_t titleCount = 0;
+    s32 titleCount = 0;
 
     int lastMenu = M_Dummy;
     MenuType menu = M_Error;
@@ -150,7 +150,7 @@ int main(int argc, char * argv[]){
             error = true;
         }
         if (R_SUCCEEDED(rc)){
-            rc = nsListApplicationRecord(titleRecord, MAX_TITLES * sizeof(NsApplicationRecord), 0, &titleCount);
+            rc = nsListApplicationRecord(titleRecord, MAX_TITLES, 0, &titleCount);
             if (R_FAILED(rc)){
                 moveCursor(0, CONSOLE_HEIGHT-1);
                 std::cout << TEXT_RED << "Error: " << TEXT_RESET << "nsListApplicationRecord() failed: " << rc;
