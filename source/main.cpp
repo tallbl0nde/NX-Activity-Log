@@ -5,13 +5,12 @@
 #include "User.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
-#define MAX_TITLES 100
-
 // Populate vector with Title objects created from NsApplicationRecord
-void getUserPlayStats(int titleCount, u128 userID, NsApplicationRecord * titleRecord, std::vector<Title *> &titles){
+void getUserPlayStats(u128 userID, std::vector<u64> titleIDs, std::vector<Title *> &titles){
     Result rc;
 
     // Empty vector if necessary
@@ -20,15 +19,15 @@ void getUserPlayStats(int titleCount, u128 userID, NsApplicationRecord * titleRe
         titles.erase(titles.begin());
     }
 
-    // Parse NsAppRecords and create Titles
-    for (int i = 0; i < titleCount; i++){
-        // Print status
-        moveCursor(0, CONSOLE_HEIGHT-1);
-        std::cout << "Reading title " << i+1 << " of " << titleCount;
-        consoleUpdate(NULL);
+    // Print status
+    moveCursor(0, CONSOLE_HEIGHT-1);
+    std::cout << "Reading play data...";
+    consoleUpdate(NULL);
 
+    // Create Titles for every titleID
+    for (int i = 0; i < titleIDs.size(); i++){
         PdmPlayStatistics stats;
-        rc = pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleRecord[i].titleID, userID, &stats);
+        rc = pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleIDs[i], userID, &stats);
         if (R_FAILED(rc)){
             moveCursor(0, CONSOLE_HEIGHT-1);
             std::cout << TEXT_RED << "Error: " << TEXT_RESET << "pdmqryPSBAIAUAI() failed: " << rc;
@@ -38,7 +37,7 @@ void getUserPlayStats(int titleCount, u128 userID, NsApplicationRecord * titleRe
             NsApplicationControlData data;
             NacpLanguageEntry * lang = nullptr;
 
-            rc = nsGetApplicationControlData(NsApplicationControlSource_Storage, titleRecord[i].titleID, &data, sizeof(NsApplicationControlData), NULL);
+            rc = nsGetApplicationControlData(1, titleIDs[i], &data, sizeof(NsApplicationControlData), NULL);
             if (R_FAILED(rc)){
                 moveCursor(0, CONSOLE_HEIGHT-1);
                 std::cout << TEXT_RED << "Error: " << TEXT_RESET << "nsGetApplicationControlData() failed: " << rc;
@@ -62,6 +61,7 @@ int main(int argc, char * argv[]){
     // Status variables
     Result rc = 0;
     bool error = false;
+    bool fsInit = false;
     bool nsInit = false;
     bool pdmInit = false;
 
@@ -69,9 +69,8 @@ int main(int argc, char * argv[]){
     std::vector<User *> users;
     int selectedUser = 0;
 
-    NsApplicationRecord * titleRecord = new NsApplicationRecord[MAX_TITLES];
     std::vector<Title *> titles;
-    s32 titleCount = 0;
+    std::vector<u64> titleIDs;
 
     int lastMenu = M_Dummy;
     MenuType menu = M_Error;
@@ -137,10 +136,10 @@ int main(int argc, char * argv[]){
     }
     consoleUpdate(NULL);
 
-    // Get installed title data
+    // Get titleIDs of played titles
     if (!error){
         moveCursor(0, CONSOLE_HEIGHT-1);
-        std::cout << "Getting installed titles...";
+        std::cout << "Getting title data...";
         consoleUpdate(NULL);
 
         rc = nsInitialize();
@@ -150,14 +149,45 @@ int main(int argc, char * argv[]){
             error = true;
         }
         if (R_SUCCEEDED(rc)){
-            rc = nsListApplicationRecord(titleRecord, MAX_TITLES, 0, &titleCount);
+            nsInit = true;
+            rc = fsInitialize();
             if (R_FAILED(rc)){
                 moveCursor(0, CONSOLE_HEIGHT-1);
-                std::cout << TEXT_RED << "Error: " << TEXT_RESET << "nsListApplicationRecord() failed: " << rc;
+                std::cout << TEXT_RED << "Error: " << TEXT_RESET << "fsInitialize() failed: " << rc;
                 error = true;
             }
-            nsInit = true;
+            if (R_SUCCEEDED(rc)){
+                // Create save data iterator
+                FsSaveDataIterator fsIterator;
+                rc = fsOpenSaveDataIterator(&fsIterator, FsSaveDataSpaceId_NandUser);
+                if (R_FAILED(rc)){
+                    moveCursor(0, CONSOLE_HEIGHT-1);
+                    std::cout << TEXT_RED << "Error: " << TEXT_RESET << "fsOpenSaveDataIterator() failed: " << rc;
+                    error = true;
+                }
+                if (R_SUCCEEDED(rc)){
+                    // Iterate over all save data to get titleIDs
+                    FsSaveDataInfo info;
+                    while (true){
+                        size_t total = 0;
+                        rc = fsSaveDataIteratorRead(&fsIterator, &info, 1, &total);
+                        // Break if at the end or no titles
+                        if (R_FAILED(rc) || total == 0){
+                            break;
+                        }
+                        titleIDs.push_back(info.titleID);
+                    }
+
+                    // Remove duplicate titleIDs
+                    std::vector<u64>::iterator it = std::unique(titleIDs.begin(), titleIDs.end());
+                    titleIDs.resize(std::distance(titleIDs.begin(), it));
+
+                    fsSaveDataIteratorClose(&fsIterator);
+                }
+                fsInit = true;
+            }
         }
+
         consoleUpdate(NULL);
     }
 
@@ -211,8 +241,8 @@ int main(int argc, char * argv[]){
                     break;
                 // Stats menu
                 case M_Stats:
-                    getUserPlayStats(titleCount, userIDs[selectedUser], titleRecord, titles);
-                    if (titles.size() == titleCount){
+                    getUserPlayStats(userIDs[selectedUser], titleIDs, titles);
+                    if (titles.size() == titleIDs.size()){
                         moveCursor(0, CONSOLE_HEIGHT-1);
                         std::cout << "                                D-Pad: Change Page   B: Back   -: Sort   +: Quit";
                         menuObject = new Menu_Stats(titles);
@@ -236,6 +266,9 @@ int main(int argc, char * argv[]){
     }
 
     // Cleanup resources
+    if (fsInit){
+        fsExit();
+    }
     if (nsInit){
         nsExit();
     }
@@ -244,7 +277,6 @@ int main(int argc, char * argv[]){
     }
     consoleExit(NULL);
 
-    delete titleRecord;
     for (size_t i = 0; i < users.size(); i++){
         delete users[i];
     }

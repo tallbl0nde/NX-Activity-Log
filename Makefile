@@ -30,7 +30,7 @@ INCLUDES	:=	include include/menus
 
 APP_TITLE   := 	NX Activity Log
 APP_AUTHOR	:= 	tallbl0nde
-APP_VERSION	:=	0.1.0
+APP_VERSION	:=	0.2.0
 ICON 		:= 	icon.jpg
 #---------------------------------------------------------------------------------
 # options for code generation
