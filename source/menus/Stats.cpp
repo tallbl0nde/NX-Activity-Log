@@ -22,6 +22,9 @@ void Menu_Stats::sortTitles(){
             std::sort(this->titles.begin(), this->titles.end(), [](Title * lhs, Title * rhs){
                 return lhs->getFirstPlayed() < rhs->getFirstPlayed();
             });
+            while (this->titles[0]->getFirstPlayed() == 0){
+                std::rotate(this->titles.begin(), this->titles.begin()+1, this->titles.end());
+            }
             break;
         case LastPlayed:
             std::sort(this->titles.begin(), this->titles.end(), [](Title * lhs, Title * rhs){
@@ -42,7 +45,7 @@ Menu_Stats::Menu_Stats(std::vector<Title *> titles){
     this->sort = HoursAsc;
     this->sortTitles();
     this->page = 1;
-    this->pages = (int)ceil(titles.size()/(float)GAMES_PER_PAGE);
+    this->pages = (int)ceil(this->titles.size()/(float)GAMES_PER_PAGE);
 }
 
 MenuType Menu_Stats::draw(u64 kDown){
