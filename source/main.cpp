@@ -78,7 +78,7 @@ int main(int argc, char * argv[]){
 
     // Initialise console
     consoleInit(NULL);
-    std::cout << TEXT_WHITE << "NX-Activity-Log" << std::endl;
+    std::cout << TEXT_WHITE << "NX-Activity-Log (v0.2.0)" << std::endl;
     for (size_t i = 0; i < CONSOLE_WIDTH; i++){
         std::cout << "_";
     }
@@ -136,7 +136,7 @@ int main(int argc, char * argv[]){
     }
     consoleUpdate(NULL);
 
-    // Get titleIDs of played titles
+    // Get titleIDs of played and installed titles
     if (!error){
         moveCursor(0, CONSOLE_HEIGHT-1);
         std::cout << "Getting title data...";
@@ -150,6 +150,21 @@ int main(int argc, char * argv[]){
         }
         if (R_SUCCEEDED(rc)){
             nsInit = true;
+            // Get installed titles (including unplayed)
+            NsApplicationRecord info;
+            size_t count = 0;
+            size_t total = 0;
+            while (true){
+                rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &total);
+                // Break if at the end or no titles
+                if (R_FAILED(rc) || total == 0){
+                    break;
+                }
+                count++;
+                titleIDs.push_back(info.titleID);
+            }
+
+            // Get played titles (including deleted)
             rc = fsInitialize();
             if (R_FAILED(rc)){
                 moveCursor(0, CONSOLE_HEIGHT-1);
@@ -178,14 +193,14 @@ int main(int argc, char * argv[]){
                         titleIDs.push_back(info.titleID);
                     }
 
-                    // Remove duplicate titleIDs
-                    std::vector<u64>::iterator it = std::unique(titleIDs.begin(), titleIDs.end());
-                    titleIDs.resize(std::distance(titleIDs.begin(), it));
-
                     fsSaveDataIteratorClose(&fsIterator);
                 }
                 fsInit = true;
             }
+
+            // Remove duplicate titleIDs
+            std::sort(titleIDs.begin(), titleIDs.end());
+            titleIDs.resize(std::distance(titleIDs.begin(), std::unique(titleIDs.begin(), titleIDs.end())));
         }
 
         consoleUpdate(NULL);

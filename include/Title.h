@@ -6,8 +6,6 @@
 
 class Title{
     private:
-        static int num;
-        int ID;
         u64 titleID;
         std::string name;
         u32 firstTimestamp;
@@ -18,7 +16,6 @@ class Title{
         Title(PdmPlayStatistics, char *);
 
         // These functions return Title's data
-        int getID();
         u64 getTitleID();
         std::string getName();
         u32 getFirstPlayed();

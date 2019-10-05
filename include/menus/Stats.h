@@ -7,7 +7,6 @@
 #include "Title.h"
 
 enum SortType {
-    HomeMenu,       // Home menu order
     HoursAsc,       // Play time (ascending)
     LaunchAsc,      // Launches (ascending)
     FirstPlayed,    // First played (earliest first)

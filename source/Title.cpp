@@ -1,11 +1,7 @@
 #include "Title.h"
 #include <time.h>
 
-int Title::num = 0;
-
 Title::Title(PdmPlayStatistics stats, char * name){
-    ID = num;
-    num++;
     titleID = stats.titleID;
 
     // Copy the name string
@@ -16,10 +12,6 @@ Title::Title(PdmPlayStatistics stats, char * name){
     lastTimestamp = stats.last_timestampUser;
     playtime = stats.playtimeMinutes;
     launches = stats.totalLaunches;
-}
-
-int Title::getID(){
-    return ID;
 }
 
 u64 Title::getTitleID(){

@@ -8,6 +8,7 @@ Currently, you can view (per game and per user):
 * Time of first play
 * Time of last play
 * Total playtime (down to the minute and not just 5 hour segments!)
+* Average playtime (per launch)
 
 This application is fairly basic right now; I have plans to make a GUI (once I learn how to) as well as something bigger and better, so stay tuned!
 
