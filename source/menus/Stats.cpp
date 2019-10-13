@@ -65,11 +65,6 @@ MenuType Menu_Stats::draw(u64 kDown){
         }
     }
 
-    // Back
-    if (kDown & KEY_B){
-        return M_UserSelect;
-    }
-
     // Sort
     if (kDown & KEY_MINUS){
         switch (sort){

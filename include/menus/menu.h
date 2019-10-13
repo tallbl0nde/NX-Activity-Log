@@ -7,7 +7,6 @@
 enum MenuType {
     M_Dummy,        // Dummy menu
     M_Error,        // Error
-    M_UserSelect,   // UserSelect
     M_Stats         // Stats
 };
 

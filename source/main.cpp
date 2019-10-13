@@ -1,5 +1,4 @@
 #include "menus/Error.h"
-#include "menus/UserSelect.h"
 #include "menus/Stats.h"
 #include "Title.h"
 #include "User.h"
@@ -65,9 +64,7 @@ int main(int argc, char * argv[]){
     bool nsInit = false;
     bool pdmInit = false;
 
-    u128 userIDs[8];
-    std::vector<User *> users;
-    int selectedUser = 0;
+    u128 userID;
 
     std::vector<Title *> titles;
     std::vector<u64> titleIDs;
@@ -85,54 +82,6 @@ int main(int argc, char * argv[]){
     moveCursor(0, CONSOLE_HEIGHT-3);
     for (size_t i = 0; i < CONSOLE_WIDTH; i++){
         std::cout << "_";
-    }
-    consoleUpdate(NULL);
-
-    // Get user account info
-    moveCursor(0, CONSOLE_HEIGHT-1);
-    std::cout << TEXT_RESET << "Reading user information...";
-    consoleUpdate(NULL);
-
-    rc = accountInitialize();
-    if (R_FAILED(rc)){
-        moveCursor(0, CONSOLE_HEIGHT-1);
-        std::cout << TEXT_RED << "Error: " << TEXT_RESET << "accountInitialize() failed: " << rc;
-        error = true;
-    }
-    if (R_SUCCEEDED(rc)){
-        size_t num = 0;
-        rc = accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
-        if (R_FAILED(rc)){
-            moveCursor(0, CONSOLE_HEIGHT-1);
-            std::cout << TEXT_RED << "Error: " << TEXT_RESET << "accountListAllUsers() failed: " << rc;
-            error = true;
-        }
-        if (R_SUCCEEDED(rc)){
-            // Populate users vector with User objects
-            AccountProfile profile;
-            AccountProfileBase profilebase;
-            for (size_t i = 0; i < num; i++){
-                rc = accountGetProfile(&profile, userIDs[i]);
-                if (R_FAILED(rc)){
-                    moveCursor(0, CONSOLE_HEIGHT-1);
-                    std::cout << TEXT_RED << "Error: " << TEXT_RESET << "accountGetProfile() failed: " << rc;
-                    error = true;
-                }
-                if (R_SUCCEEDED(rc)){
-                    rc = accountProfileGet(&profile, NULL, &profilebase);
-                    if (R_FAILED(rc)){
-                        moveCursor(0, CONSOLE_HEIGHT-1);
-                        std::cout << TEXT_RED << "Error: " << TEXT_RESET << "accountProfileGet() failed (iteration " << i << "): " << rc;
-                        error = true;
-                    }
-                    if (R_SUCCEEDED(rc)){
-                        users.push_back(new User(userIDs[i], profilebase.username));
-                    }
-                    accountProfileClose(&profile);
-                }
-            }
-        }
-        accountExit();
     }
     consoleUpdate(NULL);
 
@@ -222,7 +171,54 @@ int main(int argc, char * argv[]){
 
     // No errors: present user selection
     if (!error){
-        menu = M_UserSelect;
+        moveCursor(0, CONSOLE_HEIGHT-1);
+        std::cout << "Select a user         ";
+        consoleUpdate(NULL);
+
+        // Struct to store returned data
+        struct UserSelectData{
+            u64 result;
+            u128 userID;
+        } PACKED;
+        struct UserSelectData ret;
+
+        // Data to pass into applet
+        u8 in[0xA0] = {0};
+        in[0x96] = 1;
+
+        // A lot of stuff to launch the User Select Applet
+        AppletHolder app_holder;
+        AppletStorage app_stor;
+        AppletStorage app_stor2;
+        LibAppletArgs app_args;
+        appletCreateLibraryApplet(&app_holder, AppletId_playerSelect, LibAppletMode_AllForeground);
+        libappletArgsCreate(&app_args, 0);
+        libappletArgsPush(&app_args, &app_holder);
+        appletCreateStorage(&app_stor2, 0xA0);
+        appletStorageWrite(&app_stor2, 0, in, 0xA0);
+        appletHolderPushInData(&app_holder, &app_stor2);
+        appletHolderStart(&app_holder);
+        while (appletHolderWaitInteractiveOut(&app_holder)){
+        }
+        appletHolderJoin(&app_holder);
+        appletHolderPopOutData(&app_holder, &app_stor);
+        appletStorageRead(&app_stor, 0, &ret, 24);
+        appletHolderClose(&app_holder);
+        appletStorageClose(&app_stor);
+        appletStorageClose(&app_stor2);
+
+        // Store returned userID
+        userID = ret.userID;
+
+        // Show an error if none selected
+        if (userID == 0){
+            moveCursor(0, CONSOLE_HEIGHT-1);
+            std::cout << TEXT_RED << "Error: " << TEXT_RESET << "No user was selected!";
+            consoleUpdate(NULL);
+            menu = M_Error;
+        } else {
+            menu = M_Stats;
+        }
     }
 
     while (appletMainLoop()){
@@ -248,18 +244,12 @@ int main(int argc, char * argv[]){
                 case M_Error:
                     menuObject = new Menu_Error();
                     break;
-                // UserSelect menu
-                case M_UserSelect:
-                    moveCursor(0, CONSOLE_HEIGHT-1);
-                    std::cout << "                                      D-Pad: Move Cursor    A: Select    +: Quit";
-                    menuObject = new Menu_UserSelect(users, &selectedUser);
-                    break;
                 // Stats menu
                 case M_Stats:
-                    getUserPlayStats(userIDs[selectedUser], titleIDs, titles);
+                    getUserPlayStats(userID, titleIDs, titles);
                     if (titles.size() == titleIDs.size()){
                         moveCursor(0, CONSOLE_HEIGHT-1);
-                        std::cout << "                                D-Pad: Change Page   B: Back   -: Sort   +: Quit";
+                        std::cout << "                                         D-Pad: Change Page   -: Sort   +: Quit";
                         menuObject = new Menu_Stats(titles);
                     } else {
                         moveCursor(0, CONSOLE_HEIGHT-1);
@@ -292,9 +282,6 @@ int main(int argc, char * argv[]){
     }
     consoleExit(NULL);
 
-    for (size_t i = 0; i < users.size(); i++){
-        delete users[i];
-    }
     for (size_t i = 0; i < titles.size(); i++){
         delete titles[i];
     }
