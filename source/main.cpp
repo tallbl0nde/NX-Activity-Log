@@ -211,7 +211,7 @@ int main(int argc, char * argv[]){
         userID = ret.userID;
 
         // Show an error if none selected
-        if (userID == 0){
+        if (ret.result != 0){
             moveCursor(0, CONSOLE_HEIGHT-1);
             std::cout << TEXT_RED << "Error: " << TEXT_RESET << "No user was selected!";
             consoleUpdate(NULL);
