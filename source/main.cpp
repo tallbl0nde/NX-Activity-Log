@@ -12,7 +12,7 @@
 #include <switch.h>
 #include <SDL2/SDL.h>
 
-#include <ui/theme.h>
+#include "screens/activity.hpp"
 
 // // Populate vector with Title objects created from NsApplicationRecord
 // void getUserPlayStats(u128 userID, std::vector<u64> titleIDs, std::vector<Title *> &titles){
@@ -81,7 +81,6 @@ int main(int argc, char * argv[]){
     // Menu * menuObject = new Menu_Error();
 
     // Initialize SDL
-    SDL_Event event;
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0){
         SDL_Log("Unable to initialize SDL!");
         return -1;
@@ -110,42 +109,35 @@ int main(int argc, char * argv[]){
         return -1;
     }
 
-    // Draw test screen for now
-    bool themeLight = true;
+    // Struct representing a "clock", which represents time between ticks
+    struct Clock {
+        uint32_t last_tick = 0;
+        uint32_t delta = 0;
+
+        void tick() {
+            uint32_t tick = SDL_GetTicks();
+            delta = tick - last_tick;
+            last_tick = tick;
+        }
+    } clock;
+
+    // Theme struct
     struct Theme theme = theme_light;
 
+    // Create screen
+    UI::Screen * screen = new Screen::Activity(&theme, &appRunning);
+
+    // Infinite loop until exit
     while (appRunning) {
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_JOYBUTTONDOWN:
-                    if (event.jbutton.which == 0) {
-                        if (event.jbutton.button == 10){
-                            appRunning = false;
-                        } else if (event.jbutton.button == 11){
-                            if (themeLight){
-                                theme = theme_dark;
-                            } else {
-                                theme = theme_light;
-                            }
-                            themeLight = !themeLight;
-                        }
-                    }
-                    break;
-            }
-        }
+        // Check for events first
+        screen->event();
 
-        // Clear screen
-        SDL_SetRenderDrawColor(renderer, theme.backgroundColour, theme.backgroundColour, theme.backgroundColour, 255);
-        SDL_RenderClear(renderer);
+        // Get time since last draw and update
+        clock.tick();
+        screen->update(clock.delta);
 
-        // Draw top and bottom lines
-        SDL_Rect lineTop = {30, 87, 1220, 1};
-        SDL_Rect lineBottom = {30, 647, 1220, 1};
-
-        SDL_SetRenderDrawColor(renderer, theme.lineColour, theme.lineColour, theme.lineColour, 255);
-        SDL_RenderFillRect(renderer, &lineTop);
-        SDL_RenderFillRect(renderer, &lineBottom);
-
+        // Render screen
+        screen->draw(renderer);
         SDL_RenderPresent(renderer);
     }
 

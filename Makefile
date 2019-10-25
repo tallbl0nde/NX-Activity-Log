@@ -23,9 +23,9 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	NX-Activity-Log
 BUILD		:=	build
-SOURCES		:=	source source/menus
+SOURCES		:=	source source/menus source/screens source/ui
 # DATA		:=	data
-INCLUDES	:=	include include/menus
+INCLUDES	:=	include include/menus include/screens include/ui
 # ROMFS		:=	romfs
 
 APP_TITLE   := 	NX Activity Log
