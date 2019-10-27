@@ -12,6 +12,8 @@
 #include <switch.h>
 #include <SDL2/SDL.h>
 
+#include <SDL2/SDL_ttf.h>
+
 #include "screens/activity.hpp"
 
 // // Populate vector with Title objects created from NsApplicationRecord
@@ -80,15 +82,21 @@ int main(int argc, char * argv[]){
     // MenuType menu = M_Error;
     // Menu * menuObject = new Menu_Error();
 
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0){
-        SDL_Log("Unable to initialize SDL!");
+    Result rc = plInitialize();
+    if (R_FAILED(rc)) {
         return -1;
     }
 
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+        SDL_Log("Unable to initialize SDL!");
+        return -1;
+    }
+    TTF_Init();
+
     // Create SDL Window
     SDL_Window * window = SDL_CreateWindow("window", 0, 0, 1280, 720, 0);
-    if (!window){
+    if (!window) {
         SDL_Log("Unable to create SDL window %s\n", SDL_GetError());
         SDL_Quit();
         return -1;
@@ -96,14 +104,14 @@ int main(int argc, char * argv[]){
 
     // Create SDL Renderer
     SDL_Renderer * renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer){
+    if (!renderer) {
         SDL_Log("Unable to create SDL renderer %s\n", SDL_GetError());
         SDL_Quit();
         return -1;
     }
 
     // Prepare controller (only railed for now)
-    if (SDL_JoystickOpen(0) == NULL){
+    if (SDL_JoystickOpen(0) == NULL) {
         SDL_Log("Unable to open joystick 0 %s\n", SDL_GetError());
         SDL_Quit();
         return -1;
@@ -125,7 +133,7 @@ int main(int argc, char * argv[]){
     struct Theme theme = theme_light;
 
     // Create screen
-    UI::Screen * screen = new Screen::Activity(&theme, &appRunning);
+    UI::Screen * screen = new Screen::Activity(renderer, &theme, &appRunning);
 
     // Infinite loop until exit
     while (appRunning) {
@@ -137,14 +145,16 @@ int main(int argc, char * argv[]){
         screen->update(clock.delta);
 
         // Render screen
-        screen->draw(renderer);
+        screen->draw();
         SDL_RenderPresent(renderer);
     }
 
-    // Clean up SDL
+    // Clean up SDL and services
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
+    plExit();
 
 /* #region foff */
     // Get titleIDs of played and installed titles

@@ -9,13 +9,13 @@ namespace Screen {
 
         // See ui/screen.hpp for what these functions do
         public:
-            Activity(struct Theme *, bool *);
+            Activity(SDL_Renderer *, struct Theme *, bool *);
 
             void event();
 
             void update(uint32_t dt);
 
-            void draw(SDL_Renderer *);
+            void draw();
 
             ~Activity();
     };
