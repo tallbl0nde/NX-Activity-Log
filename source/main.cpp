@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "screens/activity.hpp"
+#include "screens/error.hpp"
 
 // Forward declarations of functions because I like them at the end :)
 u128 getUserID();
@@ -90,20 +91,26 @@ int main(int argc, char * argv[]){
     // Screen pointer
     UI::Screen * screen = new Screen::Activity(renderer, &theme, &appRunning);
 
+
     // Only proceed if no errors
     if (fsInit && nsInit && pdmInit && plInit) {
         // Loading is kinda dodge
-        char stage = 0;
+        bool error = false;
         screen->draw();
 
         // Stage 0: Get User ID
         userID = getUserID();
         if (userID == 0) {
-            // Do something
+            // Unable to get user ID - raise error
+            delete screen;
+            screen = new Screen::Error(renderer, &theme, &appRunning, "Unable to get a User ID... Did you select a user?");
+            error = true;
         }
 
         // Stage 1: Get installed titles and create Title objects
-        titles = getTitleObjects(userID);
+        if (!error) {
+            titles = getTitleObjects(userID);
+        }
 
         // Infinite draw loop until exit
         while (appRunning) {
@@ -235,7 +242,7 @@ std::vector<Title *> getTitleObjects(u128 userID) {
 
     // Create Titles
     std::vector<Title *> titles;
-    for (int i = 0; i < titleIDs.size(); i++){
+    for (size_t i = 0; i < titleIDs.size(); i++){
         PdmPlayStatistics stats;
         rc = pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleIDs[i], userID, &stats);
         if (R_SUCCEEDED(rc)){

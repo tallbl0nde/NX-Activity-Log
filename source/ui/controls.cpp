@@ -175,5 +175,9 @@ namespace UI {
                 SDL_DestroyTexture(this->buttons[i].texture);
             }
         }
+
+        // Free fonts
+        TTF_CloseFont(this->extend);
+        TTF_CloseFont(this->stndrd);
     }
 }
