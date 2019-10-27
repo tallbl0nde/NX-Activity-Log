@@ -11,7 +11,7 @@
 #define TEX_GAP 13
 
 // "Map" of keys to unicode characters
-std::string key_char[] = {
+const std::string key_char[] = {
     "\uE0E0", // KEY_A
     "\uE0E1", // KEY_B
     "\uE0E2", // KEY_X

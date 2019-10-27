@@ -1,12 +1,9 @@
 #include "activity.hpp"
-#include <SDL2/SDL_ttf.h>
 #include <switch.h>
 
 namespace Screen {
     Activity::Activity(SDL_Renderer * r, struct Theme * t, bool * b) : Screen::Screen(r, t, b) {
-        this->controls->add(KEY_A, "Confirm Something", 0);
-        this->controls->add(KEY_B, "Back", 1);
-        this->controls->add(KEY_PLUS, "Exit", 2);
+        this->controls->add(KEY_PLUS, "Exit", 0);
     }
 
     void Activity::event() {
@@ -17,10 +14,8 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     if (events.jbutton.which == 0) {
-                        if (events.jbutton.button == 10) {
+                        if (events.jbutton.button == key_map[KEY_PLUS]) {
                             *(this->loop) = false;
-                        } else if (events.jbutton.button == 11){
-
                         }
                     }
                     break;
@@ -38,16 +33,16 @@ namespace Screen {
         SDL_RenderClear(this->renderer);
 
         // Draw top and bottom lines
+        SDL_SetRenderDrawColor(this->renderer, this->theme->line, this->theme->line, this->theme->line, 255);
         SDL_Rect lineTop = {30, 87, 1220, 1};
         SDL_Rect lineBottom = {30, 647, 1220, 1};
-
-        SDL_SetRenderDrawColor(this->renderer, this->theme->line, this->theme->line, this->theme->line, 255);
         SDL_RenderFillRect(this->renderer, &lineTop);
         SDL_RenderFillRect(this->renderer, &lineBottom);
 
         // Draw controls
         SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
         this->controls->draw(1215, 670);
+        SDL_RenderPresent(renderer);
     }
 
     Activity::~Activity() {

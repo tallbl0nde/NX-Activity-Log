@@ -1,5 +1,5 @@
-#ifndef TITLE_H
-#define TITLE_H
+#ifndef TITLE_HPP
+#define TITLE_HPP
 
 #include <string>
 #include <switch.h>

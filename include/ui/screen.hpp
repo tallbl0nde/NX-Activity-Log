@@ -34,7 +34,7 @@ namespace UI {
             virtual void draw() = 0;
 
             // Destructor is used to free variables/clean up
-            ~Screen();
+            virtual ~Screen();
     };
 }
 
