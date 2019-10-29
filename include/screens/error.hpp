@@ -9,9 +9,6 @@ namespace Screen {
         private:
             // Error message to display
             std::string message;
-            // Fonts to draw text with
-            TTF_Font * heading;
-            TTF_Font * body;
 
         // See ui/screen.hpp for what these functions do
         public:

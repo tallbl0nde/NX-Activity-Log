@@ -5,6 +5,10 @@
 #include "theme.h"
 #include "ui/controls.hpp"
 
+// Default font sizes
+#define HEADING_FONT_SIZE 28
+#define BODY_FONT_SIZE 20
+
 namespace UI {
     // Screen represents a application screen and has it's own event handling
     // Functions called in order: event(), update(), draw()
@@ -18,6 +22,9 @@ namespace UI {
             bool * loop;
             // Controls element
             Controls * controls;
+            // Default fonts to draw text with
+            TTF_Font * heading;
+            TTF_Font * body;
 
         public:
             // Constructor is used to initialize variables

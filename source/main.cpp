@@ -1,12 +1,12 @@
-// #include "User.h"
-
 #include <algorithm>
 #include <iostream>
 #include <string>
 #include <switch.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include "Title.hpp"
+#include "User.hpp"
 #include "utils.h"
 #include <vector>
 
@@ -15,12 +15,14 @@
 
 // Forward declarations of functions because I like them at the end :)
 u128 getUserID();
+std::string getUserUsername(u128);
+SDL_Texture * getUserImage(u128, SDL_Renderer *);
 std::vector<Title *> getTitleObjects(u128);
 
 int main(int argc, char * argv[]){
     // Status variables
     bool appRunning = true;
-    bool fsInit, nsInit, pdmInit, plInit = false;
+    bool accInit, fsInit, nsInit, pdmInit, plInit = false;
     Result rc = 0;
 
     // Current user ID
@@ -30,6 +32,10 @@ int main(int argc, char * argv[]){
     std::vector<Title *> titles;
 
     // Start required services
+    rc = accountInitialize();
+    if (R_SUCCEEDED(rc)) {
+        accInit = true;
+    }
     rc = fsInitialize();
     if (R_SUCCEEDED(rc)) {
         fsInit = true;
@@ -88,12 +94,11 @@ int main(int argc, char * argv[]){
     // Theme struct
     struct Theme theme = theme_light;
 
-    // Screen pointer
-    UI::Screen * screen = new Screen::Activity(renderer, &theme, &appRunning);
-
+    UI::Screen * screen = new Screen::Error(renderer, &theme, &appRunning, "Loading...");
+    User * user = nullptr;
 
     // Only proceed if no errors
-    if (fsInit && nsInit && pdmInit && plInit) {
+    if (accInit && fsInit && nsInit && pdmInit && plInit) {
         // Loading is kinda dodge
         bool error = false;
         screen->draw();
@@ -102,14 +107,36 @@ int main(int argc, char * argv[]){
         userID = getUserID();
         if (userID == 0) {
             // Unable to get user ID - raise error
-            delete screen;
             screen = new Screen::Error(renderer, &theme, &appRunning, "Unable to get a User ID... Did you select a user?");
             error = true;
         }
 
-        // Stage 1: Get installed titles and create Title objects
+        // Stage 1: Get user's data
+        std::string username;
+        SDL_Texture * image;
+        if (!error) {
+            username = getUserUsername(userID);
+            image = getUserImage(userID, renderer);
+
+            if (username == "" || image == nullptr) {
+                screen = new Screen::Error(renderer, &theme, &appRunning, "An unexpected error occurred while parsing user data");
+                error = true;
+            }
+        }
+
+        // Stage 1.5: Create user object
+        if (!error) {
+            user = new User(userID, username, image);
+        }
+
+        // Stage 2: Get installed titles and create Title objects
         if (!error) {
             titles = getTitleObjects(userID);
+        }
+
+        // Stage 3: Initialize screen
+        if (!error) {
+            screen = new Screen::Activity(renderer, &theme, &appRunning, user);
         }
 
         // Infinite draw loop until exit
@@ -133,6 +160,9 @@ int main(int argc, char * argv[]){
     SDL_Quit();
 
     // Cleanup resources
+    if (accInit) {
+        accountExit();
+    }
     if (fsInit) {
         fsExit();
     }
@@ -146,6 +176,11 @@ int main(int argc, char * argv[]){
         plExit();
     }
 
+    // Delete user object
+    if (user != nullptr) {
+        delete user;
+    }
+
     // Delete any created titles
     while (titles.size() > 0) {
         delete titles[0];
@@ -155,46 +190,79 @@ int main(int argc, char * argv[]){
     return 0;
 }
 
+#define ARG_SIZE 0xA0
+#define OUT_SIZE 0x18
 // Returns the userID obtained by the PlayerSelect applet
 u128 getUserID() {
-    // Struct to store returned data
-    struct UserSelectData{
-        u64 result;
-        u128 userID;
-    } ret;
+    u128 userID = 0;
 
-    // Data to pass into applet
-    u8 in[0xA0] = {0};
-    in[0x96] = 1;
+    LibAppletArgs args;
+    libappletArgsCreate(&args, 0x10000);
+    u8 args2[ARG_SIZE]  = {0};
+    u8 out[OUT_SIZE] = {0};
+    size_t out_size;
 
-    // A lot of stuff to launch the User Select Applet
-    AppletHolder app_holder;
-    AppletStorage app_stor;
-    AppletStorage app_stor2;
-    LibAppletArgs app_args;
-    appletCreateLibraryApplet(&app_holder, AppletId_playerSelect, LibAppletMode_AllForeground);
-    libappletArgsCreate(&app_args, 0);
-    libappletArgsPush(&app_args, &app_holder);
-    appletCreateStorage(&app_stor2, 0xA0);
-    appletStorageWrite(&app_stor2, 0, in, 0xA0);
-    appletHolderPushInData(&app_holder, &app_stor2);
-    appletHolderStart(&app_holder);
-    while (appletHolderWaitInteractiveOut(&app_holder)){
-    }
-    appletHolderJoin(&app_holder);
-    appletHolderPopOutData(&app_holder, &app_stor);
-    appletStorageRead(&app_stor, 0, &ret, 24);
-    appletHolderClose(&app_holder);
-    appletStorageClose(&app_stor);
-    appletStorageClose(&app_stor2);
-
-    // Return 0 if an error occurred
-    if (ret.result != 0){
-        return 0;
+    Result rc = libappletLaunch(AppletId_playerSelect, &args, args2, ARG_SIZE, out, OUT_SIZE, &out_size);
+    if (R_SUCCEEDED(rc)) {
+        u64 res = *(u64 *) out;
+        u128 uid = *(u128 *) &out[8];
+        if (res == 0) {
+            userID = uid;
+        }
     }
 
-    // Otherwise return the obtained ID
-    return ret.userID;
+    return userID;
+}
+
+// Returns username for user with given ID
+std::string getUserUsername(u128 userID) {
+    AccountProfile profile;
+    AccountProfileBase profile_base;
+
+    Result rc = accountGetProfile(&profile, userID);
+    if (R_SUCCEEDED(rc)){
+        rc = accountProfileGet(&profile, NULL, &profile_base);
+        if (R_SUCCEEDED(rc)){
+            return profile_base.username;
+        }
+        accountProfileClose(&profile);
+    }
+
+    // Return blank string on error
+    return "";
+}
+
+// Return texture with user image
+SDL_Texture * getUserImage(u128 userID, SDL_Renderer * renderer) {
+    AccountProfile profile;
+    SDL_Texture * texture = nullptr;
+
+    Result rc = accountGetProfile(&profile, userID);
+    if (R_SUCCEEDED(rc)){
+        u8 * buffer;
+        size_t img_size, tmp;
+
+        // Get image size and allocate memory
+        rc = accountProfileGetImageSize(&profile, &img_size);
+        if (R_SUCCEEDED(rc)) {
+            buffer = (u8 *) malloc(img_size);
+
+            // Get image
+            rc = accountProfileLoadImage(&profile, buffer, img_size, &tmp);
+            if (R_SUCCEEDED(rc)) {
+                // Create texture
+                SDL_Surface * tmp = IMG_Load_RW(SDL_RWFromMem(buffer, img_size), 1);
+                texture = SDL_CreateTextureFromSurface(renderer, tmp);
+                SDL_FreeSurface(tmp);
+            }
+
+            free(buffer);
+        }
+        accountProfileClose(&profile);
+    }
+
+    // Will be nullptr if any error occurs
+    return texture;
 }
 
 // Reads all installed title IDs and creates Title objects using them

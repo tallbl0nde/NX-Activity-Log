@@ -1,25 +1,10 @@
 #include "error.hpp"
 #include <switch.h>
 
-#define HEADING_FONT_SIZE 30
-#define BODY_FONT_SIZE 20
-
 namespace Screen {
     Error::Error(SDL_Renderer * r, struct Theme * t, bool * b, std::string msg) : Screen::Screen(r, t, b) {
-        // Set default error message
+        // Set error message
         this->message = msg;
-
-        // Create fonts
-        PlFontData fontData;
-        plGetSharedFontByType(&fontData, PlSharedFontType_Standard);
-        this->heading = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, HEADING_FONT_SIZE);
-        if (!this->heading) {
-            // Handle error
-        }
-        this->body = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, BODY_FONT_SIZE);
-        if (!this->body) {
-            // Handle error
-        }
 
         // Add buttons
         this->controls->add(KEY_PLUS, "Exit", 0);

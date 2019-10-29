@@ -2,7 +2,8 @@
 #include <switch.h>
 
 namespace Screen {
-    Activity::Activity(SDL_Renderer * r, struct Theme * t, bool * b) : Screen::Screen(r, t, b) {
+    Activity::Activity(SDL_Renderer * r, struct Theme * t, bool * b, User * u) : Screen::Screen(r, t, b) {
+        this->user = u;
         this->controls->add(KEY_PLUS, "Exit", 0);
     }
 
@@ -38,6 +39,24 @@ namespace Screen {
         SDL_Rect lineBottom = {30, 647, 1220, 1};
         SDL_RenderFillRect(this->renderer, &lineTop);
         SDL_RenderFillRect(this->renderer, &lineBottom);
+
+        // Draw player icon
+        SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
+        uint32_t format;
+        SDL_QueryTexture(this->user->getImage(), &format, nullptr, nullptr, nullptr);
+        SDL_Rect pos = {65, 14, 60, 60};
+        SDL_RenderCopy(this->renderer, this->user->getImage(), NULL, &pos);
+
+        // Print heading text
+        std::string text = this->user->getUsername() + "'s Play Activity";
+        SDL_Surface * tmp = TTF_RenderUTF8_Blended(this->heading, text.c_str(), SDL_Color{0, 0, 0, 255});
+        SDL_Texture * tex = SDL_CreateTextureFromSurface(this->renderer, tmp);
+        int width, height;
+        SDL_QueryTexture(tex, &format, nullptr, &width, &height);
+        SDL_Rect pos2 = {150, 44 - (HEADING_FONT_SIZE/2), width, height};
+        SDL_RenderCopy(this->renderer, tex, NULL, &pos2);
+        SDL_FreeSurface(tmp);
+        SDL_DestroyTexture(tex);
 
         // Draw controls
         SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
