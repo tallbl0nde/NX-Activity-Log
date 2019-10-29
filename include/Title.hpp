@@ -1,19 +1,31 @@
 #ifndef TITLE_HPP
 #define TITLE_HPP
 
+#include <SDL2/SDL.h>
 #include <string>
 #include <switch.h>
 
-class Title{
+// A Title stores the name, image texture and play statistics for
+// a game/title. All information is fetched using the titleID passed
+class Title {
     private:
+        // Game's titleID
         u64 titleID;
+        // Game's name
         std::string name;
-        u32 firstTimestamp;
-        u32 lastTimestamp;
+        // POSIX timestamps of first andlast play time
+        u32 first_timestamp;
+        u32 last_timestamp;
+        // Total playtime in minutes
         u32 playtime;
+        // Number of launches
         u32 launches;
+        // SDL Texture containing game icon
+        SDL_Texture * icon;
+
     public:
-        Title(PdmPlayStatistics, char *);
+        // The constructor derives all relevant info from given titleID
+        Title(u64, u128, SDL_Renderer *);
 
         // These functions return Title's data
         u64 getTitleID();
@@ -22,6 +34,10 @@ class Title{
         u32 getLastPlayed();
         u32 getPlaytime();
         u32 getLaunches();
+        SDL_Texture * getIcon();
+
+        // Destructor frees memory used by image
+        ~Title();
 };
 
 #endif

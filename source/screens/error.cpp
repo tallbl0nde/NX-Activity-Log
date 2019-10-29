@@ -71,8 +71,6 @@ namespace Screen {
     }
 
     Error::~Error() {
-        // Free fonts
-        TTF_CloseFont(this->heading);
-        TTF_CloseFont(this->body);
+
     }
 }

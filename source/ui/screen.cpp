@@ -21,6 +21,8 @@ namespace UI {
     }
 
     Screen::~Screen() {
+        TTF_CloseFont(this->body);
         delete this->controls;
+        TTF_CloseFont(this->heading);
     }
 }

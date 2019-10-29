@@ -1,8 +1,15 @@
 #include "activity.hpp"
+#include "ui/list.hpp"
+#include "ui/listitem.hpp"
 #include <switch.h>
 
 namespace Screen {
-    Activity::Activity(SDL_Renderer * r, struct Theme * t, bool * b, User * u) : Screen::Screen(r, t, b) {
+    Activity::Activity(SDL_Renderer * r, struct Theme * t, bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(r, t, b) {
+        this->list = new UI::List();
+        for (int i = 0; i < tls.size(); i++) {
+            this->list->addItem(new UI::ListItem(tls[i]));
+        }
+
         this->user = u;
         this->controls->add(KEY_PLUS, "Exit", 0);
     }
@@ -57,6 +64,9 @@ namespace Screen {
         SDL_RenderCopy(this->renderer, tex, NULL, &pos2);
         SDL_FreeSurface(tmp);
         SDL_DestroyTexture(tex);
+
+        // Draw list of items
+        this->list->draw(this->renderer, 100, 100, 700, 400);
 
         // Draw controls
         SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);

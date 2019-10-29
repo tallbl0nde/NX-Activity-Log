@@ -12,12 +12,13 @@
 
 #include "screens/activity.hpp"
 #include "screens/error.hpp"
+#include "screens/loading.hpp"
 
 // Forward declarations of functions because I like them at the end :)
 u128 getUserID();
 std::string getUserUsername(u128);
 SDL_Texture * getUserImage(u128, SDL_Renderer *);
-std::vector<Title *> getTitleObjects(u128);
+std::vector<Title *> getTitleObjects(u128, SDL_Renderer *);
 
 int main(int argc, char * argv[]){
     // Status variables
@@ -81,6 +82,9 @@ int main(int argc, char * argv[]){
         return -1;
     }
 
+    // Enable antialiasing
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+
     // Prepare controller (only railed for now)
     if (SDL_JoystickOpen(0) == NULL) {
         SDL_Log("Unable to open joystick 0 %s\n", SDL_GetError());
@@ -94,7 +98,7 @@ int main(int argc, char * argv[]){
     // Theme struct
     struct Theme theme = theme_light;
 
-    UI::Screen * screen = new Screen::Error(renderer, &theme, &appRunning, "Loading...");
+    UI::Screen * screen = new Screen::Loading(renderer, &theme, &appRunning, nullptr);
     User * user = nullptr;
 
     // Only proceed if no errors
@@ -131,12 +135,12 @@ int main(int argc, char * argv[]){
 
         // Stage 2: Get installed titles and create Title objects
         if (!error) {
-            titles = getTitleObjects(userID);
+            titles = getTitleObjects(userID, renderer);
         }
 
         // Stage 3: Initialize screen
         if (!error) {
-            screen = new Screen::Activity(renderer, &theme, &appRunning, user);
+            screen = new Screen::Activity(renderer, &theme, &appRunning, user, titles);
         }
 
         // Infinite draw loop until exit
@@ -266,7 +270,7 @@ SDL_Texture * getUserImage(u128 userID, SDL_Renderer * renderer) {
 }
 
 // Reads all installed title IDs and creates Title objects using them
-std::vector<Title *> getTitleObjects(u128 userID) {
+std::vector<Title *> getTitleObjects(u128 userID, SDL_Renderer * renderer) {
     Result rc;
 
     // Vector containing all found titleIDs
@@ -310,22 +314,8 @@ std::vector<Title *> getTitleObjects(u128 userID) {
 
     // Create Titles
     std::vector<Title *> titles;
-    for (size_t i = 0; i < titleIDs.size(); i++){
-        PdmPlayStatistics stats;
-        rc = pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleIDs[i], userID, &stats);
-        if (R_SUCCEEDED(rc)){
-            // Get application name
-            NsApplicationControlData data;
-            NacpLanguageEntry * lang = nullptr;
-
-            rc = nsGetApplicationControlData(1, titleIDs[i], &data, sizeof(NsApplicationControlData), NULL);
-            if (R_SUCCEEDED(rc)){
-                rc = nacpGetLanguageEntry(&data.nacp, &lang);
-                if (R_SUCCEEDED(rc)){
-                    titles.push_back(new Title(stats, lang->name));
-                }
-            }
-        }
+    for (size_t i = 0; i < titleIDs.size(); i++) {
+        titles.push_back(new Title(titleIDs[i], userID, renderer));
     }
 
     return titles;
