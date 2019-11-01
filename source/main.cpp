@@ -93,7 +93,7 @@ int main(int argc, char * argv[]){
     }
 
     // Clock to measure time between draw
-    struct Clock clock;
+    struct Utils::Clock clock;
 
     // Theme struct
     struct Theme theme = theme_light;
@@ -106,6 +106,10 @@ int main(int argc, char * argv[]){
         // Loading is kinda dodge
         bool error = false;
         screen->draw();
+
+        PlFontData fontData;
+        plGetSharedFontByType(&fontData, PlSharedFontType_Standard);
+        TTF_Font * font = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, 20);
 
         // Stage 0: Get User ID
         userID = getUserID();
@@ -154,6 +158,19 @@ int main(int argc, char * argv[]){
 
             // Render screen
             screen->draw();
+
+            // FPS Counter
+            std::string text = "FPS: " + std::to_string(1000.0/clock.delta);
+            SDL_Surface * tmp = TTF_RenderUTF8_Blended(font, text.c_str(), SDL_Color{0, 0, 0, 255});
+            SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);
+            int width, height;
+            SDL_QueryTexture(tex, nullptr, nullptr, &width, &height);
+            SDL_Rect pos3 = {700, 20, width, height};
+            SDL_RenderCopy(renderer, tex, NULL, &pos3);
+            SDL_FreeSurface(tmp);
+            SDL_DestroyTexture(tex);
+
+            SDL_RenderPresent(renderer);
         }
     }
 

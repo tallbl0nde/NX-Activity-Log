@@ -2,6 +2,7 @@
 #define UI_LISTITEM_HPP
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <string>
 #include "Title.hpp"
 
@@ -11,6 +12,10 @@ namespace UI {
     // a game's icon, name and play stats
     class ListItem {
         private:
+            // Font for title
+            TTF_Font * title_font;
+            // Font for hours played + last play time
+            TTF_Font * sub_font;
             // Pointer to title object from which all info is read
             Title * title;
             // Self-explanatory

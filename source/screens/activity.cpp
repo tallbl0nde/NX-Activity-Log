@@ -12,6 +12,7 @@ namespace Screen {
 
         this->user = u;
         this->controls->add(KEY_PLUS, "Exit", 0);
+        this->controls->add(KEY_MINUS, "Sort", 1);
     }
 
     void Activity::event() {
@@ -22,8 +23,12 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     if (events.jbutton.which == 0) {
-                        if (events.jbutton.button == key_map[KEY_PLUS]) {
+                        if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
                             *(this->loop) = false;
+                        } else if (events.jbutton.button == Utils::key_map[KEY_DDOWN]) {
+                            this->list->movePos(this->list->getPos() + 1);
+                        } else if (events.jbutton.button == Utils::key_map[KEY_DUP]) {
+                            this->list->movePos(this->list->getPos() - 1);
                         }
                     }
                     break;
@@ -66,7 +71,7 @@ namespace Screen {
         SDL_DestroyTexture(tex);
 
         // Draw list of items
-        this->list->draw(this->renderer, 100, 100, 700, 400);
+        this->list->draw(this->renderer, 30, 100, 750, 550);
 
         // Draw controls
         SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);

@@ -18,7 +18,7 @@ namespace Screen {
                 case SDL_JOYBUTTONDOWN:
                     if (events.jbutton.which == 0) {
                         // + button
-                        if (events.jbutton.button == key_map[KEY_PLUS]) {
+                        if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
                             *(this->loop) = false;
                         }
                     }

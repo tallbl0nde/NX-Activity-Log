@@ -69,7 +69,7 @@ namespace UI {
     }
 
     void Controls::add(HidControllerKeys k, std::string str, char pos) {
-        int key = key_map[k];
+        int key = Utils::key_map[k];
 
         // Create button texture
         SDL_Surface * tmp = TTF_RenderUTF8_Blended(this->extend, key_char[key].c_str(), SDL_Color{0, 0, 0, 255});
@@ -120,7 +120,7 @@ namespace UI {
     }
 
     void Controls::remove(HidControllerKeys k) {
-        int key = key_map[k];
+        int key = Utils::key_map[k];
 
         // Delete texture and hide the specified key
         if (this->buttons[key].texture != nullptr) {
@@ -131,12 +131,12 @@ namespace UI {
 
     void Controls::enable(HidControllerKeys k) {
         // Set enabled bool
-        this->buttons[key_map[k]].enabled = true;
+        this->buttons[Utils::key_map[k]].enabled = true;
     }
 
     void Controls::disable(HidControllerKeys k) {
         // Unset enabled bool
-        this->buttons[key_map[k]].enabled = false;
+        this->buttons[Utils::key_map[k]].enabled = false;
     }
 
     void Controls::draw(int xPos, int yPos) {

@@ -12,8 +12,8 @@ namespace UI {
         private:
             // Vector containing ListItems
             std::vector<ListItem *> items;
-            // Renderer
-            SDL_Renderer * renderer;
+            // Index of top element
+            size_t pos;
 
         public:
             // The constructor does not accept ListItems
@@ -26,6 +26,12 @@ namespace UI {
 
             // Draw at x, y with w, h
             void draw(SDL_Renderer *, int, int, int, int);
+
+            // Return pos
+            size_t getPos();
+
+            // Change pos to parameter
+            void movePos(size_t);
 
             // Destructor frees stored ListItems
             ~List();
