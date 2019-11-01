@@ -44,7 +44,7 @@ namespace Utils {
                 str += "1 hour";
                 break;
             default:
-                str += minutes/60 + " hours";
+                str += std::to_string(minutes/60) + " hours";
                 break;
         }
         if (minutes/60 != 0 && minutes%60 != 0){
@@ -60,7 +60,7 @@ namespace Utils {
                 str += "1 minute";
                 break;
             default:
-                str += minutes%60 + " minutes";
+                str += std::to_string(minutes%60) + " minutes";
                 break;
         }
         return str;

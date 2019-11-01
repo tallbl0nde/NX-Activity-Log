@@ -57,7 +57,7 @@ namespace UI {
 
         // Create button texture
         SDLHelper::setColour(0, 0, 0, 255);
-        SDL_Texture * icon = SDLHelper::renderText(key_char[key].c_str(), ICON_FONT_SIZE);
+        SDL_Texture * icon = SDLHelper::renderText(key_char[key].c_str(), ICON_FONT_SIZE, true);
 
         // Create text texture
         SDL_Texture * text = SDLHelper::renderText(str.c_str(), STR_FONT_SIZE);

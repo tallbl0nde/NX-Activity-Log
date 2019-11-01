@@ -12,12 +12,13 @@ namespace UI {
     // a game's icon, name and play stats
     class ListItem {
         private:
-            // Pointer to title object from which all info is read
-            Title * title;
+            // Rendered textures for icon and strings
+            SDL_Texture * icon;
+            SDL_Texture * title;
+            SDL_Texture * playtime;
+            SDL_Texture * lastplayed;
             // Self-explanatory
             bool selected;
-            // String holding time of last play
-            std::string last_played;
 
         public:
             // See ui/screen.hpp for similar explanations of these functions

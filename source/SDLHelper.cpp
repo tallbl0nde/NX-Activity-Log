@@ -106,9 +106,9 @@ namespace SDLHelper {
         SDL_RenderFillRect(renderer, &r);
     }
 
-    void drawText(const char * str, int x, int y, int font_size) {
+    void drawText(const char * str, int x, int y, int font_size, bool ext) {
         // Render text to texture and draw
-        SDL_Texture * tex = renderText(str, font_size);
+        SDL_Texture * tex = renderText(str, font_size, ext);
         drawTexture(tex, x, y);
         SDL_DestroyTexture(tex);
     }
@@ -168,19 +168,30 @@ namespace SDLHelper {
         return tex;
     }
 
-    SDL_Texture * renderText(const char * str, int font_size) {
+    SDL_Texture * renderText(const char * str, int font_size, bool ext) {
         // Get draw colour
         u8 r, g, b, a;
         SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a);
+        SDL_Surface * tmp;
 
         // If font doesn't exist create it
-        if (std_font.find(font_size) == std_font.end()) {
-            TTF_Font * f = TTF_OpenFontRW(SDL_RWFromMem(std_font_data.address, std_font_data.size), 1, font_size);
-            std_font[font_size] = f;
+        // Use Extended font
+        if (ext) {
+            if (ext_font.find(font_size) == ext_font.end()) {
+                TTF_Font * f = TTF_OpenFontRW(SDL_RWFromMem(ext_font_data.address, ext_font_data.size), 1, font_size);
+                ext_font[font_size] = f;
+            }
+            tmp = TTF_RenderUTF8_Blended(ext_font[font_size], str, SDL_Color{r, g, b, a});
+        // Use standard font
+        } else {
+            if (std_font.find(font_size) == std_font.end()) {
+                TTF_Font * f = TTF_OpenFontRW(SDL_RWFromMem(std_font_data.address, std_font_data.size), 1, font_size);
+                std_font[font_size] = f;
+            }
+            tmp = TTF_RenderUTF8_Blended(std_font[font_size], str, SDL_Color{r, g, b, a});
         }
 
         // Render text
-        SDL_Surface * tmp = TTF_RenderUTF8_Blended(std_font[font_size], str, SDL_Color{r, g, b, a});
         SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);
         SDL_FreeSurface(tmp);
 

@@ -16,9 +16,15 @@ namespace UI {
         std::stringstream ss;
         std::time_t timestamp = pdmPlayTimestampToPosix(t->getLastPlayed());
         ss << std::put_time(std::localtime(&timestamp), "%d %B %Y %I:%M %p");
-        this->last_played = ss.str();
 
-        this->title = t;
+        // Create textures using title object
+        this->icon = t->getIcon();
+        SDLHelper::setColour(0, 0, 0, 255);
+        this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
+        SDLHelper::setColour(120, 120, 120, 255);
+        this->playtime = SDLHelper::renderText(Utils::formatPlaytime(t->getPlaytime()).c_str(), SUB_FONT_SIZE);
+        this->lastplayed = SDLHelper::renderText(ss.str().c_str(), SUB_FONT_SIZE);
+
         this->selected = false;
     }
 
@@ -39,22 +45,18 @@ namespace UI {
 
         // Draw icon
         SDLHelper::setColour(255, 255, 255, 255);
-        SDLHelper::drawTexture(this->title->getIcon(), x + 10, y + 10, h - 20, h - 20);
+        SDLHelper::drawTexture(this->icon, x + 10, y + 10, h - 20, h - 20);
 
-        // Print name
-        SDLHelper::setColour(0, 0, 0, 255);
-        SDLHelper::drawText(this->title->getName().c_str(), x + h, y + 20, TITLE_FONT_SIZE);
-
-        // Print play time
-        SDLHelper::setColour(120, 120, 120, 255);
-        std::string str = Utils::formatPlaytime(this->title->getPlaytime());
-        SDLHelper::drawText(str.c_str(), x + h, y + 40, SUB_FONT_SIZE);
-
-        // Print last played
-        SDLHelper::drawText(this->last_played.c_str(), x + h, y + 60, SUB_FONT_SIZE);
+        // Print text
+        SDLHelper::drawTexture(this->title, x + h + 10, y + 20);
+        SDLHelper::drawTexture(this->playtime, x + h + 10, y + 55);
+        SDLHelper::drawTexture(this->lastplayed, x + h + 10, y + 80);
     }
 
     ListItem::~ListItem() {
-
+        // Destroy created textures
+        SDLHelper::destroyTexture(this->title);
+        SDLHelper::destroyTexture(this->playtime);
+        SDLHelper::destroyTexture(this->lastplayed);
     }
 };

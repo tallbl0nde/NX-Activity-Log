@@ -46,6 +46,14 @@ namespace Screen {
         SDLHelper::setColour(this->theme->background, this->theme->background, this->theme->background, 255);
         SDLHelper::clearScreen();
 
+        // Draw list of items
+        this->list->draw(30, 100, 750, 550);
+
+        // Draw over list to hide scrolling
+        SDLHelper::setColour(this->theme->background, this->theme->background, this->theme->background, 255);
+        SDLHelper::drawRect(30, 0, 780, 87);
+        SDLHelper::drawRect(30, 648, 1220, 72);
+
         // Draw top and bottom lines
         SDLHelper::setColour(this->theme->line, this->theme->line, this->theme->line, 255);
         SDLHelper::drawRect(30, 87, 1220, 1);
@@ -59,9 +67,6 @@ namespace Screen {
         std::string str = this->user->getUsername() + "'s Play Activity";
         SDLHelper::setColour(0, 0, 0, 255);
         SDLHelper::drawText(str.c_str(), 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
-
-        // Draw list of items
-        this->list->draw(30, 100, 750, 550);
 
         // Draw controls
         SDLHelper::setColour(255, 255, 255, 255);
