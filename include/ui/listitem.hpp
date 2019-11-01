@@ -12,10 +12,6 @@ namespace UI {
     // a game's icon, name and play stats
     class ListItem {
         private:
-            // Font for title
-            TTF_Font * title_font;
-            // Font for hours played + last play time
-            TTF_Font * sub_font;
             // Pointer to title object from which all info is read
             Title * title;
             // Self-explanatory
@@ -30,7 +26,7 @@ namespace UI {
 
             void update(uint32_t);
 
-            void draw(SDL_Renderer *, int, int, int, int);
+            void draw(int, int, int, int);
 
             ~ListItem();
     };

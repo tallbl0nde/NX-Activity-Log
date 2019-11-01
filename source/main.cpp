@@ -1,10 +1,7 @@
 #include <algorithm>
-#include <iostream>
+#include "SDLHelper.hpp"
 #include <string>
 #include <switch.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 #include "Title.hpp"
 #include "User.hpp"
 #include "utils.h"
@@ -17,13 +14,13 @@
 // Forward declarations of functions because I like them at the end :)
 u128 getUserID();
 std::string getUserUsername(u128);
-SDL_Texture * getUserImage(u128, SDL_Renderer *);
-std::vector<Title *> getTitleObjects(u128, SDL_Renderer *);
+SDL_Texture * getUserImage(u128);
+std::vector<Title *> getTitleObjects(u128);
 
 int main(int argc, char * argv[]){
     // Status variables
     bool appRunning = true;
-    bool accInit, fsInit, nsInit, pdmInit, plInit = false;
+    bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit = false;
     Result rc = 0;
 
     // Current user ID
@@ -55,42 +52,7 @@ int main(int argc, char * argv[]){
     }
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
-        SDL_Log("Unable to initialize SDL!");
-        return -1;
-    }
-
-    // Initialize SDL_ttf
-    if (TTF_Init() == -1) {
-        SDL_Log("Unable to initialize SDL_ttf!");
-        return -1;
-    }
-
-    // Create SDL Window
-    SDL_Window * window = SDL_CreateWindow("window", 0, 0, 1280, 720, 0);
-    if (!window) {
-        SDL_Log("Unable to create SDL window %s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    // Create SDL Renderer
-    SDL_Renderer * renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer) {
-        SDL_Log("Unable to create SDL renderer %s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    // Enable antialiasing
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
-
-    // Prepare controller (only railed for now)
-    if (SDL_JoystickOpen(0) == NULL) {
-        SDL_Log("Unable to open joystick 0 %s\n", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
+    SDLInit = SDLHelper::initSDL();
 
     // Clock to measure time between draw
     struct Utils::Clock clock;
@@ -98,24 +60,21 @@ int main(int argc, char * argv[]){
     // Theme struct
     struct Theme theme = theme_light;
 
-    UI::Screen * screen = new Screen::Loading(renderer, &theme, &appRunning, nullptr);
+    UI::Screen * screen = new Screen::Loading(&theme, &appRunning, nullptr);
     User * user = nullptr;
 
     // Only proceed if no errors
-    if (accInit && fsInit && nsInit && pdmInit && plInit) {
+    if (accInit && fsInit && nsInit && pdmInit && plInit && SDLInit) {
         // Loading is kinda dodge
         bool error = false;
         screen->draw();
-
-        PlFontData fontData;
-        plGetSharedFontByType(&fontData, PlSharedFontType_Standard);
-        TTF_Font * font = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, 20);
+        SDLHelper::draw();
 
         // Stage 0: Get User ID
         userID = getUserID();
         if (userID == 0) {
             // Unable to get user ID - raise error
-            screen = new Screen::Error(renderer, &theme, &appRunning, "Unable to get a User ID... Did you select a user?");
+            screen = new Screen::Error(&theme, &appRunning, "Unable to get a User ID... Did you select a user?");
             error = true;
         }
 
@@ -124,10 +83,10 @@ int main(int argc, char * argv[]){
         SDL_Texture * image;
         if (!error) {
             username = getUserUsername(userID);
-            image = getUserImage(userID, renderer);
+            image = getUserImage(userID);
 
             if (username == "" || image == nullptr) {
-                screen = new Screen::Error(renderer, &theme, &appRunning, "An unexpected error occurred while parsing user data");
+                screen = new Screen::Error(&theme, &appRunning, "An unexpected error occurred while parsing user data");
                 error = true;
             }
         }
@@ -139,12 +98,12 @@ int main(int argc, char * argv[]){
 
         // Stage 2: Get installed titles and create Title objects
         if (!error) {
-            titles = getTitleObjects(userID, renderer);
+            titles = getTitleObjects(userID);
         }
 
         // Stage 3: Initialize screen
         if (!error) {
-            screen = new Screen::Activity(renderer, &theme, &appRunning, user, titles);
+            screen = new Screen::Activity(&theme, &appRunning, user, titles);
         }
 
         // Infinite draw loop until exit
@@ -160,25 +119,15 @@ int main(int argc, char * argv[]){
             screen->draw();
 
             // FPS Counter
-            std::string text = "FPS: " + std::to_string(1000.0/clock.delta);
-            SDL_Surface * tmp = TTF_RenderUTF8_Blended(font, text.c_str(), SDL_Color{0, 0, 0, 255});
-            SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);
-            int width, height;
-            SDL_QueryTexture(tex, nullptr, nullptr, &width, &height);
-            SDL_Rect pos3 = {700, 20, width, height};
-            SDL_RenderCopy(renderer, tex, NULL, &pos3);
-            SDL_FreeSurface(tmp);
-            SDL_DestroyTexture(tex);
-
-            SDL_RenderPresent(renderer);
+            std::string fps = "FPS: " + std::to_string(1000.0/clock.delta);
+            SDLHelper::setColour(0, 0, 0, 255);
+            SDLHelper::drawText(fps.c_str(), 800, 10, 20);
+            SDLHelper::draw();
         }
     }
 
     // Clean up SDL
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    TTF_Quit();
-    SDL_Quit();
+    SDLHelper::exitSDL();
 
     // Cleanup resources
     if (accInit) {
@@ -254,7 +203,7 @@ std::string getUserUsername(u128 userID) {
 }
 
 // Return texture with user image
-SDL_Texture * getUserImage(u128 userID, SDL_Renderer * renderer) {
+SDL_Texture * getUserImage(u128 userID) {
     AccountProfile profile;
     SDL_Texture * texture = nullptr;
 
@@ -272,9 +221,7 @@ SDL_Texture * getUserImage(u128 userID, SDL_Renderer * renderer) {
             rc = accountProfileLoadImage(&profile, buffer, img_size, &tmp);
             if (R_SUCCEEDED(rc)) {
                 // Create texture
-                SDL_Surface * tmp = IMG_Load_RW(SDL_RWFromMem(buffer, img_size), 1);
-                texture = SDL_CreateTextureFromSurface(renderer, tmp);
-                SDL_FreeSurface(tmp);
+                texture = SDLHelper::renderImage(buffer, img_size);
             }
 
             free(buffer);
@@ -287,7 +234,7 @@ SDL_Texture * getUserImage(u128 userID, SDL_Renderer * renderer) {
 }
 
 // Reads all installed title IDs and creates Title objects using them
-std::vector<Title *> getTitleObjects(u128 userID, SDL_Renderer * renderer) {
+std::vector<Title *> getTitleObjects(u128 userID) {
     Result rc;
 
     // Vector containing all found titleIDs
@@ -332,7 +279,7 @@ std::vector<Title *> getTitleObjects(u128 userID, SDL_Renderer * renderer) {
     // Create Titles
     std::vector<Title *> titles;
     for (size_t i = 0; i < titleIDs.size(); i++) {
-        titles.push_back(new Title(titleIDs[i], userID, renderer));
+        titles.push_back(new Title(titleIDs[i], userID));
     }
 
     return titles;

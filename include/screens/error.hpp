@@ -12,7 +12,7 @@ namespace Screen {
 
         // See ui/screen.hpp for what these functions do
         public:
-            Error(SDL_Renderer *, struct Theme *, bool *, std::string);
+            Error(struct Theme *, bool *, std::string);
 
             void event();
 

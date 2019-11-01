@@ -12,7 +12,7 @@ namespace Screen {
 
         // See ui/screen.hpp for what these functions do
         public:
-            Loading(SDL_Renderer *, struct Theme *, bool *, char *);
+            Loading(struct Theme *, bool *, char *);
 
             void event();
 

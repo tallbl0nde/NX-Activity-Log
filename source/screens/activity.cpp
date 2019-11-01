@@ -1,10 +1,11 @@
 #include "activity.hpp"
 #include "ui/list.hpp"
 #include "ui/listitem.hpp"
+#include "SDLHelper.hpp"
 #include <switch.h>
 
 namespace Screen {
-    Activity::Activity(SDL_Renderer * r, struct Theme * t, bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(r, t, b) {
+    Activity::Activity(struct Theme * t, bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(t, b) {
         this->list = new UI::List();
         for (int i = 0; i < tls.size(); i++) {
             this->list->addItem(new UI::ListItem(tls[i]));
@@ -41,42 +42,30 @@ namespace Screen {
     }
 
     void Activity::draw() {
-        // Clear screen
-        SDL_SetRenderDrawColor(this->renderer, this->theme->background, this->theme->background, this->theme->background, 255);
-        SDL_RenderClear(this->renderer);
+        // Clear screen (draw background)
+        SDLHelper::setColour(this->theme->background, this->theme->background, this->theme->background, 255);
+        SDLHelper::clearScreen();
 
         // Draw top and bottom lines
-        SDL_SetRenderDrawColor(this->renderer, this->theme->line, this->theme->line, this->theme->line, 255);
-        SDL_Rect lineTop = {30, 87, 1220, 1};
-        SDL_Rect lineBottom = {30, 647, 1220, 1};
-        SDL_RenderFillRect(this->renderer, &lineTop);
-        SDL_RenderFillRect(this->renderer, &lineBottom);
+        SDLHelper::setColour(this->theme->line, this->theme->line, this->theme->line, 255);
+        SDLHelper::drawRect(30, 87, 1220, 1);
+        SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Draw player icon
-        SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
-        uint32_t format;
-        SDL_QueryTexture(this->user->getImage(), &format, nullptr, nullptr, nullptr);
-        SDL_Rect pos = {65, 14, 60, 60};
-        SDL_RenderCopy(this->renderer, this->user->getImage(), NULL, &pos);
+        SDLHelper::setColour(255, 255, 255, 255);
+        SDLHelper::drawTexture(this->user->getImage(), 65, 14, 60, 60);
 
-        // Print heading text
-        std::string text = this->user->getUsername() + "'s Play Activity";
-        SDL_Surface * tmp = TTF_RenderUTF8_Blended(this->heading, text.c_str(), SDL_Color{0, 0, 0, 255});
-        SDL_Texture * tex = SDL_CreateTextureFromSurface(this->renderer, tmp);
-        int width, height;
-        SDL_QueryTexture(tex, &format, nullptr, &width, &height);
-        SDL_Rect pos2 = {150, 44 - (HEADING_FONT_SIZE/2), width, height};
-        SDL_RenderCopy(this->renderer, tex, NULL, &pos2);
-        SDL_FreeSurface(tmp);
-        SDL_DestroyTexture(tex);
+        // Print heading
+        std::string str = this->user->getUsername() + "'s Play Activity";
+        SDLHelper::setColour(0, 0, 0, 255);
+        SDLHelper::drawText(str.c_str(), 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
 
         // Draw list of items
-        this->list->draw(this->renderer, 30, 100, 750, 550);
+        this->list->draw(30, 100, 750, 550);
 
         // Draw controls
-        SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
+        SDLHelper::setColour(255, 255, 255, 255);
         this->controls->draw(1215, 670);
-        SDL_RenderPresent(renderer);
     }
 
     Activity::~Activity() {

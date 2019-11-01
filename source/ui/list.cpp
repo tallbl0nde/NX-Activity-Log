@@ -16,11 +16,11 @@ namespace UI {
 
     }
 
-    void List::draw(SDL_Renderer * renderer, int x, int y, int w, int h) {
+    void List::draw(int x, int y, int w, int h) {
         // Draw list items
         for (size_t i = 0; i < this->items.size(); i++) {
             // List items utilize 95% of list width
-            this->items[i]->draw(renderer, x + w*0.05, y + (ITEM_HEIGHT * (i-pos)), w*0.95, ITEM_HEIGHT);
+            this->items[i]->draw(x + w*0.05, y + (ITEM_HEIGHT * (i-pos)), w*0.95, ITEM_HEIGHT);
         }
     }
 

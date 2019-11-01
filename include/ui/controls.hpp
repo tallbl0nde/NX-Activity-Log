@@ -2,7 +2,6 @@
 #define UI_CONTROLS_HPP
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <string>
 #include "utils.h"
 
@@ -22,15 +21,10 @@ namespace UI {
         private:
             // Array storing button structs
             struct Button buttons[KEY_MAP_SIZE];
-            // Fonts
-            TTF_Font * extend;
-            TTF_Font * stndrd;
-            // Renderer
-            SDL_Renderer * renderer;
 
         public:
             // Constructor initializes vector and creates fonts
-            Controls(SDL_Renderer *);
+            Controls();
 
             // Add a button (updates text/position if already added)
             // Passed a key, text and position

@@ -25,7 +25,7 @@ class Title {
 
     public:
         // The constructor derives all relevant info from given titleID
-        Title(u64, u128, SDL_Renderer *);
+        Title(u64, u128);
 
         // These functions return Title's data
         u64 getTitleID();

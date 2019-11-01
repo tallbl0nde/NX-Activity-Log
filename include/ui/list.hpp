@@ -25,7 +25,7 @@ namespace UI {
             void update(uint32_t);
 
             // Draw at x, y with w, h
-            void draw(SDL_Renderer *, int, int, int, int);
+            void draw(int, int, int, int);
 
             // Return pos
             size_t getPos();

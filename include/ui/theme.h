@@ -1,6 +1,8 @@
 #ifndef THEME_H
 #define THEME_H
 
+#include <cstdint>
+
 struct Theme{
     uint8_t background;
     uint8_t line;

@@ -1,8 +1,8 @@
-#include <SDL2/SDL_image.h>
+#include "SDLHelper.hpp"
 #include "Title.hpp"
 #include <time.h>
 
-Title::Title(u64 titleID, u128 userID, SDL_Renderer * renderer) {
+Title::Title(u64 titleID, u128 userID) {
     this->titleID = titleID;
 
     // Defaults in case fetch fails
@@ -38,9 +38,7 @@ Title::Title(u64 titleID, u128 userID, SDL_Renderer * renderer) {
         // Get icon
         size_t icon_size = nacp_size - sizeof(data.nacp);
         // Create texture
-        SDL_Surface * tmp = IMG_Load_RW(SDL_RWFromMem(data.icon, icon_size), 1);
-        this->icon = SDL_CreateTextureFromSurface(renderer, tmp);
-        SDL_FreeSurface(tmp);
+        this->icon = SDLHelper::renderImage(data.icon, icon_size);
     }
 }
 

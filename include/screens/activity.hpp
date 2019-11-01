@@ -18,7 +18,7 @@ namespace Screen {
         // See ui/screen.hpp for what these functions do
         public:
             // Additionally takes a user object
-            Activity(SDL_Renderer *, struct Theme *, bool *, User *, std::vector<Title *>);
+            Activity(struct Theme *, bool *, User *, std::vector<Title *>);
 
             void event();
 

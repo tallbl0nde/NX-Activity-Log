@@ -1,28 +1,13 @@
 #include "screen.hpp"
 
 namespace UI {
-    Screen::Screen(SDL_Renderer * r, struct Theme * t, bool * b) {
-        this->renderer = r;
+    Screen::Screen(struct Theme * t, bool * b) {
         this->theme = t;
         this->loop = b;
-        this->controls = new Controls(r);
-
-        // Create fonts
-        PlFontData fontData;
-        plGetSharedFontByType(&fontData, PlSharedFontType_Standard);
-        this->heading = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, HEADING_FONT_SIZE);
-        if (!this->heading) {
-            // Handle error
-        }
-        this->body = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, BODY_FONT_SIZE);
-        if (!this->body) {
-            // Handle error
-        }
+        this->controls = new Controls();
     }
 
     Screen::~Screen() {
-        TTF_CloseFont(this->body);
         delete this->controls;
-        TTF_CloseFont(this->heading);
     }
 }

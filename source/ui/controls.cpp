@@ -1,6 +1,7 @@
 #include "controls.hpp"
 
 #include <algorithm>
+#include "SDLHelper.hpp"
 #include <string>
 #include <vector>
 
@@ -43,28 +44,11 @@ const std::string key_char[] = {
 };
 
 namespace UI {
-    Controls::Controls(SDL_Renderer * r) {
-        this->renderer = r;
-
+    Controls::Controls() {
         // Fill array with empty structs
         for (int i = 0; i < KEY_MAP_SIZE; i++) {
             struct Button b;
             this->buttons[i] = b;
-        }
-
-        // Create fonts
-        PlFontData fontData;
-        // Standard font
-        plGetSharedFontByType(&fontData, PlSharedFontType_Standard);
-        this->stndrd = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, STR_FONT_SIZE);
-        if (!this->stndrd) {
-            // Handle error
-        }
-        // NintendoExtended font
-        plGetSharedFontByType(&fontData, PlSharedFontType_NintendoExt);
-        this->extend = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, ICON_FONT_SIZE);
-        if (!this->extend) {
-            // Handle error
         }
     }
 
@@ -72,42 +56,16 @@ namespace UI {
         int key = Utils::key_map[k];
 
         // Create button texture
-        SDL_Surface * tmp = TTF_RenderUTF8_Blended(this->extend, key_char[key].c_str(), SDL_Color{0, 0, 0, 255});
-        SDL_Texture * icon = SDL_CreateTextureFromSurface(this->renderer, tmp);
-        SDL_FreeSurface(tmp);
+        SDLHelper::setColour(0, 0, 0, 255);
+        SDL_Texture * icon = SDLHelper::renderText(key_char[key].c_str(), ICON_FONT_SIZE);
 
         // Create text texture
-        tmp = TTF_RenderUTF8_Blended(this->stndrd, str.c_str(), SDL_Color{0, 0, 0, 255});
-        SDL_Texture * text = SDL_CreateTextureFromSurface(this->renderer, tmp);
-        SDL_FreeSurface(tmp);
+        SDL_Texture * text = SDLHelper::renderText(str.c_str(), STR_FONT_SIZE);
 
-        // Determine width and height
-        int iconW, iconH = 0;
-        int textW, textH = 0;
-        uint32_t format;
-        SDL_QueryTexture(icon, &format, nullptr, &iconW, &iconH);
-        SDL_QueryTexture(text, nullptr, nullptr, &textW, &textH);
-        int width = iconW + textW + TEX_GAP;
-        int height = std::max(iconH, textH);
-
-        // "Merge" both into one texture
-        SDL_Texture * tex = SDL_CreateTexture(this->renderer, format, SDL_TEXTUREACCESS_TARGET, width, height);
-        SDL_SetRenderTarget(this->renderer, tex);
-        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 0);
-        SDL_RenderClear(renderer);
-
-        SDL_Rect r1 = {0, 0, iconW, iconH};
-        SDL_RenderCopy(this->renderer, icon, nullptr, &r1);
-        SDL_DestroyTexture(icon);
-
-        SDL_Rect r2 = {iconW + TEX_GAP, (height - textH)/2, textW, textH};
-        SDL_RenderCopy(this->renderer, text, nullptr, &r2);
-        SDL_DestroyTexture(text);
-
-        // Reset renderer
-        SDL_RenderPresent(this->renderer);
-        SDL_SetRenderTarget(this->renderer, nullptr);
+        // Merge the two together
+        SDL_Texture * tex = SDLHelper::renderMergeTextures(icon, text, TEX_GAP);
+        SDLHelper::destroyTexture(icon);
+        SDLHelper::destroyTexture(text);
 
         // Create and store struct
         this->remove(k);
@@ -124,7 +82,7 @@ namespace UI {
 
         // Delete texture and hide the specified key
         if (this->buttons[key].texture != nullptr) {
-            SDL_DestroyTexture(this->buttons[key].texture);
+            SDLHelper::destroyTexture(this->buttons[key].texture);
         }
         this->buttons[key].show = false;
     }
@@ -139,10 +97,7 @@ namespace UI {
         this->buttons[Utils::key_map[k]].enabled = false;
     }
 
-    void Controls::draw(int xPos, int yPos) {
-        // Coordinates of where to print next
-        SDL_Rect r = {xPos, yPos, 0, 0};
-
+    void Controls::draw(int x, int y) {
         // Vector stores a sorted copy of structs
         std::vector<struct Button> vec(std::begin(this->buttons), std::end(this->buttons));
         std::sort(vec.begin(), vec.end(), [](struct Button lhs, struct Button rhs){
@@ -154,16 +109,16 @@ namespace UI {
             if (vec[i].show) {
                 // Shift coordinates
                 int w, h = 0;
-                SDL_QueryTexture(vec[i].texture, nullptr, nullptr, &w, &h);
-                r.x -= w;
+                SDLHelper::getDimensions(vec[i].texture, &w, &h);
+                x -= w;
 
                 // Copy texture
-                r.w = w;
-                r.h = h;
-                SDL_RenderCopy(this->renderer, vec[i].texture, NULL, &r);
+                w = w;
+                h = h;
+                SDLHelper::drawTexture(vec[i].texture, x, y, w, h);
 
                 // Prepare for next button
-                r.x -= BUTTON_GAP;
+                x -= BUTTON_GAP;
             }
         }
     }
@@ -172,12 +127,8 @@ namespace UI {
         // Destroy any remaining textures
         for (int i = 0; i < KEY_MAP_SIZE; i++) {
             if (this->buttons[i].texture != nullptr) {
-                SDL_DestroyTexture(this->buttons[i].texture);
+                SDLHelper::destroyTexture(this->buttons[i].texture);
             }
         }
-
-        // Free fonts
-        TTF_CloseFont(this->extend);
-        TTF_CloseFont(this->stndrd);
     }
 }

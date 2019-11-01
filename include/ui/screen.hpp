@@ -1,7 +1,6 @@
 #ifndef UI_SCREEN_HPP
 #define UI_SCREEN_HPP
 
-#include <SDL2/SDL.h>
 #include "theme.h"
 #include "ui/controls.hpp"
 
@@ -14,21 +13,16 @@ namespace UI {
     // Functions called in order: event(), update(), draw()
     class Screen {
         protected:
-            // Renderer
-            SDL_Renderer * renderer;
             // The active theme
             struct Theme * theme;
             // Pointer to variable to break loop
             bool * loop;
             // Controls element
             Controls * controls;
-            // Default fonts to draw text with
-            TTF_Font * heading;
-            TTF_Font * body;
 
         public:
             // Constructor is used to initialize variables
-            Screen(SDL_Renderer *, struct Theme *, bool *);
+            Screen(struct Theme *, bool *);
 
             // Called before update, handles any events
             virtual void event() = 0;

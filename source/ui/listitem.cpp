@@ -2,6 +2,7 @@
 #include <ctime>
 #include <iomanip>
 #include "listitem.hpp"
+#include "SDLHelper.hpp"
 #include <sstream>
 #include "utils.h"
 
@@ -19,85 +20,41 @@ namespace UI {
 
         this->title = t;
         this->selected = false;
-
-        // Create fonts
-        PlFontData fontData;
-        plGetSharedFontByType(&fontData, PlSharedFontType_Standard);
-        this->title_font = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, TITLE_FONT_SIZE);
-        if (!this->title_font) {
-            // Handle error
-        }
-        this->sub_font = TTF_OpenFontRW(SDL_RWFromMem(fontData.address, fontData.size), 1, SUB_FONT_SIZE);
-        if (!this->sub_font) {
-            // Handle error
-        }
     }
 
     void ListItem::update(uint32_t dt) {
 
     }
 
-    void ListItem::draw(SDL_Renderer * renderer, int x, int y, int w, int h) {
+    void ListItem::draw(int x, int y, int w, int h) {
         // Draw background
-        SDL_Rect rect = {x, y, w, h};
         if (this->selected) {
-            SDL_RenderFillRect(renderer, &rect);
+            SDLHelper::drawRect(x, y, w, h);
         }
 
         // Draw outlines
-        SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
-        SDL_Rect lineTop = {x, y, w, 1};
-        SDL_Rect lineBottom = {x, y + h, w, 1};
-        SDL_RenderFillRect(renderer, &lineTop);
-        SDL_RenderFillRect(renderer, &lineBottom);
+        SDLHelper::setColour(150, 150, 150, 255);
+        SDLHelper::drawRect(x, y, w, 1);
+        SDLHelper::drawRect(x, y + h, w, 1);
 
         // Draw icon
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        rect.x = x + 10;
-        rect.y = y + 10;
-        rect.w = h - 20;
-        rect.h = rect.w;
-        SDL_RenderCopy(renderer, this->title->getIcon(), NULL, &rect);
+        SDLHelper::setColour(255, 255, 255, 255);
+        SDLHelper::drawTexture(this->title->getIcon(), x + 10, y + 10, h - 20, h - 20);
 
         // Print name
-        SDL_Surface * tmp = TTF_RenderUTF8_Blended(this->title_font, this->title->getName().c_str(), SDL_Color{0, 0, 0, 255});
-        SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);
-        int width, height;
-        SDL_QueryTexture(tex, nullptr, nullptr, &width, &height);
-        rect.x += rect.w + 20;
-        rect.y += 15;
-        rect.w = width;
-        rect.h = height;
-        SDL_RenderCopy(renderer, tex, nullptr, &rect);
-        SDL_FreeSurface(tmp);
-        SDL_DestroyTexture(tex);
+        SDLHelper::setColour(0, 0, 0, 255);
+        SDLHelper::drawText(this->title->getName().c_str(), x + h, y + 20, TITLE_FONT_SIZE);
 
         // Print play time
-        std::string play_time = Utils::formatPlaytime(this->title->getPlaytime());
-        tmp = TTF_RenderUTF8_Blended(this->sub_font, play_time.c_str(), SDL_Color{120, 120, 120, 255});
-        tex = SDL_CreateTextureFromSurface(renderer, tmp);
-        SDL_QueryTexture(tex, nullptr, nullptr, &width, &height);
-        rect.y += 30;
-        rect.w = width;
-        rect.h = height;
-        SDL_RenderCopy(renderer, tex, nullptr, &rect);
-        SDL_FreeSurface(tmp);
-        SDL_DestroyTexture(tex);
+        SDLHelper::setColour(120, 120, 120, 255);
+        std::string str = Utils::formatPlaytime(this->title->getPlaytime());
+        SDLHelper::drawText(str.c_str(), x + h, y + 40, SUB_FONT_SIZE);
 
         // Print last played
-        tmp = TTF_RenderUTF8_Blended(this->sub_font, this->last_played.c_str(), SDL_Color{120, 120, 120, 255});
-        tex = SDL_CreateTextureFromSurface(renderer, tmp);
-        SDL_QueryTexture(tex, nullptr, nullptr, &width, &height);
-        rect.y += 25;
-        rect.w = width;
-        rect.h = height;
-        SDL_RenderCopy(renderer, tex, nullptr, &rect);
-        SDL_FreeSurface(tmp);
-        SDL_DestroyTexture(tex);
+        SDLHelper::drawText(this->last_played.c_str(), x + h, y + 60, SUB_FONT_SIZE);
     }
 
     ListItem::~ListItem() {
-        TTF_CloseFont(this->title_font);
-        TTF_CloseFont(this->sub_font);
+
     }
 };
