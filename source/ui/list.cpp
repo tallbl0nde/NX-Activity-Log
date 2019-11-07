@@ -34,7 +34,7 @@ namespace UI {
         }
 
         // Draw side bar
-        SDLHelper::setColour(120, 120, 120, 255);
+        SDLHelper::setColour(SDL_Color{120, 120, 120, 255});
         int yPos = y + (((float)this->pos / this->items.size()) * (h - 50));
         SDLHelper::drawRect(x + w - 10, yPos, 10, 50);
     }

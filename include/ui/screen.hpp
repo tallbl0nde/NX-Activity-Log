@@ -1,7 +1,7 @@
 #ifndef UI_SCREEN_HPP
 #define UI_SCREEN_HPP
 
-#include "theme.h"
+#include "theme.hpp"
 #include "ui/controls.hpp"
 
 // Default font sizes
@@ -13,8 +13,6 @@ namespace UI {
     // Functions called in order: event(), update(), draw()
     class Screen {
         protected:
-            // The active theme
-            struct Theme * theme;
             // Pointer to variable to break loop
             bool * loop;
             // Controls element
@@ -22,7 +20,7 @@ namespace UI {
 
         public:
             // Constructor is used to initialize variables
-            Screen(struct Theme *, bool *);
+            Screen(bool *);
 
             // Called before update, handles any events
             virtual void event() = 0;

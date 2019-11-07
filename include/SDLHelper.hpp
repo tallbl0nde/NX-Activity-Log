@@ -27,7 +27,7 @@ namespace SDLHelper {
     void getDimensions(SDL_Texture *, int *, int *);
 
     // Sets the draw colour
-    void setColour(u8, u8, u8, u8);
+    void setColour(SDL_Color);
 
     // === DRAWING FUNCTIONS ===
     // -> Draw directly to the screen/renderer

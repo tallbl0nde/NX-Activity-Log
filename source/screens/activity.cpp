@@ -3,9 +3,10 @@
 #include "ui/listitem.hpp"
 #include "SDLHelper.hpp"
 #include <switch.h>
+#include "theme.hpp"
 
 namespace Screen {
-    Activity::Activity(struct Theme * t, bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(t, b) {
+    Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
         this->list = new UI::List();
         for (int i = 0; i < tls.size(); i++) {
             this->list->addItem(new UI::ListItem(tls[i]));
@@ -43,33 +44,33 @@ namespace Screen {
 
     void Activity::draw() {
         // Clear screen (draw background)
-        SDLHelper::setColour(this->theme->background, this->theme->background, this->theme->background, 255);
+        SDLHelper::setColour(UI::theme.background);
         SDLHelper::clearScreen();
 
         // Draw list of items
         this->list->draw(30, 100, 750, 550);
 
         // Draw over list to hide scrolling
-        SDLHelper::setColour(this->theme->background, this->theme->background, this->theme->background, 255);
+        SDLHelper::setColour(UI::theme.background);
         SDLHelper::drawRect(30, 0, 780, 87);
         SDLHelper::drawRect(30, 648, 1220, 72);
 
         // Draw top and bottom lines
-        SDLHelper::setColour(this->theme->line, this->theme->line, this->theme->line, 255);
+        SDLHelper::setColour(UI::theme.foreground);
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Draw player icon
-        SDLHelper::setColour(255, 255, 255, 255);
+        SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
         SDLHelper::drawTexture(this->user->getImage(), 65, 14, 60, 60);
 
         // Print heading
         std::string str = this->user->getUsername() + "'s Play Activity";
-        SDLHelper::setColour(0, 0, 0, 255);
+        SDLHelper::setColour(UI::theme.text);
         SDLHelper::drawText(str.c_str(), 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
 
         // Draw controls
-        SDLHelper::setColour(255, 255, 255, 255);
+        SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
         this->controls->draw(1215, 670);
     }
 

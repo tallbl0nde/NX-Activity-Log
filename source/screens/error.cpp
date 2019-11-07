@@ -1,8 +1,9 @@
 #include "error.hpp"
 #include "SDLHelper.hpp"
+#include "theme.hpp"
 
 namespace Screen {
-    Error::Error(struct Theme * t, bool * b, std::string msg) : Screen::Screen(t, b) {
+    Error::Error(bool * b, std::string msg) : Screen::Screen(b) {
         // Set error message
         this->message = msg;
 
@@ -33,16 +34,16 @@ namespace Screen {
 
     void Error::draw() {
         // Clear screen (draw background)
-        SDLHelper::setColour(this->theme->background, this->theme->background, this->theme->background, 255);
+        SDLHelper::setColour(UI::theme.background);
         SDLHelper::clearScreen();
 
         // Draw top and bottom lines
-        SDLHelper::setColour(this->theme->line, this->theme->line, this->theme->line, 255);
+        SDLHelper::setColour(UI::theme.foreground);
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Print loading title and message
-        SDLHelper::setColour(0, 0, 0, 255);
+        SDLHelper::setColour(UI::theme.text);
         SDLHelper::drawText("Error", 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
         SDLHelper::drawText(this->message.c_str(), 65, 128, BODY_FONT_SIZE);
 

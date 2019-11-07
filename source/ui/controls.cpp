@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "SDLHelper.hpp"
 #include <string>
+#include "theme.hpp"
 #include <vector>
 
 // Parameters to adjust appearance
@@ -56,7 +57,7 @@ namespace UI {
         int key = Utils::key_map[k];
 
         // Create button texture
-        SDLHelper::setColour(0, 0, 0, 255);
+        SDLHelper::setColour(theme.text);
         SDL_Texture * icon = SDLHelper::renderText(key_char[key].c_str(), ICON_FONT_SIZE, true);
 
         // Create text texture

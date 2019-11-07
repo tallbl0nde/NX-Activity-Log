@@ -12,7 +12,7 @@ namespace Screen {
 
         // See ui/screen.hpp for what these functions do
         public:
-            Error(struct Theme *, bool *, std::string);
+            Error(bool *, std::string);
 
             void event();
 

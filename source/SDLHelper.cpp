@@ -87,8 +87,8 @@ namespace SDLHelper {
         SDL_QueryTexture(t, nullptr, nullptr, w, h);
     }
 
-    void setColour(u8 r, u8 g, u8 b, u8 a) {
-        SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    void setColour(SDL_Color c) {
+        SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
     }
 
     // === DRAWING FUNCTIONS ===

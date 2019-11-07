@@ -57,10 +57,10 @@ int main(int argc, char * argv[]){
     // Clock to measure time between draw
     struct Utils::Clock clock;
 
-    // Theme struct
-    struct Theme theme = theme_light;
+    // Set theme
+    UI::theme = UI::theme_light;
 
-    UI::Screen * screen = new Screen::Loading(&theme, &appRunning, nullptr);
+    UI::Screen * screen = new Screen::Loading(&appRunning, nullptr);
     User * user = nullptr;
 
     // Only proceed if no errors
@@ -74,7 +74,7 @@ int main(int argc, char * argv[]){
         userID = getUserID();
         if (userID == 0) {
             // Unable to get user ID - raise error
-            screen = new Screen::Error(&theme, &appRunning, "Unable to get a User ID... Did you select a user?");
+            screen = new Screen::Error(&appRunning, "Unable to get a User ID... Did you select a user?");
             error = true;
         }
 
@@ -86,7 +86,7 @@ int main(int argc, char * argv[]){
             image = getUserImage(userID);
 
             if (username == "" || image == nullptr) {
-                screen = new Screen::Error(&theme, &appRunning, "An unexpected error occurred while parsing user data");
+                screen = new Screen::Error(&appRunning, "An unexpected error occurred while parsing user data");
                 error = true;
             }
         }
@@ -103,7 +103,7 @@ int main(int argc, char * argv[]){
 
         // Stage 3: Initialize screen
         if (!error) {
-            screen = new Screen::Activity(&theme, &appRunning, user, titles);
+            screen = new Screen::Activity(&appRunning, user, titles);
         }
 
         // Infinite draw loop until exit
@@ -120,7 +120,7 @@ int main(int argc, char * argv[]){
 
             // FPS Counter
             std::string fps = "FPS: " + std::to_string(1000.0/clock.delta);
-            SDLHelper::setColour(0, 0, 0, 255);
+            SDLHelper::setColour(SDL_Color{0, 0, 0, 255});
             SDLHelper::drawText(fps.c_str(), 800, 10, 20);
             SDLHelper::draw();
         }
