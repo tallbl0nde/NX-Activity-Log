@@ -38,11 +38,13 @@ namespace SDLHelper {
     void drawRect(int, int, int, int);
 
     // Draw text at specified x and y coordinate with given font size
-    void drawText(const char *, int, int, int, bool = false);
+    void drawText(const char *, SDL_Color, int, int, int, bool = false);
 
     // Draw provided texture at specified coordinates
     // width and height are optional
+    // If a colour is provided the texture is tinted
     void drawTexture(SDL_Texture *, int, int, int = -1, int = -1);
+    void drawTexture(SDL_Texture *, SDL_Color, int, int, int = -1, int = -1);
 
     // === RENDERING FUNCTIONS ===
     // -> Draw to a texture and return it
@@ -55,6 +57,7 @@ namespace SDLHelper {
     SDL_Texture * renderImage(u8 *, size_t);
 
     // Returns a texture with the specified text drawn at the specified font size
+    // Always drawn in white!
     SDL_Texture * renderText(const char *, int, bool = false);
 };
 

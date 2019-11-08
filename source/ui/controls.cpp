@@ -116,7 +116,7 @@ namespace UI {
                 // Copy texture
                 w = w;
                 h = h;
-                SDLHelper::drawTexture(vec[i].texture, x, y, w, h);
+                SDLHelper::drawTexture(vec[i].texture, UI::theme.text, x, y, w, h);
 
                 // Prepare for next button
                 x -= BUTTON_GAP;

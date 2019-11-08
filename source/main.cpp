@@ -120,8 +120,7 @@ int main(int argc, char * argv[]){
 
             // FPS Counter
             std::string fps = "FPS: " + std::to_string(1000.0/clock.delta);
-            SDLHelper::setColour(SDL_Color{0, 0, 0, 255});
-            SDLHelper::drawText(fps.c_str(), 800, 10, 20);
+            SDLHelper::drawText(fps.c_str(), SDL_Color{0, 0, 0, 255}, 1000, 10, 20);
             SDLHelper::draw();
         }
     }

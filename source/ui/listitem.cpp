@@ -20,11 +20,8 @@ namespace UI {
 
         // Create textures using title object
         this->icon = t->getIcon();
-        SDLHelper::setColour(UI::theme.text);
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
-        SDLHelper::setColour(UI::theme.accent);
         this->playtime = SDLHelper::renderText(Utils::formatPlaytime(t->getPlaytime()).c_str(), SUB_FONT_SIZE);
-        SDLHelper::setColour(UI::theme.muted_text);
         this->lastplayed = SDLHelper::renderText(ss.str().c_str(), SUB_FONT_SIZE);
 
         this->selected = false;
@@ -50,9 +47,9 @@ namespace UI {
         SDLHelper::drawTexture(this->icon, x + 10, y + 10, h - 20, h - 20);
 
         // Print text
-        SDLHelper::drawTexture(this->title, x + h + 10, y + 20);
-        SDLHelper::drawTexture(this->playtime, x + h + 10, y + 55);
-        SDLHelper::drawTexture(this->lastplayed, x + h + 10, y + 80);
+        SDLHelper::drawTexture(this->title, UI::theme.text, x + h + 10, y + 20);
+        SDLHelper::drawTexture(this->playtime, UI::theme.accent, x + h + 10, y + 55);
+        SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 80);
     }
 
     ListItem::~ListItem() {

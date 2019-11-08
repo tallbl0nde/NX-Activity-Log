@@ -27,8 +27,7 @@ namespace Screen {
         SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Print loading title
-        SDLHelper::setColour(UI::theme.text);
-        SDLHelper::drawText("Loading...", 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        SDLHelper::drawText("Loading...", UI::theme.text, 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
     }
 
     Loading::~Loading() {

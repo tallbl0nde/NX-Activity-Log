@@ -43,9 +43,8 @@ namespace Screen {
         SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Print loading title and message
-        SDLHelper::setColour(UI::theme.text);
-        SDLHelper::drawText("Error", 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
-        SDLHelper::drawText(this->message.c_str(), 65, 128, BODY_FONT_SIZE);
+        SDLHelper::drawText("Error", UI::theme.text, 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        SDLHelper::drawText(this->message.c_str(), UI::theme.text, 65, 128, BODY_FONT_SIZE);
 
         // Draw controls
         this->controls->draw(1215, 670);
