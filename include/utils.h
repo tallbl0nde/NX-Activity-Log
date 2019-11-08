@@ -1,21 +1,29 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <iostream>
+#include <map>
+#include <SDL2/SDL.h>
+#include <switch.h>
 
-#define CONSOLE_WIDTH 80
-#define CONSOLE_HEIGHT 45
+namespace Utils {
+    // Map from HidControllerKeys -> int
+    #define KEY_MAP_SIZE 28
+    extern std::map<HidControllerKeys, int> key_map;
 
-// Apparently you can't use libnx colour macros with cout...? (most likely my fault)
-#define TEXT_CYAN "\033[36;1m"
-#define TEXT_RED "\033[31;1m"
-#define TEXT_RESET "\033[0m"
-#define TEXT_WHITE "\033[37;1m"
+    // Nicely format a time (from zero)
+    std::string formatPlaytime(u32);
 
-// Move the cursor to specified coords
-void moveCursor(int, int);
+    // Struct representing a "clock", which represents time between ticks
+    struct Clock {
+        uint32_t last_tick = 0;
+        uint32_t delta = 0;
 
-// Clear the 'middle' section of the console
-void clearConsole();
+        void tick() {
+            uint32_t tick = SDL_GetTicks();
+            delta = tick - last_tick;
+            last_tick = tick;
+        }
+    };
+};
 
 #endif
