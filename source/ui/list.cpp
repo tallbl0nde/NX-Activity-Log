@@ -2,7 +2,7 @@
 #include "SDLHelper.hpp"
 
 // Height of items in list
-#define ITEM_HEIGHT 140
+#define ITEM_HEIGHT 110
 
 namespace UI {
     List::List() {

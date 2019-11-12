@@ -11,6 +11,7 @@ typedef struct {
     SDL_Color foreground;
     SDL_Color text;
     SDL_Color muted_text;
+    SDL_Color muted_line;
     SDL_Color accent;
 } theme_t;
 

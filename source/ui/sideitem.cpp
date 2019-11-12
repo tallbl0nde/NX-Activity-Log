@@ -1,7 +1,7 @@
 #include "SDLHelper.hpp"
 #include "sideitem.hpp"
 #include "theme.hpp"
-#include "utils.h"
+#include "utils.hpp"
 
 // Font sizes
 #define FONT_SIZE 22

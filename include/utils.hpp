@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <ctime>
 #include <map>
 #include <SDL2/SDL.h>
 #include <switch.h>
@@ -12,6 +13,9 @@ namespace Utils {
 
     // Nicely format a time (from zero)
     std::string formatPlaytime(u32);
+
+    // Returns a string with the difference between the two timestamps
+    std::string formatTimestamps(std::time_t, std::time_t);
 
     // Struct representing a "clock", which represents time between ticks
     struct Clock {

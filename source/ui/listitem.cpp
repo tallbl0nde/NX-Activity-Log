@@ -1,28 +1,25 @@
 #include <algorithm>
-#include <ctime>
-#include <iomanip>
 #include "listitem.hpp"
 #include "SDLHelper.hpp"
-#include <sstream>
 #include "theme.hpp"
-#include "utils.h"
+#include "utils.hpp"
 
 // Font sizes
-#define TITLE_FONT_SIZE 25
-#define SUB_FONT_SIZE 20
+#define TITLE_FONT_SIZE 22
+#define SUB_FONT_SIZE 18
 
 namespace UI {
     ListItem::ListItem(Title * t) {
-        // Format timestamp for printing
-        std::stringstream ss;
-        std::time_t timestamp = pdmPlayTimestampToPosix(t->getLastPlayed());
-        ss << std::put_time(std::localtime(&timestamp), "%d %B %Y %I:%M %p");
+        // Timestamp stuff
+        std::time_t play_stamp = pdmPlayTimestampToPosix(t->getLastPlayed());
+        std::time_t now_stamp;
+        std::time(&now_stamp);
 
         // Create textures using title object
         this->icon = t->getIcon();
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
         this->playtime = SDLHelper::renderText(Utils::formatPlaytime(t->getPlaytime()).c_str(), SUB_FONT_SIZE);
-        this->lastplayed = SDLHelper::renderText(ss.str().c_str(), SUB_FONT_SIZE);
+        this->lastplayed = SDLHelper::renderText(Utils::formatTimestamps(play_stamp, now_stamp).c_str(), SUB_FONT_SIZE);
 
         this->selected = false;
     }
@@ -38,7 +35,7 @@ namespace UI {
         }
 
         // Draw outlines
-        SDLHelper::setColour(SDL_Color{150, 150, 150, 255});
+        SDLHelper::setColour(UI::theme.muted_line);
         SDLHelper::drawRect(x, y, w, 1);
         SDLHelper::drawRect(x, y + h, w, 1);
 
@@ -47,9 +44,9 @@ namespace UI {
         SDLHelper::drawTexture(this->icon, x + 10, y + 10, h - 20, h - 20);
 
         // Print text
-        SDLHelper::drawTexture(this->title, UI::theme.text, x + h + 10, y + 20);
-        SDLHelper::drawTexture(this->playtime, UI::theme.accent, x + h + 10, y + 55);
-        SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 80);
+        SDLHelper::drawTexture(this->title, UI::theme.text, x + h + 10, y + 15);
+        SDLHelper::drawTexture(this->playtime, UI::theme.accent, x + h + 10, y + 48);
+        SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 77);
     }
 
     ListItem::~ListItem() {

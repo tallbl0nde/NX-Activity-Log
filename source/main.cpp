@@ -4,7 +4,7 @@
 #include <switch.h>
 #include "Title.hpp"
 #include "User.hpp"
-#include "utils.h"
+#include "utils.hpp"
 #include <vector>
 
 #include "screens/activity.hpp"
@@ -120,7 +120,7 @@ int main(int argc, char * argv[]){
 
             // FPS Counter
             std::string fps = "FPS: " + std::to_string(1000.0/clock.delta);
-            SDLHelper::drawText(fps.c_str(), SDL_Color{0, 0, 0, 255}, 1000, 10, 20);
+            SDLHelper::drawText(fps.c_str(), UI::theme.text, 1000, 10, 20);
             SDLHelper::draw();
         }
     }

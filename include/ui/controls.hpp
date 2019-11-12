@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <string>
-#include "utils.h"
+#include "utils.hpp"
 
 // Struct stored in vector which stores button text and position
 struct Button {
