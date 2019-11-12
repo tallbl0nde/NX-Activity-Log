@@ -13,7 +13,7 @@ class Title {
         u64 titleID;
         // Game's name
         std::string name;
-        // POSIX timestamps of first andlast play time
+        // POSIX timestamps of first and last play time
         u32 first_timestamp;
         u32 last_timestamp;
         // Total playtime in minutes

@@ -1,5 +1,3 @@
-#include <iomanip>
-#include <sstream>
 #include "utils.hpp"
 
 namespace Utils {
@@ -37,10 +35,6 @@ namespace Utils {
 
     // Nicely format playtime (from zero)
     std::string formatPlaytime(u32 minutes) {
-        if (minutes == 0) {
-            return "Never played";
-        }
-
         std::string str = "Played for ";
         switch (minutes/60){
             case 0:
@@ -71,70 +65,123 @@ namespace Utils {
         return str;
     }
 
-    // Returns a string with the difference between the two timestamps
-    std::string formatTimestamps(std::time_t sml, std::time_t lrg) {
-        // Calculate difference (in seconds)
-        double diff_secs = std::difftime(lrg, sml);
-
-        // Create structs for easy calculations
-        struct tm sml_s = *(std::localtime(&sml));
-        struct tm lrg_s = *(std::localtime(&lrg));
-
-        // Titles "played" before launch date likely aren't played
-        if (sml_s.tm_year < 117) {
-            return "";
+    // Returns a string with the time since last played
+    std::string formatLastPlayed(u32 ts) {
+        if (ts == 0) {
+            return "Never played";
         }
 
+        // Get difference between timestamps in seconds
+        time_t t = std::time(nullptr);
+        time_t t2 = pdmPlayTimestampToPosix(ts);
+        double diff = std::difftime(t, t2);
+
         // Negative values indicate played with a future date
-        if (diff_secs < 0) {
+        if (diff < 0) {
             return "Played in the future";
         }
 
         std::string str = "Last played ";
-        if (diff_secs < 60) {
+        if (diff < 60) {
             str += "seconds ago";
 
         // If within the last hour show minutes
-        } else if (diff_secs < 3600) {
-            str += std::to_string((int)diff_secs/60);
-            if ((int)(diff_secs/60) == 1) {
+        } else if (diff < 3600) {
+            str += std::to_string((int)diff/60);
+            if ((int)(diff/60) == 1) {
                 str += " minute ago";
             } else {
                 str += " minutes ago";
             }
 
         // If within last day show hours
-        } else if (diff_secs < 86400) {
-            str += std::to_string((int)diff_secs/3600);
-            if ((int)(diff_secs/3600) == 1) {
+        } else if (diff < 86400) {
+            str += std::to_string((int)diff/3600);
+            if ((int)(diff/3600) == 1) {
                 str += " hour ago";
             } else {
                 str += " hours ago";
             }
 
         // If within last month show days
-        } else if (diff_secs < 2678400) {
-            str += std::to_string((int)diff_secs/86400);
-            if ((int)(diff_secs/86400) == 1) {
+        } else if (diff < 2678400) {
+            str += std::to_string((int)diff/86400);
+            if ((int)(diff/86400) == 1) {
                 str += " day ago";
             } else {
                 str += " days ago";
             }
 
-        // If within this year show month
-        } else if (diff_secs < 32140800) {
-            str += std::to_string((int)diff_secs/2678400);
-            if ((int)(diff_secs/2678400) == 1) {
-                str += " month ago";
-            } else {
-                str += " months ago";
+        // Otherwise show date
+        } else {
+            // Create structs for easy fprmatting
+            struct tm now = *(std::localtime(&t));
+            struct tm stamp = *(std::localtime(&t2));
+
+            str += "on ";
+            switch (stamp.tm_mon) {
+                case 0:
+                    str += "January";
+                    break;
+                case 1:
+                    str += "February";
+                    break;
+                case 2:
+                    str += "March";
+                    break;
+                case 3:
+                    str += "April";
+                    break;
+                case 4:
+                    str += "May";
+                    break;
+                case 5:
+                    str += "June";
+                    break;
+                case 6:
+                    str += "July";
+                    break;
+                case 7:
+                    str += "August";
+                    break;
+                case 8:
+                    str += "September";
+                    break;
+                case 9:
+                    str += "October";
+                    break;
+                case 10:
+                    str += "November";
+                    break;
+                default:
+                    str += "December";
+                    break;
+            }
+            str += " ";
+            str += std::to_string(stamp.tm_mday + 1);
+            switch (stamp.tm_mday) {
+                case 1:
+                case 21:
+                case 31:
+                    str += "st";
+                    break;
+                case 2:
+                case 22:
+                    str += "nd";
+                    break;
+                case 3:
+                case 23:
+                    str += "rd";
+                    break;
+                default:
+                    str += "th";
+                    break;
             }
 
-        // Otherwise show date w/ year
-        } else {
-            std::stringstream ss;
-            ss << std::put_time(std::localtime(&sml), "%B %d, %Y");
-            str += "on " + ss.str();
+            // If not in this year show year as well
+            if (now.tm_year != stamp.tm_year) {
+                str += ", " + std::to_string(stamp.tm_year + 1900);
+            }
         }
 
         return str;

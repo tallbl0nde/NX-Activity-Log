@@ -10,16 +10,11 @@
 
 namespace UI {
     ListItem::ListItem(Title * t) {
-        // Timestamp stuff
-        std::time_t play_stamp = pdmPlayTimestampToPosix(t->getLastPlayed());
-        std::time_t now_stamp;
-        std::time(&now_stamp);
-
         // Create textures using title object
         this->icon = t->getIcon();
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
         this->playtime = SDLHelper::renderText(Utils::formatPlaytime(t->getPlaytime()).c_str(), SUB_FONT_SIZE);
-        this->lastplayed = SDLHelper::renderText(Utils::formatTimestamps(play_stamp, now_stamp).c_str(), SUB_FONT_SIZE);
+        this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
 
         this->selected = false;
     }
