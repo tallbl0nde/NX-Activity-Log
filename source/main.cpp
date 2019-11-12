@@ -119,8 +119,8 @@ int main(int argc, char * argv[]){
             screen->draw();
 
             // FPS Counter
-            std::string fps = "FPS: " + std::to_string(1000.0/clock.delta);
-            SDLHelper::drawText(fps.c_str(), UI::theme.text, 1000, 10, 20);
+            std::string fps = "FPS: " + std::to_string((int)(1000.0/clock.delta)) + " (" + std::to_string(clock.delta) + " ms)";
+            SDLHelper::drawText(fps.c_str(), UI::theme.text, 10, 690, 20);
             SDLHelper::draw();
         }
     }

@@ -18,6 +18,7 @@ namespace UI {
             SDL_Texture * playtime;
             SDL_Texture * lastplayed;
             // Self-explanatory
+            Title * title_obj;
             bool selected;
 
         public:
@@ -28,6 +29,8 @@ namespace UI {
             void update(uint32_t);
 
             void draw(int, int, int, int);
+
+            Title * getTitleObj();
 
             ~ListItem();
     };

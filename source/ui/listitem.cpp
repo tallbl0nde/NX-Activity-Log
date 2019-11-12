@@ -16,6 +16,7 @@ namespace UI {
         this->playtime = SDLHelper::renderText(Utils::formatPlaytime(t->getPlaytime()).c_str(), SUB_FONT_SIZE);
         this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
 
+        this->title_obj = t;
         this->selected = false;
     }
 
@@ -44,10 +45,16 @@ namespace UI {
         SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 77);
     }
 
+    Title * ListItem::getTitleObj() {
+        return this->title_obj;
+    }
+
     ListItem::~ListItem() {
         // Destroy created textures
         SDLHelper::destroyTexture(this->title);
         SDLHelper::destroyTexture(this->playtime);
         SDLHelper::destroyTexture(this->lastplayed);
+
+        delete this->title_obj;
     }
 };

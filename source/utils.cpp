@@ -158,7 +158,7 @@ namespace Utils {
                     break;
             }
             str += " ";
-            str += std::to_string(stamp.tm_mday + 1);
+            str += std::to_string(stamp.tm_mday);
             switch (stamp.tm_mday) {
                 case 1:
                 case 21:

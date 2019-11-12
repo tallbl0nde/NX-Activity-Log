@@ -5,6 +5,17 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
+// Enumerations for sorting methods
+enum SortType {
+    AlphaAsc,       // Alphabetically (A-Z)
+    HoursAsc,       // Play time (ascending)
+    HoursDec,       // Play time (descending)
+    LaunchAsc,      // Launches (ascending)
+    LaunchDec,      // Launches (descending)
+    FirstPlayed,    // First played (earliest first)
+    LastPlayed,     // Last played (most recent first)
+};
+
 namespace UI {
     // A List contains ListItems and handles the positioning and
     // selection stuff. A small navigation bar is also shown
@@ -14,6 +25,10 @@ namespace UI {
             std::vector<ListItem *> items;
             // Index of top element
             size_t pos;
+            // Current sorting type
+            SortType sorting;
+            // Texture for sorting text
+            SDL_Texture * sort_text;
 
         public:
             // The constructor does not accept ListItems
@@ -32,6 +47,12 @@ namespace UI {
 
             // Change pos to parameter
             void movePos(size_t);
+
+            // Returns current sort type
+            SortType getSorting();
+
+            // Sorts with given type
+            void sort(SortType);
 
             // Destructor frees stored ListItems
             ~List();

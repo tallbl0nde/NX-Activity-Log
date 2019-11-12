@@ -8,9 +8,10 @@
 namespace Screen {
     Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
         this->list = new UI::List();
-        for (int i = 0; i < tls.size(); i++) {
+        for (size_t i = 0; i < tls.size(); i++) {
             this->list->addItem(new UI::ListItem(tls[i]));
         }
+        this->list->sort(this->list->getSorting());
 
         // Create side menu
         this->menu = new UI::SideMenu();
@@ -33,8 +34,36 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     if (events.jbutton.which == 0) {
+                        // Plus exits app
                         if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
                             *(this->loop) = false;
+
+                        // Minus changes sorting method
+                        } else if (events.jbutton.button == Utils::key_map[KEY_MINUS]) {
+                            switch (this->list->getSorting()) {
+                                case AlphaAsc:
+                                    this->list->sort(HoursAsc);
+                                    break;
+                                case HoursAsc:
+                                    this->list->sort(HoursDec);
+                                    break;
+                                case HoursDec:
+                                    this->list->sort(LaunchAsc);
+                                    break;
+                                case LaunchAsc:
+                                    this->list->sort(LaunchDec);
+                                    break;
+                                case LaunchDec:
+                                    this->list->sort(FirstPlayed);
+                                    break;
+                                case FirstPlayed:
+                                    this->list->sort(LastPlayed);
+                                    break;
+                                case LastPlayed:
+                                    this->list->sort(AlphaAsc);
+                                    break;
+                            }
+
                         } else if (events.jbutton.button == Utils::key_map[KEY_DDOWN]) {
                             this->list->movePos(this->list->getPos() + 1);
                         } else if (events.jbutton.button == Utils::key_map[KEY_DUP]) {
