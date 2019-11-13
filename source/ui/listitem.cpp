@@ -13,9 +13,11 @@ namespace UI {
         // Create textures using title object
         this->icon = t->getIcon();
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
-        this->playtime = SDLHelper::renderText(Utils::formatPlaytime(t->getPlaytime()).c_str(), SUB_FONT_SIZE);
+        std::string str = "Played for " + Utils::formatPlaytime(t->getPlaytime());
+        this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
         this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
 
+        this->rank = nullptr;
         this->title_obj = t;
         this->selected = false;
     }
@@ -41,8 +43,28 @@ namespace UI {
 
         // Print text
         SDLHelper::drawTexture(this->title, UI::theme.text, x + h + 10, y + 15);
-        SDLHelper::drawTexture(this->playtime, UI::theme.accent, x + h + 10, y + 48);
-        SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 77);
+        SDLHelper::drawTexture(this->playtime, UI::theme.accent, x + h + 10, y + 51);
+        SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 82);
+        if (this->rank != nullptr) {
+            int tw, th;
+            SDLHelper::getDimensions(this->rank, &tw, &th);
+            SDLHelper::drawTexture(this->rank, UI::theme.muted_text, x + w - tw - 15, y + 15);
+        }
+    }
+
+    void ListItem::setRank(size_t i) {
+        // If set to zero remove texture
+        if (i == 0) {
+            if (this->rank != nullptr) {
+                SDLHelper::destroyTexture(this->rank);
+            }
+            this->rank = nullptr;
+            return;
+        }
+
+        // Otherwise create new texture
+        std::string str = "#" + std::to_string(i);
+        this->rank = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
     }
 
     Title * ListItem::getTitleObj() {
@@ -54,6 +76,10 @@ namespace UI {
         SDLHelper::destroyTexture(this->title);
         SDLHelper::destroyTexture(this->playtime);
         SDLHelper::destroyTexture(this->lastplayed);
+
+        if (this->rank != nullptr) {
+            SDLHelper::destroyTexture(this->rank);
+        }
 
         delete this->title_obj;
     }

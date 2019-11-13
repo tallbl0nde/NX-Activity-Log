@@ -4,7 +4,7 @@
 #include "ui/theme.hpp"
 
 // Height of items in list
-#define ITEM_HEIGHT 110
+#define ITEM_HEIGHT 120
 // Font size of sorting text
 #define SORT_FONT_SIZE 18
 
@@ -121,6 +121,15 @@ namespace UI {
 
         // Set sorted type
         this->sorting = type;
+
+        // Refresh item rankings
+        for (size_t i = 0; i < this->items.size(); i++) {
+            if (this->sorting != AlphaAsc) {
+                this->items[i]->setRank(i + 1);
+            } else {
+                this->items[i]->setRank(0);
+            }
+        }
 
         // Create texture
         if (this->sort_text != nullptr) {

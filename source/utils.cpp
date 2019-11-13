@@ -35,7 +35,7 @@ namespace Utils {
 
     // Nicely format playtime (from zero)
     std::string formatPlaytime(u32 minutes) {
-        std::string str = "Played for ";
+        std::string str = "";
         switch (minutes/60){
             case 0:
                 break;

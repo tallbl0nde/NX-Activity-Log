@@ -15,6 +15,8 @@ namespace Screen {
             UI::List * list;
             // Left menu object
             UI::SideMenu * menu;
+            // Top right time texture
+            SDL_Texture * total_hours;
             // Used to print/render user name and image
             User * user;
 

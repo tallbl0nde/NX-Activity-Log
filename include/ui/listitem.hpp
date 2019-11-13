@@ -17,6 +17,7 @@ namespace UI {
             SDL_Texture * title;
             SDL_Texture * playtime;
             SDL_Texture * lastplayed;
+            SDL_Texture * rank;
             // Self-explanatory
             Title * title_obj;
             bool selected;
@@ -29,6 +30,8 @@ namespace UI {
             void update(uint32_t);
 
             void draw(int, int, int, int);
+
+            void setRank(size_t);
 
             Title * getTitleObj();
 

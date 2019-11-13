@@ -4,14 +4,24 @@
 #include "SDLHelper.hpp"
 #include <switch.h>
 #include "theme.hpp"
+#include "utils.hpp"
 
 namespace Screen {
     Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
+        u32 total_mins = 0;
         this->list = new UI::List();
         for (size_t i = 0; i < tls.size(); i++) {
             this->list->addItem(new UI::ListItem(tls[i]));
+            total_mins += tls[i]->getPlaytime();
         }
-        this->list->sort(this->list->getSorting());
+
+        // Sort list by most played
+        this->list->sort(HoursAsc);
+
+        // Create total hours texture
+        std::string str = "Total Playtime: ";
+        str += Utils::formatPlaytime(total_mins);
+        this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
 
         // Create side menu
         this->menu = new UI::SideMenu();
@@ -114,6 +124,11 @@ namespace Screen {
         // Print heading
         std::string str = this->user->getUsername() + "'s Activity";
         SDLHelper::drawText(str.c_str(), UI::theme.text, 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+
+        // Print total hours
+        int tw, th;
+        SDLHelper::getDimensions(this->total_hours, &tw, &th);
+        SDLHelper::drawTexture(this->total_hours, UI::theme.muted_text, 1215 - tw, 44 - th/2);
 
         // Draw controls
         SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
