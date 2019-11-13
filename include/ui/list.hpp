@@ -23,8 +23,9 @@ namespace UI {
         private:
             // Vector containing ListItems
             std::vector<ListItem *> items;
-            // Index of top element
-            size_t pos;
+            // Used for scrolling
+            unsigned int pos;
+            unsigned int max_pos;
             // Current sorting type
             SortType sorting;
             // Texture for sorting text
@@ -43,10 +44,10 @@ namespace UI {
             void draw(int, int, int, int);
 
             // Return pos
-            size_t getPos();
+            unsigned int getPos();
 
             // Change pos to parameter
-            void movePos(size_t);
+            void setPos(unsigned int);
 
             // Returns current sort type
             SortType getSorting();

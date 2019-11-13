@@ -17,6 +17,12 @@ namespace UI {
 
     void List::addItem(ListItem * item) {
         this->items.push_back(item);
+        // Update maximum scroll pos
+        if (this->items.size() > 4) {
+            this->max_pos = ITEM_HEIGHT * (this->items.size() - 4);
+        } else {
+            this->max_pos = 0;
+        }
     }
 
     void List::update(uint32_t dt) {
@@ -24,42 +30,48 @@ namespace UI {
     }
 
     void List::draw(int x, int y, int w, int h) {
-        // Print sorting type
+        // Draw list items
         int tw, th;
         SDLHelper::getDimensions(this->sort_text, &tw, &th);
-        SDLHelper::drawTexture(this->sort_text, UI::theme.muted_text, x + (w/2) - (tw/2), y + 10);
 
-        // Draw list items
-        size_t idx = this->pos;
-        if (this->pos > 0) {
-            idx--;
+        size_t i = this->pos/ITEM_HEIGHT;
+        if (i > 0) {
+            i--;
+        } else {
+            // Print sorting type
+            SDLHelper::drawTexture(this->sort_text, UI::theme.muted_text, x + (w/2) - (tw/2), y + 10 - this->pos);
         }
-        for (size_t i = idx; i < idx + 6; i++) {
+
+        for (; i < (this->pos/ITEM_HEIGHT) + 5; i++) {
             // Break out of loop if going to access outside vector
             if (i >= this->items.size()) {
                 break;
             }
 
             // List items utilize 85% of list width
-            this->items[i]->draw(x + w*0.075, y + 25 + th + (ITEM_HEIGHT * (i-pos)), w*0.85, ITEM_HEIGHT);
+            this->items[i]->draw(x + w*0.075, y + 25 + th + ((ITEM_HEIGHT * i) - pos), w*0.85, ITEM_HEIGHT);
         }
 
         // Draw side bar
-        SDLHelper::setColour(SDL_Color{120, 120, 120, 255});
-        int yPos = y + (((float)this->pos / this->items.size()) * (h - 50));
-        SDLHelper::drawRect(x + w - 10, yPos, 10, 50);
+        if (this->max_pos != 0) {
+            SDLHelper::setColour(UI::theme.muted_line);
+            int yPos = y + (((float)this->pos / this->max_pos) * (h - 95));
+            SDLHelper::drawRect(x + w - 25, yPos, 5, 70);
+        }
     }
 
-    size_t List::getPos() {
+    unsigned int List::getPos() {
         return this->pos;
     }
 
-    void List::movePos(size_t pos) {
+    void List::setPos(unsigned int pos) {
+        // Avoid going from 0 to max uint val
+        if (this->pos == 0 && pos > this->max_pos) {
+            return;
+        }
         this->pos = pos;
-        if (this->pos > this->items.size()-3) {
-            this->pos = this->items.size()-3;
-        } else if (this->pos < 0) {
-            this->pos = 0;
+        if (this->pos > this->max_pos) {
+            this->pos = this->max_pos;
         }
     }
 

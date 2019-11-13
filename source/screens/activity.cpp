@@ -74,10 +74,12 @@ namespace Screen {
                                     break;
                             }
 
+                            this->list->setPos(0);
+
                         } else if (events.jbutton.button == Utils::key_map[KEY_DDOWN]) {
-                            this->list->movePos(this->list->getPos() + 1);
+                            this->list->setPos(this->list->getPos() + 20);
                         } else if (events.jbutton.button == Utils::key_map[KEY_DUP]) {
-                            this->list->movePos(this->list->getPos() - 1);
+                            this->list->setPos(this->list->getPos() - 20);
                         } else if (events.jbutton.button == Utils::key_map[KEY_X]) {
                             UI::theme = UI::theme_dark;
                         } else if (events.jbutton.button == Utils::key_map[KEY_Y]) {
