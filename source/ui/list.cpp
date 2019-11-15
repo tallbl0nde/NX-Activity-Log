@@ -55,9 +55,6 @@ namespace UI {
         int tw, th;
         SDLHelper::getDimensions(this->sort_text, &tw, &th);
 
-        std::string ss = std::to_string(this->scroll_v);
-        SDLHelper::drawText(ss.c_str(), UI::theme.text, 200, 200, 20);
-
         size_t i = this->pos/ITEM_HEIGHT;
         if (i > 0) {
             i--;
@@ -94,6 +91,11 @@ namespace UI {
             case SDL_FINGERMOTION:
                 this->setPos(this->getPos() - dy);
                 this->scroll_v = dy;
+                if (this->scroll_v > 30) {
+                    this->scroll_v = 30;
+                } else if (this->scroll_v < -30) {
+                    this->scroll_v = -30;
+                }
                 break;
 
             // Released

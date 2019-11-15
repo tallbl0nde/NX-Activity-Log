@@ -187,18 +187,19 @@ u128 getUserID() {
 std::string getUserUsername(u128 userID) {
     AccountProfile profile;
     AccountProfileBase profile_base;
+    std::string str = "";
 
     Result rc = accountGetProfile(&profile, userID);
     if (R_SUCCEEDED(rc)){
         rc = accountProfileGet(&profile, NULL, &profile_base);
         if (R_SUCCEEDED(rc)){
-            return profile_base.username;
+            str = profile_base.username;
         }
         accountProfileClose(&profile);
     }
 
     // Return blank string on error
-    return "";
+    return str;
 }
 
 // Return texture with user image
