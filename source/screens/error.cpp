@@ -47,7 +47,7 @@ namespace Screen {
         SDLHelper::drawText(this->message.c_str(), UI::theme.text, 65, 128, BODY_FONT_SIZE);
 
         // Draw controls
-        this->controls->draw(1215, 670);
+        this->controls->draw();
     }
 
     Error::~Error() {

@@ -8,9 +8,13 @@
 // Struct stored in vector which stores button text and position
 struct Button {
     SDL_Texture * texture = nullptr;
+    int tex_x = 0;
+    int tex_w = 0;
+    int tex_h = 0;
     char pos = 0;
     bool show = false;
     bool enabled = true;
+    bool touched = false;
 };
 
 namespace UI {
@@ -21,10 +25,12 @@ namespace UI {
         private:
             // Array storing button structs
             struct Button buttons[KEY_MAP_SIZE];
+            // Position of top-rightmost pixel
+            int pos_x, pos_y;
 
         public:
-            // Constructor initializes vector and creates fonts
-            Controls();
+            // Constructor initializes vector and creates fonts + rightmost position
+            Controls(int, int);
 
             // Add a button (updates text/position if already added)
             // Passed a key, text and position
@@ -40,8 +46,10 @@ namespace UI {
             void disable(HidControllerKeys);
 
             // Draw controls
-            // xPos specifies right most point, yPos specifies
-            void draw(int, int);
+            void draw();
+
+            // Handles touch events
+            void touched(uint32_t, float, float);
 
             ~Controls();
     };

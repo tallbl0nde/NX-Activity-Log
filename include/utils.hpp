@@ -6,6 +6,9 @@
 #include <SDL2/SDL.h>
 #include <switch.h>
 
+#define WIDTH 1280
+#define HEIGHT 720
+
 namespace Utils {
     // Map from HidControllerKeys -> int
     #define KEY_MAP_SIZE 28

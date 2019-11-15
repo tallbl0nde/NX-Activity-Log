@@ -1,4 +1,5 @@
 #include "SDLHelper.hpp"
+#include "utils.hpp"
 
 // === SDL RENDERING ===
 // SDL Renderer instance
@@ -31,7 +32,7 @@ namespace SDLHelper {
         }
 
         // Create SDL Window
-        window = SDL_CreateWindow("window", 0, 0, 1280, 720, 0);
+        window = SDL_CreateWindow("window", 0, 0, WIDTH, HEIGHT, 0);
         if (!window) {
             SDL_Log("Unable to create SDL window %s\n", SDL_GetError());
             return false;
@@ -50,6 +51,8 @@ namespace SDLHelper {
             return false;
         }
 
+        // Enable blending (transparency)
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         // Enable antialiasing
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 

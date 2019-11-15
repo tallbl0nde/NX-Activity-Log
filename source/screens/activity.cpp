@@ -34,6 +34,7 @@ namespace Screen {
         this->controls->add(KEY_MINUS, "Sort", 1);
         this->controls->add(KEY_X, "Theme (Dark)", 2);
         this->controls->add(KEY_Y, "Theme (Light)", 3);
+        this->controls->disable(KEY_Y);
     }
 
     void Activity::event() {
@@ -82,11 +83,51 @@ namespace Screen {
                             this->list->setPos(this->list->getPos() - 20);
                         } else if (events.jbutton.button == Utils::key_map[KEY_X]) {
                             UI::theme = UI::theme_dark;
+                            this->controls->disable(KEY_X);
+                            this->controls->enable(KEY_Y);
                         } else if (events.jbutton.button == Utils::key_map[KEY_Y]) {
                             UI::theme = UI::theme_light;
+                            this->controls->disable(KEY_Y);
+                            this->controls->enable(KEY_X);
                         }
                     }
                     break;
+
+                // Touch (pressed)
+                case SDL_FINGERDOWN: {
+                    float x = WIDTH * events.tfinger.x;
+                    float y = HEIGHT * events.tfinger.y;
+
+                    // Pass event to controls object if below bottom line
+                    if (y > 647) {
+                        this->controls->touched(events.type, x, y);
+                    }
+                    break;
+                }
+
+                // Touch (moved)
+                case SDL_FINGERMOTION: {
+                    float x = WIDTH * events.tfinger.x;
+                    float y = HEIGHT * events.tfinger.y;
+
+                    // Pass event to controls object if was below or originally below line
+                    if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
+                        this->controls->touched(events.type, x, y);
+                    }
+                    break;
+                }
+
+                // Touch (released)
+                case SDL_FINGERUP: {
+                    float x = WIDTH * events.tfinger.x;
+                    float y = HEIGHT * events.tfinger.y;
+
+                    // Pass event to controls object if below bottom line
+                    if (y > 647) {
+                        this->controls->touched(events.type, x, y);
+                    }
+                    break;
+                }
             }
         }
     }
@@ -134,7 +175,7 @@ namespace Screen {
 
         // Draw controls
         SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
-        this->controls->draw(1215, 670);
+        this->controls->draw();
     }
 
     Activity::~Activity() {
