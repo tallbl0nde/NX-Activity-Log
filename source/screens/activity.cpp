@@ -9,7 +9,7 @@
 namespace Screen {
     Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
         u32 total_mins = 0;
-        this->list = new UI::List();
+        this->list = new UI::List(400, 100, 850, 550);
         for (size_t i = 0; i < tls.size(); i++) {
             this->list->addItem(new UI::ListItem(tls[i]));
             total_mins += tls[i]->getPlaytime();
@@ -35,6 +35,8 @@ namespace Screen {
         this->controls->add(KEY_X, "Theme (Dark)", 2);
         this->controls->add(KEY_Y, "Theme (Light)", 3);
         this->controls->disable(KEY_Y);
+
+        this->list_scroll = false;
     }
 
     void Activity::event() {
@@ -98,6 +100,11 @@ namespace Screen {
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
+                    // Pressed within list: activate scroll
+                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                        this->list->touched(events.type, x, y);
+                    }
+
                     // Pass event to controls object if below bottom line
                     if (y > 647) {
                         this->controls->touched(events.type, x, y);
@@ -110,9 +117,14 @@ namespace Screen {
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
-                    // Pass event to controls object if was below or originally below line
-                    if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
-                        this->controls->touched(events.type, x, y);
+                    // Scrolling overrides any other actions
+                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                        this->list->touched(events.type, x, y, (WIDTH * events.tfinger.dx), (HEIGHT * events.tfinger.dy));
+                    } else {
+                        // Pass event to controls object if was below or originally below line
+                        if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
+                            this->controls->touched(events.type, x, y);
+                        }
                     }
                     break;
                 }
@@ -122,9 +134,13 @@ namespace Screen {
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
-                    // Pass event to controls object if below bottom line
-                    if (y > 647) {
-                        this->controls->touched(events.type, x, y);
+                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                        this->list->touched(events.type, x, y, (WIDTH * events.tfinger.dx), (HEIGHT * events.tfinger.dy));
+                    } else {
+                        // Pass event to controls object if below bottom line
+                        if (y > 647) {
+                            this->controls->touched(events.type, x, y);
+                        }
                     }
                     break;
                 }
@@ -133,7 +149,7 @@ namespace Screen {
     }
 
     void Activity::update(uint32_t dt) {
-
+        this->list->update(dt);
     }
 
     void Activity::draw() {
@@ -149,7 +165,7 @@ namespace Screen {
         SDLHelper::drawRect(400, 88, 850, 560);
 
         // Draw list of items
-        this->list->draw(400, 100, 850, 550);
+        this->list->draw();
 
         // Draw over list to hide scrolling
         SDLHelper::setColour(UI::theme.background);

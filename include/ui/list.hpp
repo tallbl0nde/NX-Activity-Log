@@ -30,18 +30,26 @@ namespace UI {
             SortType sorting;
             // Texture for sorting text
             SDL_Texture * sort_text;
+            // Position vars
+            int x, y, w, h;
+            // Scrolling vars
+            bool is_scrolling;
+            float scroll_v;
 
         public:
             // The constructor does not accept ListItems
-            List();
+            List(int, int, int, int);
 
             // Add an item to the list
             void addItem(ListItem *);
 
             void update(uint32_t);
 
-            // Draw at x, y with w, h
-            void draw(int, int, int, int);
+            // Draw at stored coords
+            void draw();
+
+            // Handles touches
+            void touched(uint32_t, float, float, float = 0, float = 0);
 
             // Return pos
             unsigned int getPos();
@@ -54,6 +62,12 @@ namespace UI {
 
             // Sorts with given type
             void sort(SortType);
+
+            // Getters for position
+            int getX();
+            int getY();
+            int getW();
+            int getH();
 
             // Destructor frees stored ListItems
             ~List();

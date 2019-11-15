@@ -13,6 +13,8 @@ namespace Screen {
         private:
             // List object
             UI::List * list;
+            // List scrolling stuff
+            bool list_scroll;
             // Left menu object
             UI::SideMenu * menu;
             // Top right time texture

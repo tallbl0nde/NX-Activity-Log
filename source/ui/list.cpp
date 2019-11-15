@@ -7,12 +7,21 @@
 #define ITEM_HEIGHT 120
 // Font size of sorting text
 #define SORT_FONT_SIZE 18
+// Decrement scroll velocity bu this amount
+#define SCROLL_DEC 20
 
 namespace UI {
-    List::List() {
+    List::List(int x, int y, int w, int h) {
+        this->x = x;
+        this->y = y;
+        this->w = w;
+        this->h = h;
         this->pos = 0;
         this->sorting = SortType::LastPlayed;
         this->sort_text = nullptr;
+
+        this->is_scrolling = false;
+        this->scroll_v = 0;
     }
 
     void List::addItem(ListItem * item) {
@@ -26,20 +35,35 @@ namespace UI {
     }
 
     void List::update(uint32_t dt) {
+        if (this->is_scrolling) {
+            this->setPos(this->getPos() - this->scroll_v);
+            if (this->scroll_v < 0) {
+                this->scroll_v += SCROLL_DEC * (dt/1000.0);
+            } else {
+                this->scroll_v -= SCROLL_DEC * (dt/1000.0);
+            }
 
+            if (this->scroll_v > -1 && this->scroll_v < 1) {
+                this->scroll_v = 0;
+                this->is_scrolling = false;
+            }
+        }
     }
 
-    void List::draw(int x, int y, int w, int h) {
+    void List::draw() {
         // Draw list items
         int tw, th;
         SDLHelper::getDimensions(this->sort_text, &tw, &th);
+
+        std::string ss = std::to_string(this->scroll_v);
+        SDLHelper::drawText(ss.c_str(), UI::theme.text, 200, 200, 20);
 
         size_t i = this->pos/ITEM_HEIGHT;
         if (i > 0) {
             i--;
         } else {
             // Print sorting type
-            SDLHelper::drawTexture(this->sort_text, UI::theme.muted_text, x + (w/2) - (tw/2), y + 10 - this->pos);
+            SDLHelper::drawTexture(this->sort_text, UI::theme.muted_text, this->x + (this->w/2) - (tw/2), this->y + 10 - this->pos);
         }
 
         for (; i < (this->pos/ITEM_HEIGHT) + 5; i++) {
@@ -49,14 +73,33 @@ namespace UI {
             }
 
             // List items utilize 85% of list width
-            this->items[i]->draw(x + w*0.075, y + 25 + th + ((ITEM_HEIGHT * i) - pos), w*0.85, ITEM_HEIGHT);
+            this->items[i]->draw(this->x + this->w*0.075, this->y + 25 + th + ((ITEM_HEIGHT * i) - this->pos), this->w*0.85, ITEM_HEIGHT);
         }
 
         // Draw side bar
         if (this->max_pos != 0) {
             SDLHelper::setColour(UI::theme.muted_line);
-            int yPos = y + (((float)this->pos / this->max_pos) * (h - 95));
-            SDLHelper::drawRect(x + w - 25, yPos, 5, 70);
+            int yPos = this->y + (((float)this->pos / this->max_pos) * (this->h - 95));
+            SDLHelper::drawRect(this->x + this->w - 25, yPos, 5, 70);
+        }
+    }
+
+    void List::touched(uint32_t type, float x, float y, float dx, float dy) {
+        switch (type) {
+            // Pressed
+            case SDL_FINGERDOWN:
+                break;
+
+            // Moved
+            case SDL_FINGERMOTION:
+                this->setPos(this->getPos() - dy);
+                this->scroll_v = dy;
+                break;
+
+            // Released
+            case SDL_FINGERUP:
+                this->is_scrolling = true;
+                break;
         }
     }
 
@@ -148,6 +191,22 @@ namespace UI {
             SDLHelper::destroyTexture(this->sort_text);
         }
         this->sort_text = SDLHelper::renderText(str.c_str(), SORT_FONT_SIZE);
+    }
+
+    int List::getX() {
+        return this->x;
+    }
+
+    int List::getY() {
+        return this->y;
+    }
+
+    int List::getW() {
+        return this->w;
+    }
+
+    int List::getH() {
+        return this->h;
     }
 
     List::~List() {
