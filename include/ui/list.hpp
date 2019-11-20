@@ -53,6 +53,9 @@ namespace UI {
             // Returns if scrolling
             bool isTouched();
 
+            // Handles button presses
+            void button(uint8_t, uint8_t);
+
             // Return pos
             unsigned int getPos();
 

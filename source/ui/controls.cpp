@@ -127,6 +127,16 @@ namespace UI {
         this->buttons[Utils::key_map[k]].enabled = false;
     }
 
+    void Controls::reset() {
+        for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
+            // Delete texture and hide the specified key
+            if (this->buttons[i].texture != nullptr) {
+                SDLHelper::destroyTexture(this->buttons[i].texture);
+            }
+            this->buttons[i].show = false;
+        }
+    }
+
     void Controls::draw() {
         for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
             if (!this->buttons[i].show) {
@@ -142,7 +152,7 @@ namespace UI {
 
             // Draw rectangle on top if touched
             if (this->buttons[i].touched) {
-                SDLHelper::setColour(SDL_Color{0, 250, 200, 50});
+                SDLHelper::setColour(this->theme->getTouchOverlay());
                 SDLHelper::drawRect(this->buttons[i].tex_x - BUTTON_LIGHT, this->y - BUTTON_LIGHT, this->buttons[i].tex_w + BUTTON_LIGHT*2, this->buttons[i].tex_h + BUTTON_LIGHT*2);
             }
         }
@@ -188,7 +198,7 @@ namespace UI {
                         if (tx >= this->buttons[i].tex_x - BUTTON_LIGHT && tx <= this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT && ty >= this->y - BUTTON_LIGHT && ty <= this->y + this->buttons[i].tex_h + BUTTON_LIGHT) {
                             SDL_Event event;
                             event.type = SDL_JOYBUTTONDOWN;
-                            event.jbutton.which = 0;
+                            event.jbutton.which = 99;
                             event.jbutton.button = i;
                             event.jbutton.state = SDL_PRESSED;
                             SDL_PushEvent(&event);

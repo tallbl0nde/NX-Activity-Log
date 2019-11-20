@@ -2,10 +2,12 @@
 #include "utils.hpp"
 
 namespace UI {
+    // Initalize static variables
+    Controls * Screen::controls = new Controls(65, 670, 1150, 50);
+    bool Screen::touch_active = true;
+
     Screen::Screen(bool * b) : Drawable(0, 0, WIDTH, HEIGHT) {
         this->loop = b;
-        this->controls = new Controls(65, 670, 1150, 50);
-        this->touch_active = false;
         this->active_element = 0;
     }
 
@@ -14,6 +16,6 @@ namespace UI {
     }
 
     Screen::~Screen() {
-        delete this->controls;
+
     }
 }

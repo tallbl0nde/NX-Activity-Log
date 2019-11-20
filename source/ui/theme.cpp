@@ -21,6 +21,7 @@ namespace UI {
         this->muted_line = SDL_Color{200, 200, 200, 255};
         this->muted_text = SDL_Color{130, 130, 130, 255};
         this->text = SDL_Color{0, 0, 0, 255};
+        this->touch_overlay = SDL_Color{0, 250, 200, 50};
     }
 
     void Theme::setDark() {
@@ -34,6 +35,7 @@ namespace UI {
         this->muted_line = SDL_Color{100, 100, 100, 255};
         this->muted_text = SDL_Color{160, 160, 160, 255};
         this->text = SDL_Color{255, 255, 255, 255};
+        this->touch_overlay = SDL_Color{0, 250, 200, 50};
     }
 
     void Theme::animateHighlight(uint32_t dt) {
@@ -88,6 +90,10 @@ namespace UI {
 
     SDL_Color Theme::getText() {
         return this->text;
+    }
+
+    SDL_Color Theme::getTouchOverlay() {
+        return this->touch_overlay;
     }
 
     Theme::~Theme() {

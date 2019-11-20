@@ -8,6 +8,7 @@ namespace Screen {
         this->message = msg;
 
         // Add buttons
+        this->controls->reset();
         this->controls->add(KEY_PLUS, "Exit", 0);
     }
 
@@ -24,6 +25,42 @@ namespace Screen {
                         }
                     }
                     break;
+
+                // Touch (pressed)
+                case SDL_FINGERDOWN: {
+                    float x = WIDTH * events.tfinger.x;
+                    float y = HEIGHT * events.tfinger.y;
+
+                    // Pass event to controls object if below bottom line
+                    if (y > 647) {
+                        this->controls->touched(events.type, x, y);
+                    }
+                    break;
+                }
+
+                // Touch (moved)
+                case SDL_FINGERMOTION: {
+                    float x = WIDTH * events.tfinger.x;
+                    float y = HEIGHT * events.tfinger.y;
+
+                    // Pass event to controls object if was below or originally below line
+                    if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
+                        this->controls->touched(events.type, x, y);
+                    }
+                    break;
+                }
+
+                // Touch (released)
+                case SDL_FINGERUP: {
+                    float x = WIDTH * events.tfinger.x;
+                    float y = HEIGHT * events.tfinger.y;
+
+                    // Pass event to controls object if below bottom line
+                    if (y > 647) {
+                        this->controls->touched(events.type, x, y);
+                    }
+                    break;
+                }
             }
         }
     }

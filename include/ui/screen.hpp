@@ -17,10 +17,10 @@ namespace UI {
             bool * loop;
 
             // Controls element
-            Controls * controls;
+            static Controls * controls;
 
             // Variables indicating touch/button state
-            bool touch_active;
+            static bool touch_active;
             unsigned int active_element;
 
         public:

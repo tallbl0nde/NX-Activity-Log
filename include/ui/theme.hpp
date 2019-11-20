@@ -31,6 +31,7 @@ namespace UI {
             SDL_Color muted_line;
             SDL_Color muted_text;
             SDL_Color text;
+            SDL_Color touch_overlay;
 
         public:
             // Constructor initializes to light scheme
@@ -59,6 +60,7 @@ namespace UI {
             SDL_Color getMutedLine();
             SDL_Color getMutedText();
             SDL_Color getText();
+            SDL_Color getTouchOverlay();
     };
 };
 

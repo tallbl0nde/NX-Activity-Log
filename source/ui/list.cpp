@@ -34,7 +34,7 @@ namespace UI {
             this->setPos(this->getPos() - this->scroll_v);
             if (this->scroll_v < 0) {
                 this->scroll_v += SCROLL_DEC * (dt/1000.0);
-            } else {
+            } else if (this->scroll_v > 0) {
                 this->scroll_v -= SCROLL_DEC * (dt/1000.0);
             }
 
@@ -104,6 +104,14 @@ namespace UI {
                 this->is_touched = false;
                 break;
         }
+    }
+
+    bool List::isTouched() {
+        return this->is_touched;
+    }
+
+    void List::button(uint8_t button, uint8_t state) {
+
     }
 
     unsigned int List::getPos() {
@@ -180,6 +188,9 @@ namespace UI {
         // Set sorted type
         this->sorting = type;
 
+        // Stop scrolling
+        this->is_scrolling = false;
+
         // Refresh item rankings
         for (size_t i = 0; i < this->items.size(); i++) {
             if (this->sorting != AlphaAsc) {
@@ -194,10 +205,6 @@ namespace UI {
             SDLHelper::destroyTexture(this->sort_text);
         }
         this->sort_text = SDLHelper::renderText(str.c_str(), SORT_FONT_SIZE);
-    }
-
-    bool List::isTouched() {
-        return this->is_touched;
     }
 
     List::~List() {
