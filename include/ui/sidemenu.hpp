@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include "sideitem.hpp"
 #include <vector>
+#include "utils.hpp"
 
 namespace UI {
     // A List contains SideItems and handles the positioning and
@@ -15,25 +16,25 @@ namespace UI {
             // Index of current element
             size_t pos;
 
+            // Change pos to parameter
+            void setPos(size_t);
+
         public:
-            // The constructor does not accept ListItems
+            // The constructor does not accept SideItems
             SideMenu();
 
             // Add an item to the list
             void addItem(SideItem *);
+
+            // Handles button events
+            void button(uint8_t, uint8_t);
 
             void update(uint32_t);
 
             // Draw at x, y with w, h
             void draw(int, int, int, int);
 
-            // Return pos
-            size_t getPos();
-
-            // Change pos to parameter
-            void movePos(size_t);
-
-            // Destructor frees stored ListItems
+            // Destructor frees stored SideItems
             ~SideMenu();
     };
 };

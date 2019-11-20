@@ -8,6 +8,12 @@
 #include "Title.hpp"
 #include <vector>
 
+// Enum for current active element
+enum ActiveElement {
+    SideMenu,   // Left menu
+    List        // List of games
+};
+
 namespace Screen {
     class Activity : public UI::Screen {
         private:

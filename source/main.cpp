@@ -115,6 +115,9 @@ int main(int argc, char * argv[]){
             clock.tick();
             screen->update(clock.delta);
 
+            // Animate highlight colour
+            UI::theme.animateHighlight(clock.delta);
+
             // Render screen
             screen->draw();
 

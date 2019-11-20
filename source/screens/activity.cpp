@@ -27,7 +27,6 @@ namespace Screen {
         this->menu = new UI::SideMenu();
         this->menu->addItem(new UI::SideItem("Play Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
-        this->menu->movePos(0);
 
         this->user = u;
         this->controls->add(KEY_PLUS, "Exit", 0);
@@ -79,10 +78,13 @@ namespace Screen {
 
                             this->list->setPos(0);
 
-                        } else if (events.jbutton.button == Utils::key_map[KEY_DDOWN]) {
-                            this->list->setPos(this->list->getPos() + 20);
-                        } else if (events.jbutton.button == Utils::key_map[KEY_DUP]) {
-                            this->list->setPos(this->list->getPos() - 20);
+                        // Left and right will swap active element
+                        } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {
+                            this->active_element = (int)ActiveElement::SideMenu;
+                        } else if (events.jbutton.button == Utils::key_map[KEY_DRIGHT]) {
+                            this->active_element = (int)ActiveElement::List;
+
+                        // These will be removed at some point
                         } else if (events.jbutton.button == Utils::key_map[KEY_X]) {
                             UI::theme = UI::theme_dark;
                             this->controls->disable(KEY_X);
@@ -91,6 +93,18 @@ namespace Screen {
                             UI::theme = UI::theme_light;
                             this->controls->disable(KEY_Y);
                             this->controls->enable(KEY_X);
+
+                        // All other buttons get handled by active element
+                        } else {
+                            switch (this->active_element) {
+                                case (int)ActiveElement::SideMenu:
+                                    this->menu->button(events.jbutton.button, events.jbutton.state);
+                                    break;
+
+                                case (int)ActiveElement::List:
+
+                                    break;
+                            }
                         }
                     }
                     break;
@@ -192,6 +206,9 @@ namespace Screen {
         // Draw controls
         SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
         this->controls->draw();
+
+        std::string stra = "ACTIVE: " + std::to_string(this->active_element);
+        SDLHelper::drawText(stra.c_str(), UI::theme.text, 0, 500, 30);
     }
 
     Activity::~Activity() {
