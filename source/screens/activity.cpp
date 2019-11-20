@@ -9,7 +9,7 @@
 namespace Screen {
     Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
         u32 total_mins = 0;
-        this->list = new UI::List(400, 100, 850, 550);
+        this->list = new UI::List(&this->touch_active, 400, 100, 850, 550);
         for (size_t i = 0; i < tls.size(); i++) {
             this->list->addItem(new UI::ListItem(tls[i]));
             total_mins += tls[i]->getPlaytime();
@@ -27,8 +27,6 @@ namespace Screen {
         this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
         this->menu->addItem(new UI::SideItem("Play Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
-        this->menu->addItem(new UI::SideItem("Test"));
-        this->menu->addItem(new UI::SideItem("Something"));
 
         this->user = u;
         this->controls->reset();
@@ -38,6 +36,7 @@ namespace Screen {
         // Set active element
         this->active_element = (int)ActiveElement::SideMenu;
         this->menu->setActive(true);
+        this->list->setActive(false);
     }
 
     void Activity::event(){
@@ -92,9 +91,11 @@ namespace Screen {
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {
                             this->active_element = (int)ActiveElement::SideMenu;
                             this->menu->setActive(true);
+                            this->list->setActive(false);
                         } else if (events.jbutton.button == Utils::key_map[KEY_DRIGHT]) {
                             this->active_element = (int)ActiveElement::List;
                             this->menu->setActive(false);
+                            this->list->setActive(true);
 
                         // All other buttons get handled by active element
                         } else {
@@ -137,12 +138,14 @@ namespace Screen {
                         this->list->touched(events.type, x, y);
                         this->active_element = (int)ActiveElement::List;
                         this->menu->setActive(false);
+                        this->list->setActive(true);
 
                     // Pressed within menu
                     } else if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
                         this->menu->touched(events.type, x, y);
                         this->active_element = (int)ActiveElement::SideMenu;
                         this->menu->setActive(true);
+                        this->list->setActive(false);
 
                     // Pass event to controls object if below bottom line
                     } else if (y > 647) {
@@ -243,11 +246,7 @@ namespace Screen {
         SDLHelper::drawTexture(this->total_hours, this->theme->getMutedText(), 1215 - tw, 44 - th/2);
 
         // Draw controls
-        SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
         this->controls->draw();
-
-        std::string stra = "ACTIVE: " + std::to_string(this->active_element);
-        SDLHelper::drawText(stra.c_str(), this->theme->getText(), 0, 500, 30);
     }
 
     Activity::~Activity() {

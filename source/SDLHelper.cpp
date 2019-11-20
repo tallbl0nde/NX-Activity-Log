@@ -39,7 +39,7 @@ namespace SDLHelper {
         }
 
         // Create SDL Renderer
-        renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED);
+        renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (!renderer) {
             SDL_Log("Unable to create SDL renderer %s\n", SDL_GetError());
             return false;

@@ -34,10 +34,20 @@ namespace UI {
             bool is_scrolling;
             bool is_touched;
             float scroll_v;
+            unsigned int hi_pos;
+            // Current held button
+            uint8_t held_button;
+            int last_tap;
+
+            // Address of touch status variable
+            bool * t_active;
+
+            // Is this the active element?
+            bool is_active;
 
         public:
             // The constructor does not accept ListItems
-            List(int, int, int, int);
+            List(bool *, int, int, int, int);
 
             // Add an item to the list
             void addItem(ListItem *);
@@ -55,6 +65,9 @@ namespace UI {
 
             // Handles button presses
             void button(uint8_t, uint8_t);
+
+            // Set active variable
+            void setActive(bool);
 
             // Return pos
             unsigned int getPos();

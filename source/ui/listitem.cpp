@@ -27,9 +27,11 @@ namespace UI {
         }
 
         // Draw outlines
-        SDLHelper::setColour(this->theme->getMutedLine());
-        SDLHelper::drawRect(this->x, this->y, this->w, 1);
-        SDLHelper::drawRect(this->x, this->y + this->h, this->w, 1);
+        if (!this->selected) {
+            SDLHelper::setColour(this->theme->getMutedLine());
+            SDLHelper::drawRect(this->x, this->y, this->w, 1);
+            SDLHelper::drawRect(this->x, this->y + this->h, this->w, 1);
+        }
 
         // Draw icon
         SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
