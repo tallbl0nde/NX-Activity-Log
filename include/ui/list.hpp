@@ -2,7 +2,7 @@
 #define UI_LIST_HPP
 
 #include "listitem.hpp"
-#include <SDL2/SDL.h>
+#include "SDLHelper.hpp"
 #include <vector>
 
 // Enumerations for sorting methods
@@ -19,7 +19,7 @@ enum SortType {
 namespace UI {
     // A List contains ListItems and handles the positioning and
     // selection stuff. A small navigation bar is also shown
-    class List {
+    class List : public Drawable {
         private:
             // Vector containing ListItems
             std::vector<ListItem *> items;
@@ -30,10 +30,9 @@ namespace UI {
             SortType sorting;
             // Texture for sorting text
             SDL_Texture * sort_text;
-            // Position vars
-            int x, y, w, h;
             // Scrolling vars
             bool is_scrolling;
+            bool is_touched;
             float scroll_v;
 
         public:
@@ -51,6 +50,9 @@ namespace UI {
             // Handles touches
             void touched(uint32_t, float, float, float = 0, float = 0);
 
+            // Returns if scrolling
+            bool isTouched();
+
             // Return pos
             unsigned int getPos();
 
@@ -62,12 +64,6 @@ namespace UI {
 
             // Sorts with given type
             void sort(SortType);
-
-            // Getters for position
-            int getX();
-            int getY();
-            int getW();
-            int getH();
 
             // Destructor frees stored ListItems
             ~List();

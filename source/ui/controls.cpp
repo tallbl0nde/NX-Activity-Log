@@ -1,9 +1,5 @@
-#include "controls.hpp"
-
 #include <algorithm>
-#include "SDLHelper.hpp"
-#include <string>
-#include "theme.hpp"
+#include "controls.hpp"
 #include <vector>
 
 // Parameters to adjust appearance
@@ -46,23 +42,19 @@ const std::string key_char[] = {
 };
 
 namespace UI {
-    Controls::Controls(int x, int y) {
+    Controls::Controls(int x, int y, int w, int h) : Drawable(x, y, w, h) {
         // Fill array with empty structs
         for (int i = 0; i < KEY_MAP_SIZE; i++) {
             struct Button b;
             this->buttons[i] = b;
         }
-
-        // Set position
-        this->pos_x = x;
-        this->pos_y = y;
     }
 
     void Controls::add(HidControllerKeys k, std::string str, char pos) {
         int key = Utils::key_map[k];
 
         // Create button texture
-        SDLHelper::setColour(theme.text);
+        SDLHelper::setColour(this->theme->getText());
         SDL_Texture * icon = SDLHelper::renderText(key_char[key].c_str(), ICON_FONT_SIZE, true);
 
         // Create text texture
@@ -95,22 +87,22 @@ namespace UI {
         });
 
         // Loop over vector and update x values
-        int x = this->pos_x;
+        int tmp_x = this->x + this->w;
         for (unsigned int i = 0; i < vec.size(); i++) {
             if (vec[i].show) {
                 // Shift coordinates
-                x -= vec[i].tex_w;
+                tmp_x -= vec[i].tex_w;
 
                 // Set xPos
                 for (unsigned int j = 0; j < KEY_MAP_SIZE; j++) {
                     if (this->buttons[j].show && this->buttons[j].pos == vec[i].pos) {
-                        this->buttons[j].tex_x = x;
+                        this->buttons[j].tex_x = tmp_x;
                         break;
                     }
                 }
 
                 // Prepare for next button
-                x -= BUTTON_GAP;
+                tmp_x -= BUTTON_GAP;
             }
         }
     }
@@ -143,27 +135,27 @@ namespace UI {
 
             // Dim if disabled
             if (this->buttons[i].enabled) {
-                SDLHelper::drawTexture(this->buttons[i].texture, UI::theme.text, this->buttons[i].tex_x, this->pos_y, this->buttons[i].tex_w, this->buttons[i].tex_h);
+                SDLHelper::drawTexture(this->buttons[i].texture, this->theme->getText(), this->buttons[i].tex_x, this->y, this->buttons[i].tex_w, this->buttons[i].tex_h);
             } else {
-                SDLHelper::drawTexture(this->buttons[i].texture, UI::theme.muted_text, this->buttons[i].tex_x, this->pos_y, this->buttons[i].tex_w, this->buttons[i].tex_h);
+                SDLHelper::drawTexture(this->buttons[i].texture, this->theme->getMutedText(), this->buttons[i].tex_x, this->y, this->buttons[i].tex_w, this->buttons[i].tex_h);
             }
 
             // Draw rectangle on top if touched
             if (this->buttons[i].touched) {
                 SDLHelper::setColour(SDL_Color{0, 250, 200, 50});
-                SDLHelper::drawRect(this->buttons[i].tex_x - BUTTON_LIGHT, this->pos_y - BUTTON_LIGHT, this->buttons[i].tex_w + BUTTON_LIGHT*2, this->buttons[i].tex_h + BUTTON_LIGHT*2);
+                SDLHelper::drawRect(this->buttons[i].tex_x - BUTTON_LIGHT, this->y - BUTTON_LIGHT, this->buttons[i].tex_w + BUTTON_LIGHT*2, this->buttons[i].tex_h + BUTTON_LIGHT*2);
             }
         }
     }
 
-    void Controls::touched(uint32_t type, float x, float y) {
+    void Controls::touched(uint32_t type, float tx, float ty) {
         switch (type) {
             // Pressed
             case SDL_FINGERDOWN:
                 // Loop over shown controls and set touched if so
                 for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
                     if (this->buttons[i].show && this->buttons[i].enabled) {
-                        if (x >= this->buttons[i].tex_x - BUTTON_LIGHT && x <= this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT && y >= this->pos_y - BUTTON_LIGHT && y <= this->pos_y + this->buttons[i].tex_h + BUTTON_LIGHT) {
+                        if (tx >= this->buttons[i].tex_x - BUTTON_LIGHT && tx <= this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT && ty >= this->y - BUTTON_LIGHT && ty <= this->y + this->buttons[i].tex_h + BUTTON_LIGHT) {
                             this->buttons[i].touched = true;
                             break;
                         }
@@ -174,13 +166,13 @@ namespace UI {
             // Moved
             case SDL_FINGERMOTION:
                 // If moved above controls treat as lifted finger
-                if (y < (this->pos_y - BUTTON_LIGHT)) {
-                    this->touched(SDL_FINGERUP, x, y);
+                if (ty < (this->y - BUTTON_LIGHT)) {
+                    this->touched(SDL_FINGERUP, tx, ty);
                 } else {
                     // Otherwise check if moved outside of active button
                     for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
-                        if (this->buttons[i].touched && (x < this->buttons[i].tex_x - BUTTON_LIGHT || x > this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT || y < this->pos_y - BUTTON_LIGHT || y > this->pos_y + this->buttons[i].tex_h + BUTTON_LIGHT)) {
-                            this->touched(SDL_FINGERUP, x, y);
+                        if (this->buttons[i].touched && (tx < this->buttons[i].tex_x - BUTTON_LIGHT || tx > this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT || ty < this->y - BUTTON_LIGHT || ty > this->y + this->buttons[i].tex_h + BUTTON_LIGHT)) {
+                            this->touched(SDL_FINGERUP, tx, ty);
                             break;
                         }
                     }
@@ -193,7 +185,7 @@ namespace UI {
                 for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
                     // Create a button pressed event for the button that was pressed
                     if (this->buttons[i].touched) {
-                        if (x >= this->buttons[i].tex_x - BUTTON_LIGHT && x <= this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT && y >= this->pos_y - BUTTON_LIGHT && y <= this->pos_y + this->buttons[i].tex_h + BUTTON_LIGHT) {
+                        if (tx >= this->buttons[i].tex_x - BUTTON_LIGHT && tx <= this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT && ty >= this->y - BUTTON_LIGHT && ty <= this->y + this->buttons[i].tex_h + BUTTON_LIGHT) {
                             SDL_Event event;
                             event.type = SDL_JOYBUTTONDOWN;
                             event.jbutton.which = 0;

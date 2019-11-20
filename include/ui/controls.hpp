@@ -1,7 +1,8 @@
 #ifndef UI_CONTROLS_HPP
 #define UI_CONTROLS_HPP
 
-#include <SDL2/SDL.h>
+#include "drawable.hpp"
+#include "SDLHelper.hpp"
 #include <string>
 #include "utils.hpp"
 
@@ -21,16 +22,14 @@ namespace UI {
     // Controls is the element where controls are shown along the bottom of the screen
     // Buttons can easily be added/removed and enabled/disabled
     // Note this is does not handle actual button input, only touch and displays the UI
-    class Controls {
+    class Controls : public Drawable {
         private:
             // Array storing button structs
             struct Button buttons[KEY_MAP_SIZE];
-            // Position of top-rightmost pixel
-            int pos_x, pos_y;
 
         public:
             // Constructor initializes vector and creates fonts + rightmost position
-            Controls(int, int);
+            Controls(int, int, int, int);
 
             // Add a button (updates text/position if already added)
             // Passed a key, text and position

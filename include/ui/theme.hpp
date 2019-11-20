@@ -1,50 +1,65 @@
 #ifndef THEME_HPP
 #define THEME_HPP
 
-#include <cmath>
 #include <cstdint>
 #include <SDL2/SDL.h>
 
-// Theme struct declaration
-#define ANIM_SPEED 1.8
-typedef struct {
-    bool is_light;
-    SDL_Color background;
-    SDL_Color alt_background;
-    SDL_Color foreground;
-    SDL_Color text;
-    SDL_Color muted_text;
-    SDL_Color muted_line;
-    SDL_Color accent;
-    SDL_Color highlight_bg;
-    SDL_Color highlight;
-
-    // Highlight animation stuff
-    float hi_time = 0;
-    void animateHighlight(uint32_t dt) {
-        hi_time += (ANIM_SPEED*(dt/1000.0)) * M_PI;
-        if (hi_time > 2 * M_PI) {
-            hi_time -= 2 * M_PI;
-        }
-        if (is_light) {
-            highlight.g = 225 + (25 * sin(hi_time));
-            highlight.b = 203 + (13 * sin(hi_time));
-        } else {
-            highlight.g = 200 + (50 * sin(hi_time));
-            highlight.b = 220 + (30 * sin(hi_time));
-        }
-    }
-} theme_t;
+enum ThemeType {
+    T_Light,
+    T_Dark,
+    T_Custom
+};
 
 namespace UI {
-    // Variable storing current theme (defined in theme.cpp)
-    extern theme_t theme;
+    // The theme class literally represents a theme.
+    // It is designed to only have one instance.
+    class Theme {
+        private:
+            // Type of current theme
+            ThemeType type;
 
-    // Light theme
-    extern theme_t theme_light;
+            // Used to compute highlight colour
+            float hi_sin_time;
 
-    // Dark theme
-    extern theme_t theme_dark;
+            // Colour variables
+            SDL_Color accent;
+            SDL_Color alt_background;
+            SDL_Color background;
+            SDL_Color foreground;
+            SDL_Color highlight;
+            SDL_Color highlight_bg;
+            SDL_Color muted_line;
+            SDL_Color muted_text;
+            SDL_Color text;
+
+        public:
+            // Constructor initializes to light scheme
+            Theme();
+
+            // Set to preconfigured colours
+            void setLight();
+            void setDark();
+
+            // Return type of theme
+            ThemeType getType();
+
+            // Adjusts values of highlight colour
+            // Takes a dt value
+            void animateHighlight(uint32_t);
+
+            ~Theme();
+
+            // Getters for all theme colours (prohibits writing)
+            SDL_Color getAccent();
+            SDL_Color getAltBG();
+            SDL_Color getBG();
+            SDL_Color getFG();
+            SDL_Color getHighlight();
+            SDL_Color getHighlightBG();
+            SDL_Color getMutedLine();
+            SDL_Color getMutedText();
+            SDL_Color getText();
+    };
 };
 
 #endif

@@ -1,11 +1,11 @@
 #ifndef SCREEN_ACTIVITY_HPP
 #define SCREEN_ACTIVITY_HPP
 
-#include "ui/list.hpp"
-#include "ui/screen.hpp"
-#include "ui/sidemenu.hpp"
-#include "User.hpp"
+#include "list.hpp"
+#include "screen.hpp"
+#include "sidemenu.hpp"
 #include "Title.hpp"
+#include "User.hpp"
 #include <vector>
 
 // Enum for current active element

@@ -57,9 +57,6 @@ int main(int argc, char * argv[]){
     // Clock to measure time between draw
     struct Utils::Clock clock;
 
-    // Set theme
-    UI::theme = UI::theme_light;
-
     UI::Screen * screen = new Screen::Loading(&appRunning, nullptr);
     User * user = nullptr;
 
@@ -115,15 +112,13 @@ int main(int argc, char * argv[]){
             clock.tick();
             screen->update(clock.delta);
 
-            // Animate highlight colour
-            UI::theme.animateHighlight(clock.delta);
-
             // Render screen
             screen->draw();
 
-            // FPS Counter
-            std::string fps = "FPS: " + std::to_string((int)(1000.0/clock.delta)) + " (" + std::to_string(clock.delta) + " ms)";
-            SDLHelper::drawText(fps.c_str(), UI::theme.text, 10, 690, 20);
+            // Draw FPS
+            std::string ss = "FPS: " + std::to_string((int)(1.0/(clock.delta/1000.0))) + " (" + std::to_string(clock.delta) + " ms)";
+            SDLHelper::drawText(ss.c_str(), SDL_Color{0, 150, 150, 255}, 5, 695, 20);
+
             SDLHelper::draw();
         }
     }

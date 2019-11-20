@@ -1,22 +1,24 @@
 #ifndef UI_SCREEN_HPP
 #define UI_SCREEN_HPP
 
-#include "theme.hpp"
-#include "ui/controls.hpp"
+#include "controls.hpp"
+#include "drawable.hpp"
 
 // Default font sizes
 #define HEADING_FONT_SIZE 28
 #define BODY_FONT_SIZE 20
 
 namespace UI {
-    // Screen represents a application screen and has it's own event handling
+    // Screen represents an application screen and has it's own event handling
     // Functions called in order: event(), update(), draw()
-    class Screen {
+    class Screen : public Drawable {
         protected:
             // Pointer to variable to break loop
             bool * loop;
+
             // Controls element
             Controls * controls;
+
             // Variables indicating touch/button state
             bool touch_active;
             unsigned int active_element;
@@ -30,7 +32,7 @@ namespace UI {
 
             // Called before draw, update any relevant variables here
             // dt is the time since last update call
-            virtual void update(uint32_t dt) = 0;
+            virtual void update(uint32_t dt);
 
             // Actually draw/render stuff
             virtual void draw() = 0;

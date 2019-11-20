@@ -1,21 +1,19 @@
-#include "SDLHelper.hpp"
 #include "sidemenu.hpp"
-#include "ui/theme.hpp"
 
 // Height of items in list
 #define ITEM_HEIGHT 70
 
 namespace UI {
-    SideMenu::SideMenu() {
+    SideMenu::SideMenu(int x, int y, int w, int h) : Drawable(x, y, w, h) {
         this->pos = 0;
     }
 
     void SideMenu::addItem(SideItem * item) {
+        item->setX(this->x + this->w*0.125);
+        item->setY(this->y + (ITEM_HEIGHT * this->items.size()));
+        item->setW(this->w*0.72);
+        item->setH(ITEM_HEIGHT);
         this->items.push_back(item);
-    }
-
-    void SideMenu::update(uint32_t dt) {
-
     }
 
     void SideMenu::button(uint8_t button, uint8_t state) {
@@ -43,19 +41,19 @@ namespace UI {
         }
     }
 
-    void SideMenu::draw(int x, int y, int w, int h) {
+    void SideMenu::draw() {
         // Draw list items
         for (size_t i = 0; i < this->items.size(); i++) {
             // Show highlighting box if currently selected
             if (this->pos == i) {
-                SDLHelper::setColour(UI::theme.highlight);
-                SDLHelper::drawRect((x + w*0.125) - 5, y + (ITEM_HEIGHT * i) - 5, w*0.72 + 10, ITEM_HEIGHT + 10);
-                SDLHelper::setColour(UI::theme.highlight_bg);
-                SDLHelper::drawRect(x + w*0.125, y + (ITEM_HEIGHT * i), w*0.72, ITEM_HEIGHT);
+                SDLHelper::setColour(this->theme->getHighlight());
+                SDLHelper::drawRect(this->items[i]->getX() - 5, this->items[i]->getY() - 5, this->items[i]->getW() + 10, this->items[i]->getH() + 10);
+                SDLHelper::setColour(this->theme->getHighlightBG());
+                SDLHelper::drawRect(this->items[i]->getX(), this->items[i]->getY(), this->items[i]->getW(), this->items[i]->getH());
             }
 
             // List items utilize 72% of list width
-            this->items[i]->draw(x + w*0.125, y + (ITEM_HEIGHT * i), w*0.72, ITEM_HEIGHT);
+            this->items[i]->draw();
         }
     }
 

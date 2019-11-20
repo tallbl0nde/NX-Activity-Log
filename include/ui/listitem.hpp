@@ -1,8 +1,8 @@
 #ifndef UI_LISTITEM_HPP
 #define UI_LISTITEM_HPP
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include "drawable.hpp"
+#include "SDLHelper.hpp"
 #include <string>
 #include "Title.hpp"
 
@@ -10,7 +10,7 @@ namespace UI {
     // ListItem represents an entry/item which will be stored in
     // a list. In this particular case it is specifically for presenting
     // a game's icon, name and play stats
-    class ListItem {
+    class ListItem : public Drawable {
         private:
             // Rendered textures for icon and strings
             SDL_Texture * icon;
@@ -27,9 +27,7 @@ namespace UI {
             // Assign Title pointer
             ListItem(Title *);
 
-            void update(uint32_t);
-
-            void draw(int, int, int, int);
+            void draw();
 
             void setRank(size_t);
 

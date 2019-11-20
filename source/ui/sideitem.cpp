@@ -1,6 +1,4 @@
-#include "SDLHelper.hpp"
 #include "sideitem.hpp"
-#include "theme.hpp"
 #include "utils.hpp"
 
 // Font sizes
@@ -12,17 +10,13 @@ namespace UI {
         this->selected = false;
     }
 
-    void SideItem::update(uint32_t dt) {
-
-    }
-
-    void SideItem::draw(int x, int y, int w, int h) {
+    void SideItem::draw() {
         if (this->selected) {
-            SDLHelper::setColour(UI::theme.accent);
-            SDLHelper::drawRect(x + 8, y + 9, 4, 52);
-            SDLHelper::drawTexture(this->text, UI::theme.accent, x + 24, y + (h/2) - (FONT_SIZE/2));
+            SDLHelper::setColour(this->theme->getAccent());
+            SDLHelper::drawRect(this->x + 8, this->y + 9, 4, 52);
+            SDLHelper::drawTexture(this->text, this->theme->getAccent(), this->x + 24, this->y + (this->h/2) - (FONT_SIZE/2));
         } else {
-            SDLHelper::drawTexture(this->text, UI::theme.text, x + 24, y + (h/2) - (FONT_SIZE/2));
+            SDLHelper::drawTexture(this->text, this->theme->getText(), this->x + 24, this->y + (this->h/2) - (FONT_SIZE/2));
         }
     }
 

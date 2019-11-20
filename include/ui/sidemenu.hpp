@@ -1,7 +1,8 @@
 #ifndef UI_SIDEMENU_HPP
 #define UI_SIDEMENU_HPP
 
-#include <SDL2/SDL.h>
+#include "drawable.hpp"
+#include "SDLHelper.hpp"
 #include "sideitem.hpp"
 #include <vector>
 #include "utils.hpp"
@@ -9,7 +10,7 @@
 namespace UI {
     // A List contains SideItems and handles the positioning and
     // selection stuff
-    class SideMenu {
+    class SideMenu : public Drawable {
         private:
             // Vector containing SideItems
             std::vector<SideItem *> items;
@@ -21,7 +22,7 @@ namespace UI {
 
         public:
             // The constructor does not accept SideItems
-            SideMenu();
+            SideMenu(int, int, int, int);
 
             // Add an item to the list
             void addItem(SideItem *);
@@ -29,10 +30,7 @@ namespace UI {
             // Handles button events
             void button(uint8_t, uint8_t);
 
-            void update(uint32_t);
-
-            // Draw at x, y with w, h
-            void draw(int, int, int, int);
+            void draw();
 
             // Destructor frees stored SideItems
             ~SideMenu();

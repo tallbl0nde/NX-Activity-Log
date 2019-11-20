@@ -29,22 +29,22 @@ namespace Screen {
     }
 
     void Error::update(uint32_t dt) {
-
+        Screen::update(dt);
     }
 
     void Error::draw() {
         // Clear screen (draw background)
-        SDLHelper::setColour(UI::theme.background);
+        SDLHelper::setColour(this->theme->getBG());
         SDLHelper::clearScreen();
 
         // Draw top and bottom lines
-        SDLHelper::setColour(UI::theme.foreground);
+        SDLHelper::setColour(this->theme->getFG());
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Print loading title and message
-        SDLHelper::drawText("Error", UI::theme.text, 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
-        SDLHelper::drawText(this->message.c_str(), UI::theme.text, 65, 128, BODY_FONT_SIZE);
+        SDLHelper::drawText("Error", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        SDLHelper::drawText(this->message.c_str(), this->theme->getText(), 65, 128, BODY_FONT_SIZE);
 
         // Draw controls
         this->controls->draw();

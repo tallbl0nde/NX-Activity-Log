@@ -1,7 +1,5 @@
 #include <algorithm>
 #include "list.hpp"
-#include "SDLHelper.hpp"
-#include "ui/theme.hpp"
 
 // Height of items in list
 #define ITEM_HEIGHT 120
@@ -11,15 +9,12 @@
 #define SCROLL_DEC 20
 
 namespace UI {
-    List::List(int x, int y, int w, int h) {
-        this->x = x;
-        this->y = y;
-        this->w = w;
-        this->h = h;
+    List::List(int x, int y, int w, int h) : Drawable(x, y, w, h) {
         this->pos = 0;
         this->sorting = SortType::LastPlayed;
         this->sort_text = nullptr;
 
+        this->is_touched = false;
         this->is_scrolling = false;
         this->scroll_v = 0;
     }
@@ -60,7 +55,7 @@ namespace UI {
             i--;
         } else {
             // Print sorting type
-            SDLHelper::drawTexture(this->sort_text, UI::theme.muted_text, this->x + (this->w/2) - (tw/2), this->y + 10 - this->pos);
+            SDLHelper::drawTexture(this->sort_text, this->theme->getMutedText(), this->x + (this->w/2) - (tw/2), this->y + 10 - this->pos);
         }
 
         for (; i < (this->pos/ITEM_HEIGHT) + 5; i++) {
@@ -70,21 +65,26 @@ namespace UI {
             }
 
             // List items utilize 85% of list width
-            this->items[i]->draw(this->x + this->w*0.075, this->y + 25 + th + ((ITEM_HEIGHT * i) - this->pos), this->w*0.85, ITEM_HEIGHT);
+            this->items[i]->setX(this->x + this->w*0.075);
+            this->items[i]->setY(this->y + 25 + th + ((ITEM_HEIGHT * i) - this->pos));
+            this->items[i]->setW(this->w*0.85);
+            this->items[i]->setH(ITEM_HEIGHT);
+            this->items[i]->draw();
         }
 
         // Draw side bar
         if (this->max_pos != 0) {
-            SDLHelper::setColour(UI::theme.muted_line);
+            SDLHelper::setColour(this->theme->getMutedLine());
             int yPos = this->y + (((float)this->pos / this->max_pos) * (this->h - 95));
             SDLHelper::drawRect(this->x + this->w - 25, yPos, 5, 70);
         }
     }
 
-    void List::touched(uint32_t type, float x, float y, float dx, float dy) {
+    void List::touched(uint32_t type, float tx, float ty, float dx, float dy) {
         switch (type) {
             // Pressed
             case SDL_FINGERDOWN:
+                this->is_touched = true;
                 break;
 
             // Moved
@@ -101,6 +101,7 @@ namespace UI {
             // Released
             case SDL_FINGERUP:
                 this->is_scrolling = true;
+                this->is_touched = false;
                 break;
         }
     }
@@ -195,20 +196,8 @@ namespace UI {
         this->sort_text = SDLHelper::renderText(str.c_str(), SORT_FONT_SIZE);
     }
 
-    int List::getX() {
-        return this->x;
-    }
-
-    int List::getY() {
-        return this->y;
-    }
-
-    int List::getW() {
-        return this->w;
-    }
-
-    int List::getH() {
-        return this->h;
+    bool List::isTouched() {
+        return this->is_touched;
     }
 
     List::~List() {

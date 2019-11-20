@@ -1,7 +1,5 @@
 #include <algorithm>
 #include "listitem.hpp"
-#include "SDLHelper.hpp"
-#include "theme.hpp"
 #include "utils.hpp"
 
 // Font sizes
@@ -22,33 +20,29 @@ namespace UI {
         this->selected = false;
     }
 
-    void ListItem::update(uint32_t dt) {
-
-    }
-
-    void ListItem::draw(int x, int y, int w, int h) {
+    void ListItem::draw() {
         // Draw background
         if (this->selected) {
-            SDLHelper::drawRect(x, y, w, h);
+            SDLHelper::drawRect(this->x, this->y, this->w, this->h);
         }
 
         // Draw outlines
-        SDLHelper::setColour(UI::theme.muted_line);
-        SDLHelper::drawRect(x, y, w, 1);
-        SDLHelper::drawRect(x, y + h, w, 1);
+        SDLHelper::setColour(this->theme->getMutedLine());
+        SDLHelper::drawRect(this->x, this->y, this->w, 1);
+        SDLHelper::drawRect(this->x, this->y + this->h, this->w, 1);
 
         // Draw icon
         SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
-        SDLHelper::drawTexture(this->icon, x + 10, y + 10, h - 20, h - 20);
+        SDLHelper::drawTexture(this->icon, this->x + 10, this->y + 10, this->h - 20, this->h - 20);
 
         // Print text
-        SDLHelper::drawTexture(this->title, UI::theme.text, x + h + 10, y + 15);
-        SDLHelper::drawTexture(this->playtime, UI::theme.accent, x + h + 10, y + 51);
-        SDLHelper::drawTexture(this->lastplayed, UI::theme.muted_text, x + h + 10, y + 82);
+        SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + this->h + 10, this->y + 15);
+        SDLHelper::drawTexture(this->playtime, this->theme->getAccent(), this->x + this->h + 10, this->y + 51);
+        SDLHelper::drawTexture(this->lastplayed, this->theme->getMutedText(), this->x + this->h + 10, this->y + 82);
         if (this->rank != nullptr) {
             int tw, th;
             SDLHelper::getDimensions(this->rank, &tw, &th);
-            SDLHelper::drawTexture(this->rank, UI::theme.muted_text, x + w - tw - 15, y + 15);
+            SDLHelper::drawTexture(this->rank, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 15);
         }
     }
 

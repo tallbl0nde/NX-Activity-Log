@@ -1,12 +1,13 @@
 #ifndef UI_SIDEITEM_HPP
 #define UI_SIDEITEM_HPP
 
-#include <SDL2/SDL.h>
+#include "drawable.hpp"
+#include "SDLHelper.hpp"
 
 namespace UI {
     // SideItem represents an entry/item which will be stored in
     // a side menu.
-    class SideItem {
+    class SideItem : public Drawable {
         private:
             // Text texture
             SDL_Texture * text;
@@ -18,9 +19,7 @@ namespace UI {
             // Constructor takes string and creates texture
             SideItem(std::string);
 
-            void update(uint32_t);
-
-            void draw(int, int, int, int);
+            void draw();
 
             void setSelected(bool);
 

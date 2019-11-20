@@ -24,7 +24,7 @@ namespace Screen {
         this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
 
         // Create side menu
-        this->menu = new UI::SideMenu();
+        this->menu = new UI::SideMenu(30, 130, 400, 500);
         this->menu->addItem(new UI::SideItem("Play Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
 
@@ -86,11 +86,11 @@ namespace Screen {
 
                         // These will be removed at some point
                         } else if (events.jbutton.button == Utils::key_map[KEY_X]) {
-                            UI::theme = UI::theme_dark;
+                            this->theme->setDark();
                             this->controls->disable(KEY_X);
                             this->controls->enable(KEY_Y);
                         } else if (events.jbutton.button == Utils::key_map[KEY_Y]) {
-                            UI::theme = UI::theme_light;
+                            this->theme->setLight();
                             this->controls->disable(KEY_Y);
                             this->controls->enable(KEY_X);
 
@@ -117,10 +117,9 @@ namespace Screen {
                     // Pressed within list: activate scroll
                     if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
                         this->list->touched(events.type, x, y);
-                    }
 
                     // Pass event to controls object if below bottom line
-                    if (y > 647) {
+                    } else if (y > 647) {
                         this->controls->touched(events.type, x, y);
                     }
                     break;
@@ -131,9 +130,10 @@ namespace Screen {
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
-                    // Scrolling overrides any other actions
-                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                    // List scrolling overrides any other actions
+                    if (this->list->isTouched()) {
                         this->list->touched(events.type, x, y, (WIDTH * events.tfinger.dx), (HEIGHT * events.tfinger.dy));
+
                     } else {
                         // Pass event to controls object if was below or originally below line
                         if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
@@ -148,7 +148,7 @@ namespace Screen {
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
-                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                    if (this->list->isTouched()) {
                         this->list->touched(events.type, x, y, (WIDTH * events.tfinger.dx), (HEIGHT * events.tfinger.dy));
                     } else {
                         // Pass event to controls object if below bottom line
@@ -163,31 +163,32 @@ namespace Screen {
     }
 
     void Activity::update(uint32_t dt) {
+        Screen::update(dt);
         this->list->update(dt);
     }
 
     void Activity::draw() {
         // Clear screen (draw background)
-        SDLHelper::setColour(UI::theme.background);
+        SDLHelper::setColour(this->theme->getBG());
         SDLHelper::clearScreen();
 
         // Draw menu
-        this->menu->draw(30, 130, 400, 500);
+        this->menu->draw();
 
         // Different shade behind list
-        SDLHelper::setColour(UI::theme.alt_background);
+        SDLHelper::setColour(this->theme->getAltBG());
         SDLHelper::drawRect(400, 88, 850, 560);
 
         // Draw list of items
         this->list->draw();
 
         // Draw over list to hide scrolling
-        SDLHelper::setColour(UI::theme.background);
+        SDLHelper::setColour(this->theme->getBG());
         SDLHelper::drawRect(430, 0, 780, 87);
         SDLHelper::drawRect(430, 648, 1220, 72);
 
         // Draw top and bottom lines
-        SDLHelper::setColour(UI::theme.foreground);
+        SDLHelper::setColour(this->theme->getFG());
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
@@ -196,19 +197,19 @@ namespace Screen {
 
         // Print heading
         std::string str = this->user->getUsername() + "'s Activity";
-        SDLHelper::drawText(str.c_str(), UI::theme.text, 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        SDLHelper::drawText(str.c_str(), this->theme->getText(), 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
 
         // Print total hours
         int tw, th;
         SDLHelper::getDimensions(this->total_hours, &tw, &th);
-        SDLHelper::drawTexture(this->total_hours, UI::theme.muted_text, 1215 - tw, 44 - th/2);
+        SDLHelper::drawTexture(this->total_hours, this->theme->getMutedText(), 1215 - tw, 44 - th/2);
 
         // Draw controls
         SDLHelper::setColour(SDL_Color{255, 255, 255, 255});
         this->controls->draw();
 
         std::string stra = "ACTIVE: " + std::to_string(this->active_element);
-        SDLHelper::drawText(stra.c_str(), UI::theme.text, 0, 500, 30);
+        SDLHelper::drawText(stra.c_str(), this->theme->getText(), 0, 500, 30);
     }
 
     Activity::~Activity() {

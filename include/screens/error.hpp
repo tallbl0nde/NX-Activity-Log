@@ -1,8 +1,8 @@
 #ifndef SCREEN_ERROR_HPP
 #define SCREEN_ERROR_HPP
 
+#include "screen.hpp"
 #include <string>
-#include "ui/screen.hpp"
 
 namespace Screen {
     class Error : public UI::Screen {

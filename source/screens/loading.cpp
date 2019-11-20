@@ -13,21 +13,21 @@ namespace Screen {
     }
 
     void Loading::update(uint32_t dt) {
-
+        Screen::update(dt);
     }
 
     void Loading::draw() {
         // Clear screen (draw background)
-        SDLHelper::setColour(UI::theme.background);
+        SDLHelper::setColour(this->theme->getBG());
         SDLHelper::clearScreen();
 
         // Draw top and bottom lines
-        SDLHelper::setColour(UI::theme.foreground);
+        SDLHelper::setColour(this->theme->getFG());
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
         // Print loading title
-        SDLHelper::drawText("Loading...", UI::theme.text, 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        SDLHelper::drawText("Loading...", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
     }
 
     Loading::~Loading() {
