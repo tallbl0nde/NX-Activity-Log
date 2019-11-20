@@ -20,6 +20,9 @@ namespace Screen {
 
             void draw();
 
+            // Used to set theme
+            void setTheme(bool);
+
             ~Loading();
     };
 }

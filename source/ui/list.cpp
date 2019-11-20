@@ -168,6 +168,7 @@ namespace UI {
         }
 
         if (state == SDL_PRESSED) {
+            this->is_scrolling = false;
             if (button == Utils::key_map[KEY_DDOWN]) {
                 if (this->hi_pos < max_pos) {
                     this->hi_pos++;
@@ -191,6 +192,9 @@ namespace UI {
 
     void List::setActive(bool b) {
         this->is_active = b;
+        if (!b) {
+            this->held_button = NO_BUTTON;
+        }
     }
 
     unsigned int List::getPos() {

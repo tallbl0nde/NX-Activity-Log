@@ -30,6 +30,12 @@ namespace Screen {
         SDLHelper::drawText("Loading...", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
     }
 
+    void Loading::setTheme(bool b) {
+        if (b) {
+            this->theme->setDark();
+        }
+    }
+
     Loading::~Loading() {
 
     }

@@ -20,7 +20,7 @@ std::vector<Title *> getTitleObjects(u128);
 int main(int argc, char * argv[]){
     // Status variables
     bool appRunning = true;
-    bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit = false;
+    bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit, setInit = false;
     Result rc = 0;
 
     // Current user ID
@@ -50,6 +50,10 @@ int main(int argc, char * argv[]){
     if (R_SUCCEEDED(rc)) {
         plInit = true;
     }
+    rc = setsysInitialize();
+    if (R_SUCCEEDED(rc)) {
+        setInit = true;
+    }
 
     // Initialize SDL
     SDLInit = SDLHelper::initSDL();
@@ -64,6 +68,14 @@ int main(int argc, char * argv[]){
     if (accInit && fsInit && nsInit && pdmInit && plInit && SDLInit) {
         // Loading is kinda dodge
         bool error = false;
+
+        // Get system theme and set accordingly
+        ColorSetId thm;
+        rc = setsysGetColorSetId(&thm);
+        Screen::Loading loading = Screen::Loading(&appRunning, nullptr);
+        loading.setTheme((bool)thm);
+
+        // Draw initial loading screen before selection
         screen->draw();
         SDLHelper::draw();
 
@@ -141,6 +153,9 @@ int main(int argc, char * argv[]){
     }
     if (plInit) {
         plExit();
+    }
+    if (setInit) {
+        setExit();
     }
 
     // Delete user object
