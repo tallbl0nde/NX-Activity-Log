@@ -21,13 +21,20 @@ namespace UI {
             // Self-explanatory
             Title * title_obj;
             bool selected;
+            // Scrolling text
+            int text_x;
+            int text_pause;
 
         public:
             // See ui/screen.hpp for similar explanations of these functions
             // Assign Title pointer
             ListItem(Title *);
 
+            void update(uint32_t);
+
             void draw();
+
+            void setSelected(bool);
 
             void setRank(size_t);
 

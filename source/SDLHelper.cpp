@@ -116,7 +116,7 @@ namespace SDLHelper {
         SDL_DestroyTexture(tex);
     }
 
-    void drawTexture(SDL_Texture * tex, int x, int y, int w, int h) {
+    void drawTexture(SDL_Texture * tex, int x, int y, int w, int h, int tx, int tw) {
         // Get dimensions
         int width, height;
         SDL_QueryTexture(tex, nullptr, nullptr, &width, &height);
@@ -126,19 +126,25 @@ namespace SDLHelper {
         if (h == -1) {
             h = height;
         }
-        SDL_Rect r = {x, y, w, h};
 
-        // Render to screen
-        SDL_RenderCopy(renderer, tex, nullptr, &r);
+        // Scale if necessary + render
+        if (tx != -1 && tw != -1) {
+            SDL_Rect s = {tx, 0, tw, height};
+            SDL_Rect r = {x, y, w, h};
+            SDL_RenderCopy(renderer, tex, &s, &r);
+        } else {
+            SDL_Rect r = {x, y, w, h};
+            SDL_RenderCopy(renderer, tex, nullptr, &r);
+        }
     }
 
-    void drawTexture(SDL_Texture * tex, SDL_Color c, int x, int y, int w, int h) {
+    void drawTexture(SDL_Texture * tex, SDL_Color c, int x, int y, int w, int h, int tx, int tw) {
         // Set color
         SDL_SetTextureColorMod(tex, c.r, c.g, c.b);
         SDL_SetTextureAlphaMod(tex, c.a);
 
         // Draw texture
-        drawTexture(tex, x, y, w, h);
+        drawTexture(tex, x, y, w, h, tx, tw);
 
         // Reset color
         SDL_SetTextureColorMod(tex, 255, 255, 255);

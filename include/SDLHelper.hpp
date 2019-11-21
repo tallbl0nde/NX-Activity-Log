@@ -43,8 +43,8 @@ namespace SDLHelper {
     // Draw provided texture at specified coordinates
     // width and height are optional
     // If a colour is provided the texture is tinted
-    void drawTexture(SDL_Texture *, int, int, int = -1, int = -1);
-    void drawTexture(SDL_Texture *, SDL_Color, int, int, int = -1, int = -1);
+    void drawTexture(SDL_Texture *, int, int, int = -1, int = -1, int = -1, int = -1);
+    void drawTexture(SDL_Texture *, SDL_Color, int, int, int = -1, int = -1, int = -1, int = -1);
 
     // === RENDERING FUNCTIONS ===
     // -> Draw to a texture and return it

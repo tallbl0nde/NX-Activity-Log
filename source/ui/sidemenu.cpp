@@ -117,7 +117,7 @@ namespace UI {
             this->items[i]->draw();
 
             // Draw touch overlay if touched
-            if (this->t_pos == i) {
+            if (this->t_pos == (int)i) {
                 SDLHelper::setColour(this->theme->getTouchOverlay());
                 SDLHelper::drawRect(this->items[i]->getX(), this->items[i]->getY(), this->items[i]->getW(), this->items[i]->getH());
             }

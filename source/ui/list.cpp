@@ -70,6 +70,18 @@ namespace UI {
                 this->setPos(this->pos - SCROLL_AMT*(dt/1000.0));
             }
         }
+
+        // Select current item
+        if (this->is_active) {
+            for (size_t i = 0; i < this->items.size(); i++) {
+                if (i == this->hi_pos) {
+                    this->items[i]->setSelected(true);
+                } else {
+                    this->items[i]->setSelected(false);
+                }
+                this->items[i]->update(dt);
+            }
+        }
     }
 
     void List::draw() {

@@ -27,8 +27,6 @@ namespace Screen {
         this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
         this->menu->addItem(new UI::SideItem("Play Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
-        this->menu->addItem(new UI::SideItem("Octopus"));
-        this->menu->addItem(new UI::SideItem("Set"));
 
         this->user = u;
         this->controls->reset();
