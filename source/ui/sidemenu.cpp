@@ -9,13 +9,9 @@
 #define HOLD_DELAY 500
 
 namespace UI {
-    SideMenu::SideMenu(bool * b, int x, int y, int w, int h) : Drawable(x, y, w, h) {
-        this->t_active = b;
+    SideMenu::SideMenu(bool * b, int x, int y, int w, int h) : Navigable(b, x, y, w, h) {
         this->t_pos = -1;
-        this->is_active = false;
         this->pos = 0;
-        this->held_button = NO_BUTTON;
-        this->last_tap = 0;
     }
 
     void SideMenu::addItem(SideItem * item) {
@@ -30,7 +26,9 @@ namespace UI {
         }
     }
 
-    void SideMenu::button(uint8_t button, uint8_t state) {
+    void SideMenu::handleButton(uint8_t button, uint8_t state) {
+        Navigable::handleButton(button, state);
+
         // Button pressed
         if (state == SDL_PRESSED) {
             // Move selector down one
@@ -48,12 +46,6 @@ namespace UI {
                 }
                 this->items[this->pos]->setSelected(true);
             }
-            this->held_button = button;
-            this->last_tap = 0;
-
-        // Button released
-        } else if (state == SDL_RELEASED) {
-            this->held_button = NO_BUTTON;
         }
     }
 
@@ -98,22 +90,15 @@ namespace UI {
         }
     }
 
-    void SideMenu::setActive(bool b) {
-        this->is_active = b;
-    }
-
     void SideMenu::update(uint32_t dt) {
-        if (this->held_button != NO_BUTTON) {
-            this->last_tap += dt;
+        Navigable::update(dt);
 
-            if (this->last_tap > HOLD_DELAY) {
-                if (this->held_button == Utils::key_map[KEY_DDOWN]) {
-                    this->setPos(this->pos + 1);
-                } else if (this->held_button == Utils::key_map[KEY_DUP]) {
-                    this->setPos(this->pos - 1);
-                }
-                this->last_tap -= MOVE_DELAY;
-            }
+        if (this->button[Utils::key_map[KEY_DDOWN]].is_pressed && this->button[Utils::key_map[KEY_DDOWN]].time_held > HOLD_DELAY) {
+            this->setPos(this->pos + 1);
+            this->button[Utils::key_map[KEY_DDOWN]].time_held -= MOVE_DELAY;
+        } else if (this->button[Utils::key_map[KEY_DUP]].is_pressed && this->button[Utils::key_map[KEY_DUP]].time_held > HOLD_DELAY) {
+            this->setPos(this->pos - 1);
+            this->button[Utils::key_map[KEY_DUP]].time_held -= MOVE_DELAY;
         }
     }
 
@@ -121,7 +106,7 @@ namespace UI {
         // Draw list items
         for (size_t i = 0; i < this->items.size(); i++) {
             // Show highlighting box if currently selected
-            if (!(*this->t_active) && this->pos == i && this->is_active) {
+            if (!(*this->touch_active) && this->pos == i && this->is_active) {
                 SDLHelper::setColour(this->theme->getHighlight());
                 SDLHelper::drawRect(this->items[i]->getX() - 5, this->items[i]->getY() - 5, this->items[i]->getW() + 10, this->items[i]->getH() + 10);
                 SDLHelper::setColour(this->theme->getHighlightBG());

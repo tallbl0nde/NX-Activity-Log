@@ -9,18 +9,13 @@
 // Decrement scroll velocity by this amount
 #define SCROLL_DEC 20
 
-#define NO_BUTTON 200
-// Initial held down delay (in ms)
-#define HOLD_DELAY 100
 // Offset to delay scroll when need to move
 #define DELAY_OFFSET 300
 // Amount to scroll per second when button held
 #define SCROLL_AMT 1300
 
 namespace UI {
-    List::List(bool * b, int x, int y, int w, int h) : Drawable(x, y, w, h) {
-        this->t_active = b;
-        this->is_active = false;
+    List::List(bool * b, int x, int y, int w, int h) : Navigable(b, x, y, w, h) {
         this->pos = 0;
         this->sorting = SortType::LastPlayed;
         this->sort_text = nullptr;
@@ -29,9 +24,6 @@ namespace UI {
         this->is_scrolling = false;
         this->scroll_v = 0;
         this->hi_pos = 0;
-
-        this->held_button = NO_BUTTON;
-        this->last_tap = 0;
     }
 
     void List::addItem(ListItem * item) {
@@ -45,6 +37,8 @@ namespace UI {
     }
 
     void List::update(uint32_t dt) {
+        Navigable::update(dt);
+
         // Handle touch scrolling
         if (this->is_scrolling) {
             this->setPos(this->pos - this->scroll_v);
@@ -61,25 +55,19 @@ namespace UI {
         }
 
         // Handle held button
-        if (this->held_button != NO_BUTTON) {
-            this->last_tap += dt;
-
-            if (this->last_tap >= HOLD_DELAY) {
-                if (this->held_button == Utils::key_map[KEY_DDOWN]) {
-                    unsigned int max_pos = this->pos/ITEM_HEIGHT + 3;
-                    if (this->hi_pos < max_pos) {
-                        this->hi_pos++;
-                    } else {
-                        this->setPos(this->pos + SCROLL_AMT*(dt/1000.0));
-                    }
-                } else if (this->held_button == Utils::key_map[KEY_DUP]) {
-                    unsigned int min_pos = this->pos/ITEM_HEIGHT + 1;
-                    if (this->hi_pos > min_pos || (this->pos == 0 && this->hi_pos > 0)) {
-                        this->hi_pos--;
-                    } else {
-                        this->setPos(this->pos - SCROLL_AMT*(dt/1000.0));
-                    }
-                }
+        if (this->button[Utils::key_map[KEY_DDOWN]].is_pressed && this->button[Utils::key_map[KEY_DDOWN]].time_held > DELAY_OFFSET) {
+            unsigned int max_pos = this->pos/ITEM_HEIGHT + 3;
+            if (this->hi_pos < max_pos) {
+                this->hi_pos++;
+            } else {
+                this->setPos(this->pos + SCROLL_AMT*(dt/1000.0));
+            }
+        } else if (this->button[Utils::key_map[KEY_DUP]].is_pressed && this->button[Utils::key_map[KEY_DUP]].time_held > DELAY_OFFSET) {
+            unsigned int min_pos = this->pos/ITEM_HEIGHT + 1;
+            if (this->hi_pos > min_pos || (this->pos == 0 && this->hi_pos > 0)) {
+                this->hi_pos--;
+            } else {
+                this->setPos(this->pos - SCROLL_AMT*(dt/1000.0));
             }
         }
     }
@@ -104,7 +92,7 @@ namespace UI {
             }
 
             // Highlight appropriate entry
-            if (i == this->hi_pos && !(*this->t_active) && this->is_active) {
+            if (i == this->hi_pos && !(*this->touch_active) && this->is_active) {
                 SDLHelper::setColour(this->theme->getHighlight());
                 SDLHelper::drawRect(this->items[i]->getX() - 5, this->items[i]->getY() - 5, this->items[i]->getW() + 10, this->items[i]->getH() + 10);
                 SDLHelper::setColour(this->theme->getHighlightBG());
@@ -157,7 +145,9 @@ namespace UI {
         return this->is_touched;
     }
 
-    void List::button(uint8_t button, uint8_t state) {
+    void List::handleButton(uint8_t button, uint8_t state) {
+        Navigable::handleButton(button, state);
+
         // Fix hi_pos if outside of viewable area
         unsigned int max_pos = this->pos/ITEM_HEIGHT + 3;
         unsigned int min_pos = this->pos/ITEM_HEIGHT + 1;
@@ -167,33 +157,24 @@ namespace UI {
             this->hi_pos = max_pos;
         }
 
+        // Perform action on tap
         if (state == SDL_PRESSED) {
             this->is_scrolling = false;
             if (button == Utils::key_map[KEY_DDOWN]) {
                 if (this->hi_pos < max_pos) {
                     this->hi_pos++;
-                    this->last_tap = -DELAY_OFFSET;
+                    this->button[Utils::key_map[KEY_DDOWN]].time_held = 0;
                 } else {
-                    this->last_tap = 0;
+                    this->button[Utils::key_map[KEY_DDOWN]].time_held = DELAY_OFFSET;
                 }
             } else if (button == Utils::key_map[KEY_DUP]) {
                 if (this->hi_pos > min_pos || (this->pos == 0 && this->hi_pos > 0)) {
                     this->hi_pos--;
-                    this->last_tap = -DELAY_OFFSET;
+                    this->button[Utils::key_map[KEY_DUP]].time_held = 0;
                 } else {
-                    this->last_tap = 0;
+                    this->button[Utils::key_map[KEY_DUP]].time_held = DELAY_OFFSET;
                 }
             }
-            this->held_button = button;
-        } else if (state == SDL_RELEASED) {
-            this->held_button = NO_BUTTON;
-        }
-    }
-
-    void List::setActive(bool b) {
-        this->is_active = b;
-        if (!b) {
-            this->held_button = NO_BUTTON;
         }
     }
 

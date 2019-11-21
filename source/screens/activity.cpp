@@ -27,6 +27,8 @@ namespace Screen {
         this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
         this->menu->addItem(new UI::SideItem("Play Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
+        this->menu->addItem(new UI::SideItem("Octopus"));
+        this->menu->addItem(new UI::SideItem("Set"));
 
         this->user = u;
         this->controls->reset();
@@ -120,11 +122,11 @@ namespace Screen {
                         } else {
                             switch (this->active_element) {
                                 case (int)ActiveElement::SideMenu:
-                                    this->menu->button(events.jbutton.button, events.jbutton.state);
+                                    this->menu->handleButton(events.jbutton.button, events.jbutton.state);
                                     break;
 
                                 case (int)ActiveElement::List:
-                                    this->list->button(events.jbutton.button, events.jbutton.state);
+                                    this->list->handleButton(events.jbutton.button, events.jbutton.state);
                                     break;
                             }
                         }
@@ -133,15 +135,34 @@ namespace Screen {
 
                 case SDL_JOYBUTTONUP:
                     if (events.jbutton.which == 0) {
-                        // All other buttons get handled by active element
-                        switch (this->active_element) {
-                            case (int)ActiveElement::SideMenu:
-                                this->menu->button(events.jbutton.button, events.jbutton.state);
-                                break;
+                        // Joysticks push appropriate button event
+                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
+                            SDL_Event event;
+                            event.type = SDL_JOYBUTTONUP;
+                            event.jbutton.which = 0;
+                            event.jbutton.state = SDL_RELEASED;
+                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
+                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
+                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
+                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
+                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
+                                event.jbutton.button = Utils::key_map[KEY_DUP];
+                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
+                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
+                            }
+                            SDL_PushEvent(&event);
 
-                            case (int)ActiveElement::List:
-                                this->list->button(events.jbutton.button, events.jbutton.state);
-                                break;
+                        // All other buttons get handled by active element
+                        } else {
+                            switch (this->active_element) {
+                                case (int)ActiveElement::SideMenu:
+                                    this->menu->handleButton(events.jbutton.button, events.jbutton.state);
+                                    break;
+
+                                case (int)ActiveElement::List:
+                                    this->list->handleButton(events.jbutton.button, events.jbutton.state);
+                                    break;
+                            }
                         }
                     }
                     break;

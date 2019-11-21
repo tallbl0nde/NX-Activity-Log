@@ -2,6 +2,7 @@
 #define UI_LIST_HPP
 
 #include "listitem.hpp"
+#include "navigable.hpp"
 #include "SDLHelper.hpp"
 #include <vector>
 
@@ -19,7 +20,7 @@ enum SortType {
 namespace UI {
     // A List contains ListItems and handles the positioning and
     // selection stuff. A small navigation bar is also shown
-    class List : public Drawable {
+    class List : public Navigable {
         private:
             // Vector containing ListItems
             std::vector<ListItem *> items;
@@ -35,15 +36,6 @@ namespace UI {
             bool is_touched;
             float scroll_v;
             unsigned int hi_pos;
-            // Current held button
-            uint8_t held_button;
-            int last_tap;
-
-            // Address of touch status variable
-            bool * t_active;
-
-            // Is this the active element?
-            bool is_active;
 
         public:
             // The constructor does not accept ListItems
@@ -64,10 +56,7 @@ namespace UI {
             bool isTouched();
 
             // Handles button presses
-            void button(uint8_t, uint8_t);
-
-            // Set active variable
-            void setActive(bool);
+            void handleButton(uint8_t, uint8_t);
 
             // Return pos
             unsigned int getPos();
