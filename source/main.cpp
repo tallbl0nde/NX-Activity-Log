@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "config.hpp"
 #include "SDLHelper.hpp"
 #include <string>
 #include <switch.h>
@@ -58,10 +59,14 @@ int main(int argc, char * argv[]){
     // Initialize SDL
     SDLInit = SDLHelper::initSDL();
 
+    // Load config
+    Config * conf = Config::getConfig();
+    conf->readConfig();
+
     // Clock to measure time between draw
     struct Utils::Clock clock;
 
-    UI::Screen * screen = new Screen::Loading(&appRunning, nullptr);
+    UI::Screen * screen = nullptr;
     User * user = nullptr;
 
     // Only proceed if no errors
@@ -70,18 +75,37 @@ int main(int argc, char * argv[]){
         bool error = false;
 
         // Get system theme and set accordingly
-        ColorSetId thm;
-        rc = setsysGetColorSetId(&thm);
         Screen::Loading loading = Screen::Loading(&appRunning, nullptr);
-        loading.setTheme((bool)thm);
+        switch (conf->getGeneralTheme()) {
+            case T_Auto: {
+                ColorSetId thm;
+                rc = setsysGetColorSetId(&thm);
+                loading.setTheme((bool)thm);
+                break;
+            }
 
-        // Draw initial loading screen before selection
-        screen->draw();
-        SDLHelper::draw();
+            case T_Light: {
+                loading.setTheme(false);
+                break;
+            }
+
+            case T_Dark: {
+                loading.setTheme(true);
+                break;
+            }
+        }
+
+        // Draw initial loading screen before selection (with fade animation)
+        while(!loading.animDone()) {
+            clock.tick();
+            loading.update(clock.delta);
+            loading.draw();
+            SDLHelper::draw();
+        }
 
         // Stage 0: Get User ID
         userID = getUserID();
-        if (userID == 0) {
+        if (userID == 0 && !error) {
             // Unable to get user ID - raise error
             screen = new Screen::Error(&appRunning, "Unable to get a User ID... Did you select a user?");
             error = true;

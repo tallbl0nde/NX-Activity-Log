@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 
 enum ThemeType {
+    T_Auto, // Note this isn't actually set in the object
     T_Light,
     T_Dark,
     T_Custom

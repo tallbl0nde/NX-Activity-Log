@@ -1,9 +1,9 @@
 #include "activity.hpp"
+#include "config.hpp"
 #include "ui/list.hpp"
 #include "ui/listitem.hpp"
 #include "SDLHelper.hpp"
 #include <switch.h>
-#include "theme.hpp"
 #include "utils.hpp"
 
 namespace Screen {
@@ -16,7 +16,8 @@ namespace Screen {
         }
 
         // Sort list by most played
-        this->list->sort(HoursAsc);
+        Config * conf = Config::getConfig();
+        this->list->sort(conf->getGeneralSort());
 
         // Create total hours texture
         std::string str = "Total Playtime: ";

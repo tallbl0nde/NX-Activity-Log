@@ -1,6 +1,9 @@
 #include <cmath>
 #include "theme.hpp"
 
+// Apparently M_PI is undefined??
+#define PI 3.14159265
+
 // Animation speed factor for highlighting
 #define ANIM_SPEED 1.8
 
@@ -39,9 +42,9 @@ namespace UI {
     }
 
     void Theme::animateHighlight(uint32_t dt) {
-        this->hi_sin_time += (ANIM_SPEED*(dt/1000.0)) * M_PI;
-        if (this->hi_sin_time > 2 * M_PI) {
-            this->hi_sin_time -= 2 * M_PI;
+        this->hi_sin_time += (ANIM_SPEED*(dt/1000.0)) * PI;
+        if (this->hi_sin_time > 2 * PI) {
+            this->hi_sin_time -= 2 * PI;
         }
         if (this->type == T_Light) {
             this->highlight.g = 225 + (25 * sin(this->hi_sin_time));

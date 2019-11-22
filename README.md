@@ -23,3 +23,7 @@ This application is fairly basic right now; I have plans to make a GUI (once I l
 This is my first homebrew I've written so expect some quirky bugs, however from my testing it works perfectly via Title Takeover and Applet Mode on ReiNX 2.3 (FW 8.0.1).
 
 _Note, however, that no support will be given for SX OS._
+
+## Thanks
+
+* Steven Mattera for ![SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)

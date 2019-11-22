@@ -6,6 +6,7 @@ namespace Screen {
     Loading::Loading(bool * b, char * c) : Screen::Screen(b) {
         // Set Loading message
         this->status = c;
+        this->fade = 255;
     }
 
     void Loading::event() {
@@ -14,6 +15,10 @@ namespace Screen {
 
     void Loading::update(uint32_t dt) {
         Screen::update(dt);
+        this->fade -= 600*(dt/1000.0);
+        if (this->fade < 0) {
+            this->fade = 0;
+        }
     }
 
     void Loading::draw() {
@@ -28,6 +33,17 @@ namespace Screen {
 
         // Print loading title
         SDLHelper::drawText("Loading...", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+
+        // Draw fading overlay
+        SDLHelper::setColour(SDL_Color{0, 0, 0, (uint8_t)this->fade});
+        SDLHelper::drawRect(0, 0, WIDTH, HEIGHT);
+    }
+
+    bool Loading::animDone() {
+        if (this->fade <= 0) {
+            return true;
+        }
+        return false;
     }
 
     void Loading::setTheme(bool b) {

@@ -1,0 +1,3 @@
+[submodule "SimpleIniParser"]
+	path = SimpleIniParser
+	url = https://github.com/AtlasNX/SimpleIniParser

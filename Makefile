@@ -42,17 +42,17 @@ CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:=  -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_image -lpng -ljpeg -lwebp
+LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX)
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/SimpleIniParser
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -147,7 +147,11 @@ endif
 all: $(BUILD)
 
 $(BUILD):
+ifeq ($(wildcard $(CURDIR)/SimpleIniParser/LICENSE),)
+	@$(error "Please run 'git submodule update --init' before running 'make'")
+endif
 	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
@@ -155,6 +159,7 @@ clean:
 	@echo Cleaning build files...
 ifeq ($(strip $(APP_JSON)),)
 	@rm -fr $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf
+	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile clean
 else
 	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
 endif
