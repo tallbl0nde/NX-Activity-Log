@@ -40,6 +40,12 @@ namespace UI {
 
             void update(uint32_t);
 
+            // Returns index of selected entry
+            size_t getSelected();
+
+            // Set highlighted entry
+            void setSelected(size_t);
+
             // Destructor frees stored SideItems
             ~SideMenu();
     };

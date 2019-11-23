@@ -1,47 +1,148 @@
-#include "activity.hpp"
 #include "config.hpp"
-#include "ui/list.hpp"
-#include "ui/listitem.hpp"
 #include "SDLHelper.hpp"
-#include <switch.h>
+#include "settinglist.hpp"
+#include "settings.hpp"
 #include "utils.hpp"
 
-namespace Screen {
-    Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
-        u32 total_mins = 0;
-        this->list = new UI::List(&this->touch_active, 400, 100, 850, 550);
-        for (size_t i = 0; i < tls.size(); i++) {
-            this->list->addItem(new UI::ListItem(tls[i]));
-            total_mins += tls[i]->getPlaytime();
+// FUNCTIONS PASSED TO ITEMS //
+// Passed to item to toggle deleted games
+static std::string func_deleted(bool d) {
+    std::string ret;
+
+    Config * conf = Config::getConfig();
+    bool b = conf->getHiddenDeleted();
+    if (d) {
+        b = !b;
+        conf->setHiddenDeleted(b);
+    }
+
+    if (b) {
+        ret = "Yes";
+    } else {
+        ret = "No";
+    }
+
+    return ret;
+}
+
+// Passed to item to change theme
+static std::string func_theme(bool d) {
+    std::string ret;
+
+    Config * conf = Config::getConfig();
+    ThemeType t = conf->getGeneralTheme();
+    if (d) {
+        if (t == T_Light) {
+            t = T_Dark;
+        } else if (t == T_Dark) {
+            t = T_Auto;
+        } else if (t == T_Auto) {
+            t = T_Light;
         }
+        conf->setGeneralTheme(t);
+    }
 
-        // Sort list by most played
-        Config * conf = Config::getConfig();
-        this->list->sort(conf->getGeneralSort());
+    if (t == T_Light) {
+        ret = "Light";
+    } else if (t == T_Dark) {
+        ret = "Dark";
+    } else if (t == T_Auto) {
+        ret = "Auto";
+    }
 
-        // Create total hours texture
-        std::string str = "Total Playtime: ";
-        str += Utils::formatPlaytime(total_mins);
-        this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
+    return ret;
+}
 
+// Passed to item to change default sort
+static std::string func_sort(bool d) {
+    std::string ret;
+
+    Config * conf = Config::getConfig();
+    SortType s = conf->getGeneralSort();
+    if (d) {
+        if (s == AlphaAsc) {
+            s = HoursAsc;
+        } else if (s == HoursAsc) {
+            s = HoursDec;
+        } else if (s == HoursDec) {
+            s = LaunchAsc;
+        } else if (s == LaunchAsc) {
+            s = LaunchDec;
+        } else if (s == LaunchDec) {
+            s = FirstPlayed;
+        } else if (s == FirstPlayed) {
+            s = LastPlayed;
+        } else if (s == LastPlayed) {
+            s = AlphaAsc;
+        }
+        conf->setGeneralSort(s);
+    }
+
+    if (s == AlphaAsc) {
+        ret = "Alphabetically";
+    } else if (s == HoursAsc) {
+        ret = "Most Played";
+    } else if (s == HoursDec) {
+        ret = "Least Played";
+    } else if (s == LaunchAsc) {
+        ret = "Most Launched";
+    } else if (s == LaunchDec) {
+        ret = "Least Launched";
+    } else if (s == FirstPlayed) {
+        ret = "First Played";
+    } else if (s == LastPlayed) {
+        ret = "Recently Played";
+    }
+
+    return ret;
+}
+
+// Passed to item to toggle deleted games
+static std::string func_unplayed(bool d) {
+    std::string ret;
+
+    Config * conf = Config::getConfig();
+    bool b = conf->getHiddenUnplayed();
+    if (d) {
+        b = !b;
+        conf->setHiddenUnplayed(b);
+    }
+
+    if (b) {
+        ret = "Yes";
+    } else {
+        ret = "No";
+    }
+
+    return ret;
+}
+
+namespace Screen {
+    Settings::Settings(bool * b, User * u) : Screen::Screen(b) {
         // Create side menu
         this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
         this->menu->addItem(new UI::SideItem("Play Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
-        this->menu->setSelected(0);
+        this->menu->setSelected(1);
+
+        // Create list
+        this->list = new UI::SettingList(&this->touch_active, 400, 100, 850, 550);
+        this->list->addItem(new UI::SettingListItem("Default Sorting", &func_sort, "Sets the sorting used upon application launch."));
+        this->list->addItem(new UI::SettingListItem("Theme", &func_theme, "Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings."));
+        this->list->addItem(new UI::SettingListItem("Hide Deleted Games", &func_deleted, "Excludes and hides deleted games from your play activity."));
+        this->list->addItem(new UI::SettingListItem("Hide Unplayed Games", &func_unplayed, "Excludes and hides games that haven't been played from your play activity."));
 
         this->user = u;
         this->controls->reset();
         this->controls->add(KEY_PLUS, "Exit", 0);
-        this->controls->add(KEY_MINUS, "Sort", 1);
+        this->controls->add(KEY_A, "OK", 1);
 
         // Set active element
-        this->active_element = (int)ActiveElement::List;
-        this->menu->setActive(false);
-        this->list->setActive(true);
+        this->active_element = (int)ActiveElement::SideMenu;
+        this->menu->setActive(true);
     }
 
-    void Activity::event(){
+    void Settings::event() {
         // Poll events
         SDL_Event events;
         while (SDL_PollEvent(&events)) {
@@ -79,34 +180,6 @@ namespace Screen {
                         // Plus exits app
                         } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
                             *(this->loop) = false;
-
-                        // Minus changes sorting method
-                        } else if (events.jbutton.button == Utils::key_map[KEY_MINUS]) {
-                            switch (this->list->getSorting()) {
-                                case AlphaAsc:
-                                    this->list->sort(HoursAsc);
-                                    break;
-                                case HoursAsc:
-                                    this->list->sort(HoursDec);
-                                    break;
-                                case HoursDec:
-                                    this->list->sort(LaunchAsc);
-                                    break;
-                                case LaunchAsc:
-                                    this->list->sort(LaunchDec);
-                                    break;
-                                case LaunchDec:
-                                    this->list->sort(FirstPlayed);
-                                    break;
-                                case FirstPlayed:
-                                    this->list->sort(LastPlayed);
-                                    break;
-                                case LastPlayed:
-                                    this->list->sort(AlphaAsc);
-                                    break;
-                            }
-
-                            this->list->setPos(0);
 
                         // Left and right will swap active element
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {
@@ -201,7 +274,7 @@ namespace Screen {
                     float dx = WIDTH * events.tfinger.dx;
                     float dy = HEIGHT * events.tfinger.dy;
 
-                    // List scrolling overrides any other actions
+                    // // List scrolling overrides any other actions
                     if (this->list->isTouched()) {
                         this->list->touched(events.type, x, y, dx, dy);
 
@@ -242,13 +315,19 @@ namespace Screen {
         }
     }
 
-    void Activity::update(uint32_t dt) {
+    void Settings::update(uint32_t dt) {
         Screen::update(dt);
         this->menu->update(dt);
         this->list->update(dt);
+
+        if (this->touch_active) {
+            this->controls->disable(KEY_A);
+        } else {
+            this->controls->enable(KEY_A);
+        }
     }
 
-    void Activity::draw() {
+    void Settings::draw() {
         // Clear screen (draw background)
         SDLHelper::setColour(this->theme->getBG());
         SDLHelper::clearScreen();
@@ -280,24 +359,19 @@ namespace Screen {
         std::string str = this->user->getUsername() + "'s Activity";
         SDLHelper::drawText(str.c_str(), this->theme->getText(), 150, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
 
-        // Print total hours
-        int tw, th;
-        SDLHelper::getDimensions(this->total_hours, &tw, &th);
-        SDLHelper::drawTexture(this->total_hours, this->theme->getMutedText(), 1215 - tw, 44 - th/2);
-
         // Draw controls
         this->controls->draw();
     }
 
-    ScreenID Activity::change() {
-        if (this->menu->getSelected() == 1) {
-            return S_Settings;
+    ScreenID Settings::change() {
+        if (this->menu->getSelected() == 0) {
+            return S_Activity;
         }
         return S_Nothing;
     }
 
-    Activity::~Activity() {
+    Settings::~Settings() {
         delete this->list;
         delete this->menu;
     }
-}
+};

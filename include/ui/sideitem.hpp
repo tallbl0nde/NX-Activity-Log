@@ -21,6 +21,8 @@ namespace UI {
 
             void draw();
 
+            bool getSelected();
+
             void setSelected(bool);
 
             ~SideItem();

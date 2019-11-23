@@ -20,6 +20,10 @@ namespace UI {
         }
     }
 
+    bool SideItem::getSelected() {
+        return this->selected;
+    }
+
     void SideItem::setSelected(bool b) {
         this->selected = b;
     }

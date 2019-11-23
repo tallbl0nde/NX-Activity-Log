@@ -118,11 +118,11 @@ void Config::writeConfig() {
 
     option = ini->findSection("general")->findFirstOption("theme", false);
     if (this->general_theme == T_Light) {
-        option->value == "Light";
+        option->value = "Light";
     } else if (this->general_theme == T_Dark) {
-        option->value == "Dark";
+        option->value = "Dark";
     } else if (this->general_theme == T_Auto) {
-        option->value == "Auto";
+        option->value = "Auto";
     }
 
     option = ini->findSection("hidden")->findFirstOption("deleted", false);

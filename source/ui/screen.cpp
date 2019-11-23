@@ -15,6 +15,10 @@ namespace UI {
         this->theme->animateHighlight(dt);
     }
 
+    ScreenID Screen::change() {
+        return S_Nothing;
+    }
+
     Screen::~Screen() {
 
     }

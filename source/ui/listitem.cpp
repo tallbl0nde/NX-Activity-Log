@@ -108,7 +108,5 @@ namespace UI {
         if (this->rank != nullptr) {
             SDLHelper::destroyTexture(this->rank);
         }
-
-        delete this->title_obj;
     }
 };

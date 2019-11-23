@@ -130,6 +130,23 @@ namespace UI {
         }
     }
 
+    size_t SideMenu::getSelected() {
+        for (size_t i = 0; i < this->items.size(); i++) {
+            if (this->items[i]->getSelected()) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    void SideMenu::setSelected(size_t p) {
+        this->setPos(p);
+        for (size_t i = 0; i < this->items.size(); i++) {
+            this->items[i]->setSelected(false);
+        }
+        this->items[this->pos]->setSelected(true);
+    }
+
     SideMenu::~SideMenu() {
         // Delete ListItem objects
         while (this->items.size() > 0) {

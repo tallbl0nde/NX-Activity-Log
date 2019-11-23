@@ -1,29 +1,25 @@
-#ifndef SCREEN_ACTIVITY_HPP
-#define SCREEN_ACTIVITY_HPP
+#ifndef SCREEN_SETTINGS_HPP
+#define SCREEN_SETTINGS_HPP
 
-#include "list.hpp"
 #include "screen.hpp"
+#include "settinglist.hpp"
 #include "sidemenu.hpp"
-#include "Title.hpp"
 #include "User.hpp"
-#include <vector>
 
 namespace Screen {
-    class Activity : public UI::Screen {
+    class Settings : public UI::Screen {
         private:
             // List object
-            UI::List * list;
+            UI::SettingList * list;
             // Left menu object
             UI::SideMenu * menu;
-            // Top right time texture
-            SDL_Texture * total_hours;
             // Used to print/render user name and image
             User * user;
 
         // See ui/screen.hpp for what these functions do
         public:
             // Additionally takes a user object
-            Activity(bool *, User *, std::vector<Title *>);
+            Settings(bool *, User *);
 
             void event();
 
@@ -33,7 +29,7 @@ namespace Screen {
 
             ScreenID change();
 
-            ~Activity();
+            ~Settings();
     };
 }
 

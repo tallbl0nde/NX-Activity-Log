@@ -152,7 +152,6 @@ namespace SDLHelper {
     }
 
     // === RENDERING FUNCTIONS ===
-
     SDL_Texture * renderImage(u8 * ptr, size_t size) {
         SDL_Surface * tmp = IMG_Load_RW(SDL_RWFromMem(ptr, size), 1);
         SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);
@@ -208,6 +207,33 @@ namespace SDLHelper {
                 std_font[font_size] = f;
             }
             tmp = TTF_RenderUTF8_Blended(std_font[font_size], str, SDL_Color{255, 255, 255, 255});
+        }
+
+        // Render text
+        SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);
+        SDL_FreeSurface(tmp);
+
+        return tex;
+    }
+
+    SDL_Texture * renderTextWrapped(const char * str, int font_size, uint32_t max_w, bool ext) {
+        SDL_Surface * tmp;
+
+        // If font doesn't exist create it
+        // Use Extended font
+        if (ext) {
+            if (ext_font.find(font_size) == ext_font.end()) {
+                TTF_Font * f = TTF_OpenFontRW(SDL_RWFromMem(ext_font_data.address, ext_font_data.size), 1, font_size);
+                ext_font[font_size] = f;
+            }
+            tmp = TTF_RenderUTF8_Blended_Wrapped(ext_font[font_size], str, SDL_Color{255, 255, 255, 255}, max_w);
+        // Use standard font
+        } else {
+            if (std_font.find(font_size) == std_font.end()) {
+                TTF_Font * f = TTF_OpenFontRW(SDL_RWFromMem(std_font_data.address, std_font_data.size), 1, font_size);
+                std_font[font_size] = f;
+            }
+            tmp = TTF_RenderUTF8_Blended_Wrapped(std_font[font_size], str, SDL_Color{255, 255, 255, 255}, max_w);
         }
 
         // Render text

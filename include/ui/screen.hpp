@@ -8,6 +8,19 @@
 #define HEADING_FONT_SIZE 28
 #define BODY_FONT_SIZE 20
 
+// Enum for current active element
+enum ActiveElement {
+    SideMenu,   // Left menu
+    List        // List of games
+};
+
+// Enum for current screen
+enum ScreenID {
+    S_Nothing,
+    S_Activity,
+    S_Settings
+};
+
 namespace UI {
     // Screen represents an application screen and has it's own event handling
     // Functions called in order: event(), update(), draw()
@@ -36,6 +49,9 @@ namespace UI {
 
             // Actually draw/render stuff
             virtual void draw() = 0;
+
+            // Returns a value apart from S_Nothing to change screen
+            virtual ScreenID change();
 
             // Destructor is used to free variables/clean up
             virtual ~Screen();

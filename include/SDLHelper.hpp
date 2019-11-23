@@ -59,6 +59,9 @@ namespace SDLHelper {
     // Returns a texture with the specified text drawn at the specified font size
     // Always drawn in white!
     SDL_Texture * renderText(const char *, int, bool = false);
+
+    // Same as renderText but wraps text at given width
+    SDL_Texture * renderTextWrapped(const char *, int, uint32_t, bool = false);
 };
 
 #endif

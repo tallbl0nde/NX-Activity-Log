@@ -2,15 +2,11 @@
 #include "config.hpp"
 #include "SDLHelper.hpp"
 #include <string>
-#include <switch.h>
-#include "Title.hpp"
-#include "User.hpp"
-#include "utils.hpp"
-#include <vector>
 
-#include "screens/activity.hpp"
-#include "screens/error.hpp"
-#include "screens/loading.hpp"
+#include "activity.hpp"
+#include "error.hpp"
+#include "loading.hpp"
+#include "settings.hpp"
 
 // Forward declarations of functions because I like them at the end :)
 u128 getUserID();
@@ -134,14 +130,29 @@ int main(int argc, char * argv[]){
             titles = getTitleObjects(userID);
         }
 
-        // Stage 3: Initialize screen
         if (!error) {
             screen = new Screen::Activity(&appRunning, user, titles);
         }
 
         // Infinite draw loop until exit
         while (appRunning) {
-            // Check for events first
+            // Check if screen needs changing
+            switch (screen->change()) {
+                case S_Activity:
+                    delete screen;
+                    screen = new Screen::Activity(&appRunning, user, titles);
+                    break;
+
+                case S_Settings:
+                    delete screen;
+                    screen = new Screen::Settings(&appRunning, user);
+                    break;
+
+                case S_Nothing:
+                    break;
+            }
+
+            // Check for events
             screen->event();
 
             // Get time since last draw and update
@@ -158,6 +169,9 @@ int main(int argc, char * argv[]){
             SDLHelper::draw();
         }
     }
+
+    // Save config
+    conf->writeConfig();
 
     // Clean up SDL
     SDLHelper::exitSDL();

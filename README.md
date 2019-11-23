@@ -26,4 +26,4 @@ _Note, however, that no support will be given for SX OS._
 
 ## Thanks
 
-* Steven Mattera for ![SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
+* AtlasNX for ![SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
