@@ -1,6 +1,9 @@
 #include "config.hpp"
 #include "SDLHelper.hpp"
-#include "settinglist.hpp"
+#include "list.hpp"
+#include "listitem_option.hpp"
+#include "listitem_tooltip.hpp"
+#include "listitem_separator.hpp"
 #include "settings.hpp"
 #include "utils.hpp"
 
@@ -126,20 +129,26 @@ namespace Screen {
         this->menu->setSelected(1);
 
         // Create list
-        this->list = new UI::SettingList(&this->touch_active, 400, 100, 850, 550);
-        this->list->addItem(new UI::SettingListItem("Default Sorting", &func_sort, "Sets the sorting used upon application launch."));
-        this->list->addItem(new UI::SettingListItem("Theme", &func_theme, "Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings."));
-        this->list->addItem(new UI::SettingListItem("Hide Deleted Games", &func_deleted, "Excludes and hides deleted games from your play activity."));
-        this->list->addItem(new UI::SettingListItem("Hide Unplayed Games", &func_unplayed, "Excludes and hides games that haven't been played from your play activity."));
+        this->list = new UI::List(&this->touch_active, 400, 130, 850, 500);
+        this->list->addItem(new UI::ListItem::Option("Default Sorting", &func_sort));
+        this->list->addItem(new UI::ListItem::ToolTip("Sets the sorting used upon application launch."));
+        this->list->addItem(new UI::ListItem::Option("Theme", &func_theme));
+        this->list->addItem(new UI::ListItem::ToolTip("Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings."));
+        this->list->addItem(new UI::ListItem::Separator());
+        this->list->addItem(new UI::ListItem::Option("Hide Deleted Games", &func_deleted));
+        this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides deleted games from your play activity."));
+        this->list->addItem(new UI::ListItem::Option("Hide Unplayed Games", &func_unplayed));
+        this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides games that haven't been played from your play activity."));
 
         this->user = u;
         this->controls->reset();
-        this->controls->add(KEY_PLUS, "Exit", 0);
-        this->controls->add(KEY_A, "OK", 1);
+        this->controls->add(KEY_A, "OK", 0);
+        this->controls->add(KEY_PLUS, "Exit", 1);
 
         // Set active element
         this->active_element = (int)ActiveElement::SideMenu;
         this->menu->setActive(true);
+        this->list->setActive(false);
     }
 
     void Settings::event() {

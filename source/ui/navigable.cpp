@@ -18,9 +18,9 @@ namespace UI {
     void Navigable::handleButton(uint8_t button, uint8_t state) {
         if (state == SDL_PRESSED) {
             this->button[button].is_pressed = true;
+            this->button[button].time_held = 0;
         } else if (state == SDL_RELEASED) {
             this->button[button].is_pressed = false;
-            this->button[button].time_held = 0;
         }
     }
 

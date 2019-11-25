@@ -1,23 +1,19 @@
 #include "activity.hpp"
-#include "config.hpp"
-#include "ui/list.hpp"
-#include "ui/listitem.hpp"
+#include "listitem_activity.hpp"
+#include "sortedlist.hpp"
 #include "SDLHelper.hpp"
-#include <switch.h>
 #include "utils.hpp"
 
 namespace Screen {
     Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
         u32 total_mins = 0;
-        this->list = new UI::List(&this->touch_active, 400, 100, 850, 550);
+        this->list = new UI::SortedList(&this->touch_active, 400, 110, 850, 515);
         for (size_t i = 0; i < tls.size(); i++) {
-            this->list->addItem(new UI::ListItem(tls[i]));
+            this->list->addItem(new UI::ListItem::Activity(tls[i]));
             total_mins += tls[i]->getPlaytime();
         }
-
-        // Sort list by most played
-        Config * conf = Config::getConfig();
-        this->list->sort(conf->getGeneralSort());
+        // "Adding" nullptr finalizes list
+        this->list->addItem(nullptr);
 
         // Create total hours texture
         std::string str = "Total Playtime: ";
@@ -32,8 +28,9 @@ namespace Screen {
 
         this->user = u;
         this->controls->reset();
-        this->controls->add(KEY_PLUS, "Exit", 0);
+        this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_MINUS, "Sort", 1);
+        this->controls->add(KEY_PLUS, "Exit", 2);
 
         // Set active element
         this->active_element = (int)ActiveElement::List;
@@ -79,34 +76,6 @@ namespace Screen {
                         // Plus exits app
                         } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
                             *(this->loop) = false;
-
-                        // Minus changes sorting method
-                        } else if (events.jbutton.button == Utils::key_map[KEY_MINUS]) {
-                            switch (this->list->getSorting()) {
-                                case AlphaAsc:
-                                    this->list->sort(HoursAsc);
-                                    break;
-                                case HoursAsc:
-                                    this->list->sort(HoursDec);
-                                    break;
-                                case HoursDec:
-                                    this->list->sort(LaunchAsc);
-                                    break;
-                                case LaunchAsc:
-                                    this->list->sort(LaunchDec);
-                                    break;
-                                case LaunchDec:
-                                    this->list->sort(FirstPlayed);
-                                    break;
-                                case FirstPlayed:
-                                    this->list->sort(LastPlayed);
-                                    break;
-                                case LastPlayed:
-                                    this->list->sort(AlphaAsc);
-                                    break;
-                            }
-
-                            this->list->setPos(0);
 
                         // Left and right will swap active element
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {
@@ -246,6 +215,12 @@ namespace Screen {
         Screen::update(dt);
         this->menu->update(dt);
         this->list->update(dt);
+
+        if (this->touch_active) {
+            this->controls->disable(KEY_A);
+        } else {
+            this->controls->enable(KEY_A);
+        }
     }
 
     void Activity::draw() {

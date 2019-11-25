@@ -1,8 +1,8 @@
 #ifndef SCREEN_SETTINGS_HPP
 #define SCREEN_SETTINGS_HPP
 
+#include "list.hpp"
 #include "screen.hpp"
-#include "settinglist.hpp"
 #include "sidemenu.hpp"
 #include "User.hpp"
 
@@ -10,7 +10,7 @@ namespace Screen {
     class Settings : public UI::Screen {
         private:
             // List object
-            UI::SettingList * list;
+            UI::List * list;
             // Left menu object
             UI::SideMenu * menu;
             // Used to print/render user name and image

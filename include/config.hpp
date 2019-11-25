@@ -1,7 +1,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "list.hpp"
+#include "sortedlist.hpp"
 #include "theme.hpp"
 
 // Singleton class storing the application's config

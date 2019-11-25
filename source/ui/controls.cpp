@@ -113,6 +113,7 @@ namespace UI {
         // Delete texture and hide the specified key
         if (this->buttons[key].texture != nullptr) {
             SDLHelper::destroyTexture(this->buttons[key].texture);
+            this->buttons[key].texture = nullptr;
         }
         this->buttons[key].show = false;
     }
@@ -132,6 +133,7 @@ namespace UI {
             // Delete texture and hide the specified key
             if (this->buttons[i].texture != nullptr) {
                 SDLHelper::destroyTexture(this->buttons[i].texture);
+                this->buttons[i].texture = nullptr;
             }
             this->buttons[i].show = false;
         }

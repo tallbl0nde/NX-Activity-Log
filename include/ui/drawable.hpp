@@ -39,10 +39,10 @@ namespace UI {
             int getY();
             int getW();
             int getH();
-            void setX(int);
-            void setY(int);
-            void setW(int);
-            void setH(int);
+            virtual void setX(int);
+            virtual void setY(int);
+            virtual void setW(int);
+            virtual void setH(int);
     };
 };
 

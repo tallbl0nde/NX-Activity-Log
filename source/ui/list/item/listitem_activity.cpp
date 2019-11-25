@@ -1,52 +1,58 @@
-#include <algorithm>
-#include "listitem.hpp"
+#include "listitem_activity.hpp"
 #include "utils.hpp"
 
 // Font sizes
 #define TITLE_FONT_SIZE 22
 #define SUB_FONT_SIZE 18
 
+// Height of items
+#define ITEM_HEIGHT 120
+
 // Text scroll speed (in ms)
 #define TEXT_SPEED 120
 // Text scroll pause (in ms)
 #define TEXT_PAUSE 600
 
-namespace UI {
-    ListItem::ListItem(Title * t) {
+namespace UI::ListItem {
+    Activity::Activity(Title * t) : List_Item() {
+        this->setH(ITEM_HEIGHT);
+
         // Create textures using title object
         this->icon = t->getIcon();
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
         std::string str = "Played for " + Utils::formatPlaytime(t->getPlaytime());
         this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
         this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
-
-        this->text_x = 0;
-        this->text_pause = 0;
         this->rank = nullptr;
-        this->title_obj = t;
-        this->selected = false;
+
+        // Initialize all other variables
+        this->text_scroll_x = 0;
+        this->text_scroll_pause = 0;
+        this->title_object = t;
+        this->is_selectable = true;
     }
 
-    void ListItem::update(uint32_t dt) {
-        if (this->selected) {
+    void Activity::update(uint32_t dt) {
+        // Scroll text if selected and text is too large
+        if (this->is_selected) {
             int tw, th;
             SDLHelper::getDimensions(this->title, &tw, &th);
             if (tw > this->w*0.7) {
-                if (this->text_x > (tw - (this->w*0.7))) {
-                    if (this->text_pause > TEXT_PAUSE) {
-                        this->text_x = 0;
-                        this->text_pause = 0;
+                if (this->text_scroll_x > (tw - (this->w*0.7))) {
+                    if (this->text_scroll_pause > TEXT_PAUSE) {
+                        this->text_scroll_x = 0;
+                        this->text_scroll_pause = 0;
                     } else {
-                        this->text_pause += dt;
+                        this->text_scroll_pause += dt;
                     }
                 } else {
-                    this->text_x += TEXT_SPEED*(dt/1000.0);
+                    this->text_scroll_x += TEXT_SPEED*(dt/1000.0);
                 }
             }
         }
     }
 
-    void ListItem::draw() {
+    void Activity::draw() {
         // Draw outlines
         SDLHelper::setColour(this->theme->getMutedLine());
         SDLHelper::drawRect(this->x, this->y, this->w, 1);
@@ -60,7 +66,7 @@ namespace UI {
         int tw, th;
         SDLHelper::getDimensions(this->title, &tw, &th);
         if (tw > this->w*0.7) {
-            SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + this->h + 10, this->y + 15, this->w*0.7, th, this->text_x, this->w*0.7);
+            SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + this->h + 10, this->y + 15, this->w*0.7, th, this->text_scroll_x, this->w*0.7);
         } else {
             SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + this->h + 10, this->y + 15);
         }
@@ -72,20 +78,27 @@ namespace UI {
         }
     }
 
-    void ListItem::setSelected(bool b) {
-        this->selected = b;
+    void Activity::pressed() {
+
+    }
+
+    void Activity::setSelected(bool b) {
+        List_Item::setSelected(b);
+
+        // Reset text scroll if deselected
         if (!b) {
-            this->text_x = 0;
-            this->text_pause = 0;
+            this->text_scroll_x = 0;
+            this->text_scroll_pause = 0;
         }
     }
 
-    void ListItem::setRank(size_t i) {
+    void Activity::setRank(unsigned int i) {
+        if (this->rank != nullptr) {
+            SDLHelper::destroyTexture(this->rank);
+        }
+
         // If set to zero remove texture
         if (i == 0) {
-            if (this->rank != nullptr) {
-                SDLHelper::destroyTexture(this->rank);
-            }
             this->rank = nullptr;
             return;
         }
@@ -95,11 +108,11 @@ namespace UI {
         this->rank = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
     }
 
-    Title * ListItem::getTitleObj() {
-        return this->title_obj;
+    Title * Activity::getTitleObj() {
+        return this->title_object;
     }
 
-    ListItem::~ListItem() {
+    Activity::~Activity() {
         // Destroy created textures
         SDLHelper::destroyTexture(this->title);
         SDLHelper::destroyTexture(this->playtime);
