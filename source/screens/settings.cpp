@@ -129,7 +129,9 @@ namespace Screen {
         this->menu->setSelected(1);
 
         // Create list
-        this->list = new UI::List(&this->touch_active, 400, 130, 850, 500);
+        this->list = new UI::List(&this->touch_active, 400, 110, 850, 520);
+        this->list->addItem(new UI::ListItem::ToolTip("Note: All options currently require the application to be restarted to take effect."));
+        this->list->addItem(new UI::ListItem::Separator(10));
         this->list->addItem(new UI::ListItem::Option("Default Sorting", &func_sort));
         this->list->addItem(new UI::ListItem::ToolTip("Sets the sorting used upon application launch."));
         this->list->addItem(new UI::ListItem::Option("Theme", &func_theme));

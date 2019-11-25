@@ -305,22 +305,25 @@ std::vector<Title *> getTitleObjects(u128 userID) {
         titleIDs.push_back(info.titleID);
     }
 
-    // Get played titles (including deleted)
-    FsSaveDataIterator fsIterator;
-    rc = fsOpenSaveDataIterator(&fsIterator, FsSaveDataSpaceId_NandUser);
-    if (R_SUCCEEDED(rc)){
-        // Iterate over all save data to get titleIDs
-        FsSaveDataInfo info;
-        while (true){
-            size_t total = 0;
-            rc = fsSaveDataIteratorRead(&fsIterator, &info, 1, &total);
-            // Break if at the end or no titles
-            if (R_FAILED(rc) || total == 0){
-                break;
+    Config * conf = Config::getConfig();
+    if (!conf->getHiddenDeleted()) {
+        // Get played titles (including deleted)
+        FsSaveDataIterator fsIterator;
+        rc = fsOpenSaveDataIterator(&fsIterator, FsSaveDataSpaceId_NandUser);
+        if (R_SUCCEEDED(rc)){
+            // Iterate over all save data to get titleIDs
+            FsSaveDataInfo info;
+            while (true){
+                size_t total = 0;
+                rc = fsSaveDataIteratorRead(&fsIterator, &info, 1, &total);
+                // Break if at the end or no titles
+                if (R_FAILED(rc) || total == 0){
+                    break;
+                }
+                titleIDs.push_back(info.titleID);
             }
-            titleIDs.push_back(info.titleID);
+            fsSaveDataIteratorClose(&fsIterator);
         }
-        fsSaveDataIteratorClose(&fsIterator);
     }
 
     // Remove duplicate titleIDs
@@ -330,7 +333,13 @@ std::vector<Title *> getTitleObjects(u128 userID) {
     // Create Titles
     std::vector<Title *> titles;
     for (size_t i = 0; i < titleIDs.size(); i++) {
-        titles.push_back(new Title(titleIDs[i], userID));
+        Title * tmp = new Title(titleIDs[i], userID);
+        // Delete if not played
+        if (conf->getHiddenUnplayed() && tmp->getPlaytime() == 0) {
+            delete tmp;
+        } else {
+            titles.push_back(tmp);
+        }
     }
 
     return titles;

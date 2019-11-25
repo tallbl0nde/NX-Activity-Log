@@ -28,7 +28,7 @@ namespace UI {
             // Other navigation variables
             bool is_touched;
             unsigned int highlight_item;
-            unsigned int touched_item;
+            int touched_item;
 
             // Position of pressed touch
             int start_touch_y;

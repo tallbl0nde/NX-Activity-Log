@@ -34,6 +34,14 @@ namespace UI {
         item->setW(this->w*0.85);
         this->items.push_back(item);
 
+        // Calculate initial highlighted pos
+        for (unsigned int i = 0; i < this->items.size(); i++) {
+            if (this->items[i]->isSelectable()) {
+                this->highlight_item = i;
+                break;
+            }
+        }
+
         // Update maximum scroll pos
         this->max_scroll_pos = 0;
         for (size_t i = 0; i < this->items.size(); i++) {
@@ -43,7 +51,7 @@ namespace UI {
         this->max_scroll_pos += this->offset;
 
         // If the summed height of all items is less than the list height don't scroll
-        if (this->max_scroll_pos <= this->h) {
+        if (this->max_scroll_pos <= (unsigned int)this->h) {
             this->max_scroll_pos = 0;
             return;
         }
@@ -91,7 +99,7 @@ namespace UI {
 
                 // Move to next selectable item
                 bool moved = false;
-                for (int i = this->highlight_item + 1; i <= max_pos; i++) {
+                for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
                     if (this->items[i]->isSelectable()) {
                         moved = true;
                         this->highlight_item = i;
@@ -121,7 +129,11 @@ namespace UI {
 
                 // Move to next selectable item
                 bool moved = false;
-                for (int i = this->highlight_item - 1; i >= min_pos; i--) {
+                for (int i = this->highlight_item - 1; i >= (int)min_pos; i--) {
+                    if (i < 0) {
+                        break;
+                    }
+
                     if (this->items[i]->isSelectable()) {
                         moved = true;
                         this->highlight_item = i;
@@ -292,7 +304,7 @@ namespace UI {
             if (this->highlight_item < min_pos) {
                 this->items[this->highlight_item]->setSelected(false);
                 // Move to next selectable item
-                for (int i = min_pos; i <= max_pos; i++) {
+                for (unsigned int i = min_pos; i <= max_pos; i++) {
                     if (this->items[i]->isSelectable()) {
                         this->highlight_item = i;
                         this->items[this->highlight_item]->setSelected(true);
@@ -303,7 +315,7 @@ namespace UI {
             } else if (this->highlight_item > max_pos) {
                 this->items[this->highlight_item]->setSelected(false);
                 // Move to next selectable item
-                for (int i = max_pos; i >= min_pos; i--) {
+                for (unsigned int i = max_pos; i >= min_pos; i--) {
                     if (this->items[i]->isSelectable()) {
                         this->highlight_item = i;
                         this->items[this->highlight_item]->setSelected(true);
@@ -321,7 +333,7 @@ namespace UI {
 
                     // Move to next selectable item
                     bool moved = false;
-                    for (int i = this->highlight_item + 1; i <= max_pos; i++) {
+                    for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
                         if (this->items[i]->isSelectable()) {
                             moved = true;
                             this->highlight_item = i;
@@ -343,6 +355,10 @@ namespace UI {
                     // Move to next selectable item
                     bool moved = false;
                     for (int i = this->highlight_item - 1; i >= min_pos; i--) {
+                        if (i < 0) {
+                            break;
+                        }
+
                         if (this->items[i]->isSelectable()) {
                             moved = true;
                             this->highlight_item = i;
