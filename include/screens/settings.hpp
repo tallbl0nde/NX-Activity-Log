@@ -19,15 +19,13 @@ namespace Screen {
         // See ui/screen.hpp for what these functions do
         public:
             // Additionally takes a user object
-            Settings(bool *, User *);
+            Settings(User *);
 
             void event();
 
             void update(uint32_t dt);
 
             void draw();
-
-            ScreenID change();
 
             ~Settings();
     };

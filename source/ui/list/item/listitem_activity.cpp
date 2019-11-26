@@ -1,9 +1,11 @@
 #include "listitem_activity.hpp"
+#include "screenmanager.hpp"
 #include "utils.hpp"
 
 // Font sizes
 #define TITLE_FONT_SIZE 22
 #define SUB_FONT_SIZE 18
+#define LAUNCH_FONT_SIZE 16
 
 // Height of items
 #define ITEM_HEIGHT 120
@@ -14,7 +16,9 @@
 #define TEXT_PAUSE 600
 
 namespace UI::ListItem {
-    Activity::Activity(Title * t) : List_Item() {
+    Activity::Activity(User * u, Title * t) : List_Item() {
+        this->user = u;
+
         this->setH(ITEM_HEIGHT);
 
         // Create textures using title object
@@ -23,6 +27,8 @@ namespace UI::ListItem {
         std::string str = "Played for " + Utils::formatPlaytime(t->getPlaytime());
         this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
         this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
+        str = "Launched " + std::to_string(t->getLaunches()) + " times";
+        this->launches = SDLHelper::renderText(str.c_str(), LAUNCH_FONT_SIZE);
         this->rank = nullptr;
 
         // Initialize all other variables
@@ -76,10 +82,13 @@ namespace UI::ListItem {
             SDLHelper::getDimensions(this->rank, &tw, &th);
             SDLHelper::drawTexture(this->rank, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 15);
         }
+        SDLHelper::getDimensions(this->launches, &tw, &th);
+        SDLHelper::drawTexture(this->launches, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 82 + (SUB_FONT_SIZE - LAUNCH_FONT_SIZE));
     }
 
     void Activity::pressed() {
-
+        ScreenManager::getInstance()->pushScreen();
+        ScreenManager::getInstance()->setScreen(new ::Screen::Details(this->user, this->title_object));
     }
 
     void Activity::setSelected(bool b) {

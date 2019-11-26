@@ -7,15 +7,12 @@
 namespace Screen {
     class Loading : public UI::Screen {
         private:
-            // Pointer to status variable
-            char * status;
-
             // Fading value
             int fade;
 
         // See ui/screen.hpp for what these functions do
         public:
-            Loading(bool *, char *);
+            Loading();
 
             void event();
 

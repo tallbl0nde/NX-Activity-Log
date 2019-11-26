@@ -44,9 +44,6 @@ namespace UI {
             // Disable a button (dimmed and can't be touched)
             void disable(HidControllerKeys);
 
-            // Reset the controls object to nothing
-            void reset();
-
             // Draw controls
             void draw();
 

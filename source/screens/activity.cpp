@@ -1,15 +1,15 @@
-#include "activity.hpp"
 #include "listitem_activity.hpp"
+#include "screenmanager.hpp"
 #include "sortedlist.hpp"
 #include "SDLHelper.hpp"
 #include "utils.hpp"
 
 namespace Screen {
-    Activity::Activity(bool * b, User * u, std::vector<Title *> tls) : Screen::Screen(b) {
+    Activity::Activity(User * u, std::vector<Title *> tls) : Screen::Screen() {
         u32 total_mins = 0;
         this->list = new UI::SortedList(&this->touch_active, 400, 110, 850, 515);
         for (size_t i = 0; i < tls.size(); i++) {
-            this->list->addItem(new UI::ListItem::Activity(tls[i]));
+            this->list->addItem(new UI::ListItem::Activity(u, tls[i]));
             total_mins += tls[i]->getPlaytime();
         }
         // "Adding" nullptr finalizes list
@@ -27,7 +27,6 @@ namespace Screen {
         this->menu->setSelected(0);
 
         this->user = u;
-        this->controls->reset();
         this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_MINUS, "Sort", 1);
         this->controls->add(KEY_PLUS, "Exit", 2);
@@ -75,7 +74,7 @@ namespace Screen {
 
                         // Plus exits app
                         } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            *(this->loop) = false;
+                            ScreenManager::getInstance()->stopLoop();
 
                         // Left and right will swap active element
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {
@@ -221,6 +220,13 @@ namespace Screen {
         } else {
             this->controls->enable(KEY_A);
         }
+
+        // Change screen if menu selected
+        if (this->menu->getSelected() == 1) {
+            ScreenManager::getInstance()->pushScreen();
+            ScreenManager::getInstance()->setScreen(new Settings(this->user));
+            this->menu->setSelected(0);
+        }
     }
 
     void Activity::draw() {
@@ -262,13 +268,6 @@ namespace Screen {
 
         // Draw controls
         this->controls->draw();
-    }
-
-    ScreenID Activity::change() {
-        if (this->menu->getSelected() == 1) {
-            return S_Settings;
-        }
-        return S_Nothing;
     }
 
     Activity::~Activity() {

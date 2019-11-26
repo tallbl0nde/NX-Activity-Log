@@ -128,17 +128,6 @@ namespace UI {
         this->buttons[Utils::key_map[k]].enabled = false;
     }
 
-    void Controls::reset() {
-        for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
-            // Delete texture and hide the specified key
-            if (this->buttons[i].texture != nullptr) {
-                SDLHelper::destroyTexture(this->buttons[i].texture);
-                this->buttons[i].texture = nullptr;
-            }
-            this->buttons[i].show = false;
-        }
-    }
-
     void Controls::draw() {
         for (unsigned int i = 0; i < KEY_MAP_SIZE; i++) {
             if (!this->buttons[i].show) {

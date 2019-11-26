@@ -1,12 +1,8 @@
 #include <algorithm>
 #include "config.hpp"
+#include "screenmanager.hpp"
 #include "SDLHelper.hpp"
 #include <string>
-
-#include "activity.hpp"
-#include "error.hpp"
-#include "loading.hpp"
-#include "settings.hpp"
 
 // Forward declarations of functions because I like them at the end :)
 u128 getUserID();
@@ -16,7 +12,6 @@ std::vector<Title *> getTitleObjects(u128);
 
 int main(int argc, char * argv[]){
     // Status variables
-    bool appRunning = true;
     bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit, setInit = false;
     Result rc = 0;
 
@@ -62,7 +57,8 @@ int main(int argc, char * argv[]){
     // Clock to measure time between draw
     struct Utils::Clock clock;
 
-    UI::Screen * screen = nullptr;
+    // Initialise and get ScreenManager
+    ScreenManager * sm = ScreenManager::getInstance();
     User * user = nullptr;
 
     // Only proceed if no errors
@@ -71,7 +67,8 @@ int main(int argc, char * argv[]){
         bool error = false;
 
         // Get system theme and set accordingly
-        Screen::Loading loading = Screen::Loading(&appRunning, nullptr);
+        // This doesn't use sm and I want it to
+        Screen::Loading loading = Screen::Loading();
         switch (conf->getGeneralTheme()) {
             case T_Auto: {
                 ColorSetId thm;
@@ -103,7 +100,7 @@ int main(int argc, char * argv[]){
         userID = getUserID();
         if (userID == 0 && !error) {
             // Unable to get user ID - raise error
-            screen = new Screen::Error(&appRunning, "Unable to get a User ID... Did you select a user?");
+            sm->setScreen(new Screen::Error("Unable to get a User ID... Did you select a user?"));
             error = true;
         }
 
@@ -115,7 +112,7 @@ int main(int argc, char * argv[]){
             image = getUserImage(userID);
 
             if (username == "" || image == nullptr) {
-                screen = new Screen::Error(&appRunning, "An unexpected error occurred while parsing user data");
+                sm->setScreen(new Screen::Error("An unexpected error occurred while parsing user data"));
                 error = true;
             }
         }
@@ -131,40 +128,24 @@ int main(int argc, char * argv[]){
         }
 
         if (!error) {
-            screen = new Screen::Activity(&appRunning, user, titles);
+            sm->setScreen(new Screen::Activity(user, titles));
         }
 
-        // Infinite draw loop until exit
-        while (appRunning) {
-            // Check if screen needs changing
-            switch (screen->change()) {
-                case S_Activity:
-                    delete screen;
-                    screen = new Screen::Activity(&appRunning, user, titles);
-                    break;
-
-                case S_Settings:
-                    delete screen;
-                    screen = new Screen::Settings(&appRunning, user);
-                    break;
-
-                case S_Nothing:
-                    break;
-            }
-
+        // Infinite loop until exit
+        while (sm->loop()) {
             // Check for events
-            screen->event();
+            sm->event();
 
             // Get time since last draw and update
             clock.tick();
-            screen->update(clock.delta);
+            sm->update(clock.delta);
 
             // Render screen
-            screen->draw();
+            sm->draw();
 
-            // Draw FPS
-            std::string ss = "FPS: " + std::to_string((int)(1.0/(clock.delta/1000.0))) + " (" + std::to_string(clock.delta) + " ms)";
-            SDLHelper::drawText(ss.c_str(), SDL_Color{0, 150, 150, 255}, 5, 695, 20);
+            // // Draw FPS
+            // std::string ss = "FPS: " + std::to_string((int)(1.0/(clock.delta/1000.0))) + " (" + std::to_string(clock.delta) + " ms)";
+            // SDLHelper::drawText(ss.c_str(), SDL_Color{0, 150, 150, 255}, 5, 695, 20);
 
             SDLHelper::draw();
         }

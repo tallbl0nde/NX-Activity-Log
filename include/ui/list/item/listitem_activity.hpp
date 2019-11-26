@@ -3,6 +3,7 @@
 
 #include "listitem.hpp"
 #include "SDLHelper.hpp"
+#include "User.hpp"
 #include "Title.hpp"
 
 namespace UI::ListItem {
@@ -13,6 +14,7 @@ namespace UI::ListItem {
             // Rendered textures
             SDL_Texture * icon;
             SDL_Texture * lastplayed;
+            SDL_Texture * launches;
             SDL_Texture * playtime;
             SDL_Texture * rank;
             SDL_Texture * title;
@@ -22,9 +24,12 @@ namespace UI::ListItem {
             int text_scroll_x;
             int text_scroll_pause;
 
+            // TEMPORARY
+            User * user;
+
         public:
             // Constructor accepts the title object
-            Activity(Title *);
+            Activity(User *, Title *);
 
             // Update and draw functions are defined
             void update(uint32_t);

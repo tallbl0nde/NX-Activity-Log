@@ -1,14 +1,13 @@
-#include "error.hpp"
+#include "screenmanager.hpp"
 #include "SDLHelper.hpp"
 #include "theme.hpp"
 
 namespace Screen {
-    Error::Error(bool * b, std::string msg) : Screen::Screen(b) {
+    Error::Error(std::string msg) : Screen::Screen() {
         // Set error message
         this->message = msg;
 
         // Add buttons
-        this->controls->reset();
         this->controls->add(KEY_PLUS, "Exit", 0);
     }
 
@@ -21,7 +20,7 @@ namespace Screen {
                     if (events.jbutton.which == 0 || events.jbutton.which == 99) {
                         // + button
                         if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            *(this->loop) = false;
+                            ScreenManager::getInstance()->stopLoop();
                         }
                     }
                     break;

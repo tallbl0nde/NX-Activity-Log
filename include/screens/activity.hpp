@@ -23,15 +23,13 @@ namespace Screen {
         // See ui/screen.hpp for what these functions do
         public:
             // Additionally takes a user object
-            Activity(bool *, User *, std::vector<Title *>);
+            Activity(User *, std::vector<Title *>);
 
             void event();
 
             void update(uint32_t dt);
 
             void draw();
-
-            ScreenID change();
 
             ~Activity();
     };

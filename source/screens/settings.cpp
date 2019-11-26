@@ -4,7 +4,7 @@
 #include "listitem_option.hpp"
 #include "listitem_tooltip.hpp"
 #include "listitem_separator.hpp"
-#include "settings.hpp"
+#include "screenmanager.hpp"
 #include "utils.hpp"
 
 // FUNCTIONS PASSED TO ITEMS //
@@ -121,7 +121,7 @@ static std::string func_unplayed(bool d) {
 }
 
 namespace Screen {
-    Settings::Settings(bool * b, User * u) : Screen::Screen(b) {
+    Settings::Settings(User * u) : Screen::Screen() {
         // Create side menu
         this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
         this->menu->addItem(new UI::SideItem("Play Activity"));
@@ -143,7 +143,6 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides games that haven't been played from your play activity."));
 
         this->user = u;
-        this->controls->reset();
         this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_PLUS, "Exit", 1);
 
@@ -190,7 +189,7 @@ namespace Screen {
 
                         // Plus exits app
                         } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            *(this->loop) = false;
+                            ScreenManager::getInstance()->stopLoop();
 
                         // Left and right will swap active element
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {
@@ -336,6 +335,11 @@ namespace Screen {
         } else {
             this->controls->enable(KEY_A);
         }
+
+        // Return to activity screen if menu selected
+        if (this->menu->getSelected() == 0) {
+            ScreenManager::getInstance()->popScreen();
+        }
     }
 
     void Settings::draw() {
@@ -372,13 +376,6 @@ namespace Screen {
 
         // Draw controls
         this->controls->draw();
-    }
-
-    ScreenID Settings::change() {
-        if (this->menu->getSelected() == 0) {
-            return S_Activity;
-        }
-        return S_Nothing;
     }
 
     Settings::~Settings() {

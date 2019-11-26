@@ -1,11 +1,9 @@
-#include "loading.hpp"
+#include "screenmanager.hpp"
 #include "SDLHelper.hpp"
 #include "theme.hpp"
 
 namespace Screen {
-    Loading::Loading(bool * b, char * c) : Screen::Screen(b) {
-        // Set Loading message
-        this->status = c;
+    Loading::Loading() : Screen::Screen() {
         this->fade = 255;
     }
 
