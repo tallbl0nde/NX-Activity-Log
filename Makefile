@@ -30,7 +30,7 @@ INCLUDES	:=	include include/screens include/ui include/ui/list include/ui/list/i
 
 APP_TITLE   := 	NX Activity Log
 APP_AUTHOR	:= 	tallbl0nde
-APP_VERSION	:=	1.0.0a
+APP_VERSION	:=	1.0.0
 ICON 		:= 	img/icon.jpg
 #---------------------------------------------------------------------------------
 # options for code generation

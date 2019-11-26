@@ -1,29 +1,44 @@
-# NX-Activity-Log
+# NX Activity Log
 
-NX Activity Log (I'll come up with a name eventually) is a piece of homebrew for the Nintendo Switch which provides users with slightly more information than what is normally available about their activity on their console.
+_Important: You must have some method of launching homebrew in **Title Takeover**  mode to use this application._
 
-Currently, you can view (per game and per user):
+**NX Activity Log** is a homebrew application for the Nintendo Switch which provides users with the amount of information we should have been given on the User Page. The UI has been designed to feel familiar and is navigated in a similar manner to the Switch's firmware.
 
-* Number of launches
-* Time of first play
-* Time of last play
-* Total playtime (down to the minute and not just 5 hour segments!)
-* Average playtime (per launch)
+Currently, this application includes the following features:
 
-This application is fairly basic right now; I have plans to make a GUI (once I learn how to) as well as something bigger and better, so stay tuned!
+* Viewing Play Activity (per user)
+  * Total time the chosen user has spent playing games
+  * Sorting games by time played, recently played, etc.
+  * Total time spent in a title in _minutes, not 5 hour segments_
+  * Number of times a game has been launched
+  * Date of first launch
+  * Date/time of most recent launch
+  * Average time spent in a game
+* Filtering Games
+  * Ability to omit deleted games from your activity
+  * Ability to hide the activity of games that haven't been played
+* Miscellaneous
+  * Automatic theme detection to match the Switch's colour scheme
 
-**You must have some method of launching homebrew in order to use this application.**
+## Screenshots
 
-## Screenshot
+![Main View](/img/screenshot.jpg)
+![Detailed View](/img/screenshot2.jpg)
 
-![Screenshot](/img/screenshot.jpg)
+## Known Issues
 
-## Bugs
+* The main issue at the moment is that a few users' playtime is incorrect. This is due to the Switch being factory reset at some point and/or some games not requiring a user to be selected to play it. _I am looking into how to fix the former!_
+* The right half of the "game details" screen is blank
+  * This isn't an issue, I just left it empty to place something there later ;)
 
-This is my first homebrew I've written so expect some quirky bugs, however from my testing it works perfectly via Title Takeover and Applet Mode on ReiNX 2.3 (FW 8.0.1).
+_Note that no support will be given by me for SX OS as I do not intend to run their CFW. I am happy to merge pull requests that fix bugs on SX OS should there be any, though._
 
-_Note, however, that no support will be given for SX OS._
+## Support
 
-## Thanks
+There is absolutely no obligation, however if you have found this software useful you can support me on Ko-fi: <https://ko-fi.com/tallbl0nde>
 
-* AtlasNX for ![SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
+Knowing this software is being used is enough to motivate me to keep working on it!
+
+## Thanks to
+
+* AtlasNX for [SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)

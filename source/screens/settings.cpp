@@ -141,6 +141,8 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides deleted games from your play activity."));
         this->list->addItem(new UI::ListItem::Option("Hide Unplayed Games", &func_unplayed));
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides games that haven't been played from your play activity."));
+        this->list->addItem(new UI::ListItem::Separator(30));
+        this->list->addItem(new UI::ListItem::ToolTip("NX Activity Log v1.0.0\nThank you for using my app! You can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde"));
 
         this->user = u;
         this->controls->add(KEY_A, "OK", 0);
