@@ -1,9 +1,9 @@
 #ifndef SCREEN_ACTIVITY_HPP
 #define SCREEN_ACTIVITY_HPP
 
-#include "list.hpp"
 #include "screen.hpp"
 #include "sidemenu.hpp"
+#include "sortedlist.hpp"
 #include "Title.hpp"
 #include "User.hpp"
 #include <vector>
@@ -12,7 +12,7 @@ namespace Screen {
     class Activity : public UI::Screen {
         private:
             // List object
-            UI::List * list;
+            UI::SortedList * list;
             // Left menu object
             UI::SideMenu * menu;
             // Top right time texture

@@ -26,6 +26,8 @@ namespace UI {
         this->highlight_item = 0;
         this->touched_item = -1;
         this->start_touch_y = -1;
+        this->chosen = -1;
+        this->reset_chosen = false;
     }
 
     void List::addItem(List_Item * item) {
@@ -159,6 +161,15 @@ namespace UI {
                 this->items[this->highlight_item]->setSelected(false);
             }
         }
+
+        // Reset chosen if necessary
+        if (this->reset_chosen) {
+            this->chosen = -1;
+            this->reset_chosen = false;
+        }
+        if (this->chosen != -1) {
+            this->reset_chosen = true;
+        }
     }
 
     void List::draw() {
@@ -257,6 +268,7 @@ namespace UI {
                 if (this->touched_item != -1) {
                     if (tx >= this->items[this->touched_item]->getX() || tx <= this->items[this->touched_item]->getX() + this->items[this->touched_item]->getW() || ty >= this->items[this->touched_item]->getY() || ty <= this->items[this->touched_item]->getY() + this->items[this->touched_item]->getH()) {
                         this->items[this->touched_item]->pressed();
+                        this->chosen = this->touched_item;
                         this->highlight_item = this->touched_item;
                     }
                 } else {
@@ -279,106 +291,108 @@ namespace UI {
         // Perform action on tap
         if (state == SDL_PRESSED) {
             this->is_scrolling = false;
-
-            // *** Fix highlight_item if outside of viewable area ***
-            unsigned int max_pos = 0;
-            if (this->scroll_pos >= this->max_scroll_pos) {
-                max_pos = this->items.size() - 1;
-            } else {
-                for (size_t i = this->top_item; i < this->items.size(); i++) {
-                    // Break if not being drawn
-                    if ((this->items[i]->getOffset() + this->items[i]->getH()) > this->scroll_pos + this->h - this->offset) {
-                        max_pos = i-1;
-                        break;
-                    }
-                }
-            }
-
-            unsigned int min_pos;
-            if (this->scroll_pos == 0) {
-                min_pos = 0;
-            } else {
-                min_pos = this->top_item + 1;
-            }
-
-            if (this->highlight_item < min_pos) {
-                this->items[this->highlight_item]->setSelected(false);
-                // Move to next selectable item
-                for (unsigned int i = min_pos; i <= max_pos; i++) {
-                    if (this->items[i]->isSelectable()) {
-                        this->highlight_item = i;
-                        this->items[this->highlight_item]->setSelected(true);
-                        break;
-                    }
-                }
-                return;
-            } else if (this->highlight_item > max_pos) {
-                this->items[this->highlight_item]->setSelected(false);
-                // Move to next selectable item
-                for (unsigned int i = max_pos; i >= min_pos; i--) {
-                    if (this->items[i]->isSelectable()) {
-                        this->highlight_item = i;
-                        this->items[this->highlight_item]->setSelected(true);
-                        break;
-                    }
-                }
-                return;
-            }
-            // *** End section ***
-
-            // If within area move to next selectable entry
-            if (button == Utils::key_map[KEY_DDOWN]) {
-                if (this->highlight_item < max_pos) {
-                    this->items[this->highlight_item]->setSelected(false);
-
-                    // Move to next selectable item
-                    bool moved = false;
-                    for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
-                        if (this->items[i]->isSelectable()) {
-                            moved = true;
-                            this->highlight_item = i;
+            if (this->items.size() != 0) {
+                // *** Fix highlight_item if outside of viewable area ***
+                unsigned int max_pos = 0;
+                if (this->scroll_pos >= this->max_scroll_pos) {
+                    max_pos = this->items.size() - 1;
+                } else {
+                    for (size_t i = this->top_item; i < this->items.size(); i++) {
+                        // Break if not being drawn
+                        if ((this->items[i]->getOffset() + this->items[i]->getH()) > this->scroll_pos + this->h - this->offset) {
+                            max_pos = i-1;
                             break;
                         }
                     }
+                }
 
-                    // Scroll if not moved
-                    if (!moved) {
+                unsigned int min_pos;
+                if (this->scroll_pos == 0) {
+                    min_pos = 0;
+                } else {
+                    min_pos = this->top_item + 1;
+                }
+
+                if (this->highlight_item < min_pos) {
+                    this->items[this->highlight_item]->setSelected(false);
+                    // Move to next selectable item
+                    for (unsigned int i = min_pos; i <= max_pos; i++) {
+                        if (this->items[i]->isSelectable()) {
+                            this->highlight_item = i;
+                            this->items[this->highlight_item]->setSelected(true);
+                            break;
+                        }
+                    }
+                    return;
+                } else if (this->highlight_item > max_pos) {
+                    this->items[this->highlight_item]->setSelected(false);
+                    // Move to next selectable item
+                    for (unsigned int i = max_pos; i >= min_pos; i--) {
+                        if (this->items[i]->isSelectable()) {
+                            this->highlight_item = i;
+                            this->items[this->highlight_item]->setSelected(true);
+                            break;
+                        }
+                    }
+                    return;
+                }
+                // *** End section ***
+
+                // If within area move to next selectable entry
+                if (button == Utils::key_map[KEY_DDOWN]) {
+                    if (this->highlight_item < max_pos) {
+                        this->items[this->highlight_item]->setSelected(false);
+
+                        // Move to next selectable item
+                        bool moved = false;
+                        for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
+                            if (this->items[i]->isSelectable()) {
+                                moved = true;
+                                this->highlight_item = i;
+                                break;
+                            }
+                        }
+
+                        // Scroll if not moved
+                        if (!moved) {
+                            this->button[button].time_held = DELAY_OFFSET;
+                        }
+                    } else {
                         this->button[button].time_held = DELAY_OFFSET;
                     }
-                } else {
-                    this->button[button].time_held = DELAY_OFFSET;
-                }
-            } else if (button == Utils::key_map[KEY_DUP]) {
-                if (this->highlight_item > min_pos) {
-                    this->items[this->highlight_item]->setSelected(false);
+                } else if (button == Utils::key_map[KEY_DUP]) {
+                    if (this->highlight_item > min_pos) {
+                        this->items[this->highlight_item]->setSelected(false);
 
-                    // Move to next selectable item
-                    bool moved = false;
-                    for (int i = this->highlight_item - 1; i >= min_pos; i--) {
-                        if (i < 0) {
-                            break;
+                        // Move to next selectable item
+                        bool moved = false;
+                        for (int i = this->highlight_item - 1; i >= min_pos; i--) {
+                            if (i < 0) {
+                                break;
+                            }
+
+                            if (this->items[i]->isSelectable()) {
+                                moved = true;
+                                this->highlight_item = i;
+                                break;
+                            }
                         }
 
-                        if (this->items[i]->isSelectable()) {
-                            moved = true;
-                            this->highlight_item = i;
-                            break;
+                        // Scroll if not moved
+                        if (!moved) {
+                            this->button[button].time_held = DELAY_OFFSET;
                         }
-                    }
-
-                    // Scroll if not moved
-                    if (!moved) {
+                    } else {
                         this->button[button].time_held = DELAY_OFFSET;
                     }
-                } else {
-                    this->button[button].time_held = DELAY_OFFSET;
+                } else if (button == Utils::key_map[KEY_A]) {
+                    this->touched_item = this->highlight_item;
                 }
-            } else if (button == Utils::key_map[KEY_A]) {
-                this->touched_item = this->highlight_item;
             }
         } else if (state == SDL_RELEASED) {
-            if (button == Utils::key_map[KEY_A]) {
+            if (button == Utils::key_map[KEY_A] && this->items.size() != 0) {
                 this->items[this->highlight_item]->pressed();
+                this->chosen = this->highlight_item;
                 this->touched_item = -1;
             }
         }
@@ -404,6 +418,10 @@ namespace UI {
                 break;
             }
         }
+    }
+
+    int List::getChosen() {
+        return this->chosen;
     }
 
     List::~List() {

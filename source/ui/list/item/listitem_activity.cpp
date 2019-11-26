@@ -24,10 +24,10 @@ namespace UI::ListItem {
         // Create textures using title object
         this->icon = t->getIcon();
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
-        std::string str = "Played for " + Utils::formatPlaytime(t->getPlaytime());
+        std::string str = "Played for " + Utils::formatPlaytime(t->getPlaytime(), " and ");
         this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
         this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
-        str = "Launched " + std::to_string(t->getLaunches()) + " times";
+        str = "Played " + std::to_string(t->getLaunches()) + " times";
         this->launches = SDLHelper::renderText(str.c_str(), LAUNCH_FONT_SIZE);
         this->rank = nullptr;
 
@@ -87,8 +87,7 @@ namespace UI::ListItem {
     }
 
     void Activity::pressed() {
-        ScreenManager::getInstance()->pushScreen();
-        ScreenManager::getInstance()->setScreen(new ::Screen::Details(this->user, this->title_object));
+
     }
 
     void Activity::setSelected(bool b) {

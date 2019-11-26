@@ -100,7 +100,7 @@ int main(int argc, char * argv[]){
         userID = getUserID();
         if (userID == 0 && !error) {
             // Unable to get user ID - raise error
-            sm->setScreen(new Screen::Error("Unable to get a User ID... Did you select a user?"));
+            sm->setScreen(new Screen::Error("Unable to get a User ID... Did you select a user? Tip: Try launching in title mode!"));
             error = true;
         }
 
@@ -150,6 +150,9 @@ int main(int argc, char * argv[]){
             SDLHelper::draw();
         }
     }
+
+    // Free screen memory
+    sm->free();
 
     // Save config
     conf->writeConfig();

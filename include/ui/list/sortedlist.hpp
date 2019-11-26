@@ -3,6 +3,8 @@
 
 #include "list.hpp"
 #include "SDLHelper.hpp"
+#include "Title.hpp"
+#include <vector>
 
 // Enumerations for sorting methods
 enum SortType {
@@ -38,6 +40,9 @@ namespace UI {
 
             // Handles button presses
             void handleButton(uint8_t, uint8_t);
+
+            // Returns vector containing titles objects in current order
+            std::vector<Title *> getTitleVector();
 
             // Destructor frees stored ListItems
             ~SortedList();

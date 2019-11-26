@@ -149,6 +149,14 @@ namespace UI {
         this->sort_text = SDLHelper::renderText(str.c_str(), SORT_FONT_SIZE);
     }
 
+    std::vector<Title *> SortedList::getTitleVector() {
+        std::vector<Title *> v;
+        for (unsigned int i = 0; i < this->items.size(); i++) {
+            v.push_back(static_cast<ListItem::Activity *>(this->items[i])->getTitleObj());
+        }
+        return v;
+    }
+
     SortedList::~SortedList() {
         if (this->sort_text != nullptr) {
             SDLHelper::destroyTexture(this->sort_text);

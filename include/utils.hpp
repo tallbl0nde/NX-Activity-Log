@@ -14,11 +14,17 @@ namespace Utils {
     #define KEY_MAP_SIZE 28
     extern std::map<HidControllerKeys, int> key_map;
 
-    // Nicely format a time (from zero)
-    std::string formatPlaytime(u32);
-
     // Returns a string with the time since last played
     std::string formatLastPlayed(u32);
+
+    // Add commas to provided number
+    std::string formatNumberComma(u32);
+
+    // Nicely format a time with given separator (from zero)
+    std::string formatPlaytime(u32, std::string);
+
+    // Nicely format a timestamp
+    std::string formatTimestamp(u32);
 
     // Struct representing a "clock", which represents time between ticks
     struct Clock {

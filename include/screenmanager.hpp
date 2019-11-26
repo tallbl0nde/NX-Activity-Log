@@ -52,6 +52,10 @@ class ScreenManager {
         bool loop();
         // Set running to false (ie. stop loop)
         void stopLoop();
+
+        // Frees any screens on the stack and current screen
+        // Call upon exiting!
+        void free();
 };
 
 #endif

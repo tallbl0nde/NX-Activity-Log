@@ -32,6 +32,7 @@ void ScreenManager::pushScreen() {
 void ScreenManager::popScreen() {
     if (this->screen_ptr != nullptr) {
         delete this->screen_ptr;
+        this->screen_ptr = nullptr;
     }
     if (this->stack.size() > 0) {
         this->screen_ptr = this->stack.top();
@@ -64,4 +65,10 @@ bool ScreenManager::loop() {
 
 void ScreenManager::stopLoop() {
     this->looping = false;
+}
+
+void ScreenManager::free() {
+    do {
+        this->popScreen();
+    } while (this->screen_ptr != nullptr);
 }

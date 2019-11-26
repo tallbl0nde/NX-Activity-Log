@@ -17,7 +17,7 @@ namespace Screen {
 
         // Create total hours texture
         std::string str = "Total Playtime: ";
-        str += Utils::formatPlaytime(total_mins);
+        str += Utils::formatPlaytime(total_mins, " and ");
         this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
 
         // Create side menu
@@ -226,6 +226,12 @@ namespace Screen {
             ScreenManager::getInstance()->pushScreen();
             ScreenManager::getInstance()->setScreen(new Settings(this->user));
             this->menu->setSelected(0);
+        }
+
+        // Change to details if listitem chosen
+        if (this->list->getChosen() != -1) {
+            ScreenManager::getInstance()->pushScreen();
+            ScreenManager::getInstance()->setScreen(new Details(this->user, this->list->getTitleVector(), this->list->getChosen()));
         }
     }
 

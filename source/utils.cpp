@@ -33,38 +33,6 @@ namespace Utils {
         {KEY_SR_RIGHT, 27}
     };
 
-    // Nicely format playtime (from zero)
-    std::string formatPlaytime(u32 minutes) {
-        std::string str = "";
-        switch (minutes/60){
-            case 0:
-                break;
-            case 1:
-                str += "1 hour";
-                break;
-            default:
-                str += std::to_string(minutes/60) + " hours";
-                break;
-        }
-        if (minutes/60 != 0 && minutes%60 != 0){
-            str += " and ";
-        }
-        switch (minutes%60){
-            case 0:
-                if (minutes/60 == 0){
-                    str += "0 minutes";
-                }
-                break;
-            case 1:
-                str += "1 minute";
-                break;
-            default:
-                str += std::to_string(minutes%60) + " minutes";
-                break;
-        }
-        return str;
-    }
-
     // Returns a string with the time since last played
     std::string formatLastPlayed(u32 ts) {
         if (ts == 0) {
@@ -183,6 +151,120 @@ namespace Utils {
                 str += ", " + std::to_string(stamp.tm_year + 1900);
             }
         }
+
+        return str;
+    }
+
+    // Add commas to a number (only does one but shhh)
+    std::string formatNumberComma(u32 number) {
+        std::string s = std::to_string(number);
+        if (s.length() > 3) {
+            return s.substr(0, s.length() - 3) + "," + s.substr(s.length() - 3, 3);
+        }
+        return s;
+    }
+
+    // Nicely format playtime (from zero)
+    std::string formatPlaytime(u32 minutes, std::string sep) {
+        std::string str = "";
+        switch (minutes/60){
+            case 0:
+                break;
+            case 1:
+                str += "1 hour";
+                break;
+            default:
+                str += std::to_string(minutes/60) + " hours";
+                break;
+        }
+        if (minutes/60 != 0 && minutes%60 != 0){
+            str += sep;
+        }
+        switch (minutes%60){
+            case 0:
+                if (minutes/60 == 0){
+                    str += "0 minutes";
+                }
+                break;
+            case 1:
+                str += "1 minute";
+                break;
+            default:
+                str += std::to_string(minutes%60) + " minutes";
+                break;
+        }
+        return str;
+    }
+
+    std::string formatTimestamp(u32 ts) {
+        if (ts == 0) {
+            return "Never";
+        }
+
+        // Create struct for easy formatting
+        time_t t = pdmPlayTimestampToPosix(ts);
+        struct tm stamp = *(std::localtime(&t));
+
+        std::string str;
+        switch (stamp.tm_mon) {
+            case 0:
+                str = "January";
+                break;
+            case 1:
+                str = "February";
+                break;
+            case 2:
+                str = "March";
+                break;
+            case 3:
+                str = "April";
+                break;
+            case 4:
+                str = "May";
+                break;
+            case 5:
+                str = "June";
+                break;
+            case 6:
+                str = "July";
+                break;
+            case 7:
+                str = "August";
+                break;
+            case 8:
+                str = "September";
+                break;
+            case 9:
+                str = "October";
+                break;
+            case 10:
+                str = "November";
+                break;
+            default:
+                str = "December";
+                break;
+        }
+        str += " ";
+        str += std::to_string(stamp.tm_mday);
+        switch (stamp.tm_mday) {
+            case 1:
+            case 21:
+            case 31:
+                str += "st";
+                break;
+            case 2:
+            case 22:
+                str += "nd";
+                break;
+            case 3:
+            case 23:
+                str += "rd";
+                break;
+            default:
+                str += "th";
+                break;
+        }
+        str += ", " + std::to_string(stamp.tm_year + 1900);
 
         return str;
     }

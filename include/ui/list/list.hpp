@@ -33,6 +33,10 @@ namespace UI {
             // Position of pressed touch
             int start_touch_y;
 
+            // Chosen element
+            bool reset_chosen;
+            int chosen;
+
         public:
             // The constructor does not accept items
             List(bool *, int, int, int, int, int = 0);
@@ -55,6 +59,9 @@ namespace UI {
 
             // Set scroll_pos (prevents overflow)
             void setScrollPos(unsigned int);
+
+            // Returns index of chosen element or -1 if nothing is pressed
+            int getChosen();
 
             // Destructor frees stored ListItems
             ~List();
