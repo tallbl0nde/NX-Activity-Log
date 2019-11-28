@@ -35,7 +35,9 @@ _Note that no support will be given by me for SX OS as I do not intend to run th
 
 ## Support
 
-There is absolutely no obligation, however if you have found this software useful you can support me on Ko-fi: <https://ko-fi.com/tallbl0nde>
+There is absolutely no obligation, however if you have found this software useful you can support me on Ko-fi!
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/J3J718RRQ)
 
 Knowing this software is being used is enough to motivate me to keep working on it!
 
