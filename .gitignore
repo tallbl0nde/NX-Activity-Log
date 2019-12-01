@@ -1,7 +1,12 @@
 .VSCodeCounter
 /build
+/forwarder/build
 /helpful
+/sdcard
 *.elf
 *.nro
 *.nacp
 *.psd
+*.nsp
+*.nso
+*.npdm

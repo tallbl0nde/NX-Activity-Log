@@ -44,3 +44,4 @@ Knowing this software is being used is enough to motivate me to keep working on 
 ## Thanks to
 
 * AtlasNX for [SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
+* Switchbrew for [nx-hbloader](https://github.com/switchbrew/nx-hbloader)
