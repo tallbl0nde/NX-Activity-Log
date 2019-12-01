@@ -1,7 +1,7 @@
 #ifndef USER_H
 #define USER_H
 
-#include <SDL2/SDL.h>
+#include "SDLHelper.hpp"
 #include <string>
 #include <switch.h>
 
@@ -17,7 +17,8 @@ class User {
         SDL_Texture * image;
 
     public:
-        User(u128, std::string, SDL_Texture *);
+        // Constructor takes ID and derives username and icon texture
+        User(u128);
 
         // Returns private members
         u128 getID();

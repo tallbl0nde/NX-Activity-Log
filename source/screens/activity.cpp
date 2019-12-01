@@ -255,7 +255,7 @@ namespace Screen {
         // Draw over list to hide scrolling
         SDLHelper::setColour(this->theme->getBG());
         SDLHelper::drawRect(430, 0, 780, 87);
-        SDLHelper::drawRect(430, 648, 1220, 72);
+        SDLHelper::drawRect(430, 648, 780, 72);
 
         // Draw top and bottom lines
         SDLHelper::setColour(this->theme->getFG());

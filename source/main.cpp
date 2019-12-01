@@ -4,10 +4,20 @@
 #include "SDLHelper.hpp"
 #include <string>
 
+// Struct representing a "clock", which stores time between ticks
+struct Clock {
+    uint32_t last_tick = 0;
+    uint32_t delta = 0;
+
+    void tick() {
+        uint32_t tick = SDL_GetTicks();
+        delta = tick - last_tick;
+        last_tick = tick;
+    }
+};
+
 // Forward declarations of functions because I like them at the end :)
-u128 getUserID();
-std::string getUserUsername(u128);
-SDL_Texture * getUserImage(u128);
+std::vector<User *> getUserObjects();
 std::vector<Title *> getTitleObjects(u128);
 
 int main(int argc, char * argv[]){
@@ -15,9 +25,8 @@ int main(int argc, char * argv[]){
     bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit, setInit = false;
     Result rc = 0;
 
-    // Current user ID
-    u128 userID;
-
+    // Vector containing all user objects
+    std::vector<User *> users;
     // Vector contains all title objects
     std::vector<Title *> titles;
 
@@ -54,83 +63,58 @@ int main(int argc, char * argv[]){
     Config * conf = Config::getConfig();
     conf->readConfig();
 
-    // Clock to measure time between draw
-    struct Utils::Clock clock;
-
     // Initialise and get ScreenManager
     ScreenManager * sm = ScreenManager::getInstance();
-    User * user = nullptr;
 
     // Only proceed if no errors
     if (accInit && fsInit && nsInit && pdmInit && plInit && SDLInit) {
         // Loading is kinda dodge
         bool error = false;
 
-        // Get system theme and set accordingly
-        // This doesn't use sm and I want it to
-        Screen::Loading loading = Screen::Loading();
-        switch (conf->getGeneralTheme()) {
-            case T_Auto: {
-                ColorSetId thm;
-                rc = setsysGetColorSetId(&thm);
-                loading.setTheme((bool)thm);
-                break;
-            }
-
-            case T_Light: {
-                loading.setTheme(false);
-                break;
-            }
-
-            case T_Dark: {
-                loading.setTheme(true);
-                break;
-            }
-        }
-
-        // Draw initial loading screen before selection (with fade animation)
-        while(!loading.animDone()) {
-            clock.tick();
-            loading.update(clock.delta);
-            loading.draw();
-            SDLHelper::draw();
-        }
-
-        // Stage 0: Get User ID
-        userID = getUserID();
-        if (userID == 0 && !error) {
-            // Unable to get user ID - raise error
-            sm->setScreen(new Screen::Error("Unable to get a User ID... Did you select a user? Tip: Try launching in title mode!"));
+        // Stage 1: Get User IDs
+        users = getUserObjects();
+        if (users.size() == 0) {
             error = true;
+            sm->setScreen(new Screen::Error("Unable to get information about users!"));
         }
 
-        // Stage 1: Get user's data
-        std::string username;
-        SDL_Texture * image;
+        // Stage 2: Create UserSelect screen
         if (!error) {
-            username = getUserUsername(userID);
-            image = getUserImage(userID);
+            Screen::UserSelect * s = new Screen::UserSelect(users);
 
-            if (username == "" || image == nullptr) {
-                sm->setScreen(new Screen::Error("An unexpected error occurred while parsing user data"));
-                error = true;
+            // Set theme
+            switch (conf->getGeneralTheme()) {
+                case T_Auto: {
+                    ColorSetId thm;
+                    rc = setsysGetColorSetId(&thm);
+                    s->setTheme((bool)thm);
+                    break;
+                }
+
+                case T_Light: {
+                    s->setTheme(false);
+                    break;
+                }
+
+                case T_Dark: {
+                    s->setTheme(true);
+                    break;
+                }
             }
+            sm->setScreen(s);
         }
 
-        // Stage 1.5: Create user object
-        if (!error) {
-            user = new User(userID, username, image);
-        }
+        // // Stage 2: Get installed titles and create Title objects
+        // if (!error) {
+        //     titles = getTitleObjects(userID);
+        // }
 
-        // Stage 2: Get installed titles and create Title objects
-        if (!error) {
-            titles = getTitleObjects(userID);
-        }
+        // if (!error) {
+        //     sm->setScreen(new Screen::Activity(user, titles));
+        // }
 
-        if (!error) {
-            sm->setScreen(new Screen::Activity(user, titles));
-        }
-
+        // Clock to measure time between draw
+        struct Clock clock;
         // Infinite loop until exit
         while (sm->loop()) {
             // Check for events
@@ -180,9 +164,10 @@ int main(int argc, char * argv[]){
         setExit();
     }
 
-    // Delete user object
-    if (user != nullptr) {
-        delete user;
+    // Delete user objects
+    while (users.size() > 0) {
+        delete users[0];
+        users.erase(users.begin());
     }
 
     // Delete any created titles
@@ -194,78 +179,22 @@ int main(int argc, char * argv[]){
     return 0;
 }
 
-#define ARG_SIZE 0xA0
-#define OUT_SIZE 0x18
-// Returns the userID obtained by the PlayerSelect applet
-u128 getUserID() {
-    u128 userID = 0;
-
-    LibAppletArgs args;
-    libappletArgsCreate(&args, 0x10000);
-    u8 args2[ARG_SIZE]  = {0};
-    u8 out[OUT_SIZE] = {0};
-    size_t out_size;
-
-    Result rc = libappletLaunch(AppletId_playerSelect, &args, args2, ARG_SIZE, out, OUT_SIZE, &out_size);
+// Returns a vector with the IDs of all users on the system
+std::vector<User *> getUserObjects() {
+    // Get IDs
+    std::vector<User *> users;
+    u128 userIDs[ACC_USER_LIST_SIZE];
+    size_t num = 0;
+    Result rc = accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
     if (R_SUCCEEDED(rc)) {
-        u64 res = *(u64 *) out;
-        u128 uid = *(u128 *) &out[8];
-        if (res == 0) {
-            userID = uid;
+        // Create objects and insert into vector
+        for (size_t i = 0; i < num; i++) {
+            users.push_back(new User(userIDs[i]));
         }
     }
 
-    return userID;
-}
-
-// Returns username for user with given ID
-std::string getUserUsername(u128 userID) {
-    AccountProfile profile;
-    AccountProfileBase profile_base;
-    std::string str = "";
-
-    Result rc = accountGetProfile(&profile, userID);
-    if (R_SUCCEEDED(rc)){
-        rc = accountProfileGet(&profile, NULL, &profile_base);
-        if (R_SUCCEEDED(rc)){
-            str = profile_base.username;
-        }
-        accountProfileClose(&profile);
-    }
-
-    // Return blank string on error
-    return str;
-}
-
-// Return texture with user image
-SDL_Texture * getUserImage(u128 userID) {
-    AccountProfile profile;
-    SDL_Texture * texture = nullptr;
-
-    Result rc = accountGetProfile(&profile, userID);
-    if (R_SUCCEEDED(rc)){
-        u8 * buffer;
-        size_t img_size, tmp;
-
-        // Get image size and allocate memory
-        rc = accountProfileGetImageSize(&profile, &img_size);
-        if (R_SUCCEEDED(rc)) {
-            buffer = (u8 *) malloc(img_size);
-
-            // Get image
-            rc = accountProfileLoadImage(&profile, buffer, img_size, &tmp);
-            if (R_SUCCEEDED(rc)) {
-                // Create texture
-                texture = SDLHelper::renderImage(buffer, img_size);
-            }
-
-            free(buffer);
-        }
-        accountProfileClose(&profile);
-    }
-
-    // Will be nullptr if any error occurs
-    return texture;
+    // Return empty vector if an error occurred
+    return users;
 }
 
 // Reads all installed title IDs and creates Title objects using them

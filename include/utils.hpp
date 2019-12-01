@@ -25,18 +25,6 @@ namespace Utils {
 
     // Nicely format a timestamp
     std::string formatTimestamp(u32);
-
-    // Struct representing a "clock", which represents time between ticks
-    struct Clock {
-        uint32_t last_tick = 0;
-        uint32_t delta = 0;
-
-        void tick() {
-            uint32_t tick = SDL_GetTicks();
-            delta = tick - last_tick;
-            last_tick = tick;
-        }
-    };
 };
 
 #endif

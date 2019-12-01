@@ -8,7 +8,7 @@
 #define BOX_HEIGHT 70
 
 namespace UI::ListItem {
-    Option::Option(std::string str, std::string(*f)(bool)) {
+    Option::Option(std::string str, std::string(*f)(bool)) : List_Item() {
         // Create text textures
         this->text = SDLHelper::renderText(str.c_str(), TEXT_SIZE);
         std::string s = (*f)(false);

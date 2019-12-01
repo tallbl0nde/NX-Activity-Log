@@ -7,6 +7,7 @@
 #include "loading.hpp"
 #include "settings.hpp"
 #include <stack>
+#include "userselect.hpp"
 
 // The screen manager is a singleton class used to swap between
 // screens at any point in the code/program using a "ScreenID".
