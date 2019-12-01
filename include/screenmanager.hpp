@@ -4,7 +4,6 @@
 #include "activity.hpp"
 #include "details.hpp"
 #include "error.hpp"
-#include "loading.hpp"
 #include "settings.hpp"
 #include <stack>
 #include "userselect.hpp"

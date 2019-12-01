@@ -1,15 +1,82 @@
+#include <algorithm>
+#include "config.hpp"
 #include "listitem_user.hpp"
 #include "screenmanager.hpp"
 #include "SDLHelper.hpp"
 #include "utils.hpp"
 
+// Reads all installed title IDs and creates Title objects using them
+// NOTE: These objects are never deleted, I need to fix this at some point!
+// (doesn't matter yet as they are used until the program exits)
+std::vector<Title *> getTitleObjects(u128 userID) {
+    Result rc;
+
+    // Vector containing all found titleIDs
+    std::vector<u64> titleIDs;
+
+    // Get installed titles (including unplayed)
+    NsApplicationRecord info;
+    size_t count = 0;
+    size_t total = 0;
+    while (true){
+        rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &total);
+        // Break if at the end or no titles
+        if (R_FAILED(rc) || total == 0){
+            break;
+        }
+        count++;
+        titleIDs.push_back(info.titleID);
+    }
+
+    Config * conf = Config::getConfig();
+    if (!conf->getHiddenDeleted()) {
+        // Get played titles (including deleted)
+        FsSaveDataIterator fsIterator;
+        rc = fsOpenSaveDataIterator(&fsIterator, FsSaveDataSpaceId_NandUser);
+        if (R_SUCCEEDED(rc)){
+            // Iterate over all save data to get titleIDs
+            FsSaveDataInfo info;
+            while (true){
+                size_t total = 0;
+                rc = fsSaveDataIteratorRead(&fsIterator, &info, 1, &total);
+                // Break if at the end or no titles
+                if (R_FAILED(rc) || total == 0){
+                    break;
+                }
+                titleIDs.push_back(info.titleID);
+            }
+            fsSaveDataIteratorClose(&fsIterator);
+        }
+    }
+
+    // Remove duplicate titleIDs
+    std::sort(titleIDs.begin(), titleIDs.end());
+    titleIDs.resize(std::distance(titleIDs.begin(), std::unique(titleIDs.begin(), titleIDs.end())));
+
+    // Create Titles
+    std::vector<Title *> titles;
+    for (size_t i = 0; i < titleIDs.size(); i++) {
+        Title * tmp = new Title(titleIDs[i], userID);
+        // Delete if not played
+        if (conf->getHiddenUnplayed() && tmp->getPlaytime() == 0) {
+            delete tmp;
+        } else {
+            titles.push_back(tmp);
+        }
+    }
+
+    return titles;
+}
+
 namespace Screen {
     UserSelect::UserSelect(std::vector<User *> v) : Screen::Screen() {
+        this->users = v;
+
         // Set fade value
         this->fade = 255;
 
         // Create list
-        this->list = new UI::List(&this->touch_active, WIDTH/2 - 300, 110, 600, 520);
+        this->list = new UI::List(&this->touch_active, WIDTH/2 - 300, 130, 600, 480);
         for (size_t i = 0; i < v.size(); i++) {
             this->list->addItem(new UI::ListItem::User(v[i]->getImage(), v[i]->getUsername()));
         }
@@ -162,8 +229,19 @@ namespace Screen {
             return;
         }
 
+        // If there is only one user proceed straight to stats
+        if (this->users.size() == 1) {
+             ScreenManager::getInstance()->setScreen(new Activity(this->users[0], getTitleObjects(this->users[0]->getID())));
+             return;
+        }
+
         // Only executed after fade is finished
         this->list->update(dt);
+
+        // Change to loading screen with chosen user and titles
+        if (this->list->getChosen() != -1) {
+            ScreenManager::getInstance()->setScreen(new Activity(this->users[this->list->getChosen()], getTitleObjects(this->users[this->list->getChosen()]->getID())));
+        }
     }
 
     void UserSelect::draw() {
@@ -176,19 +254,23 @@ namespace Screen {
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
-        // Print UserSelect title
-        SDLHelper::drawText("Select a User", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        if (this->users.size() != 1) {
+            // Print UserSelect title
+            SDLHelper::drawText("Select a User", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
 
-        // Draw list of items
-        this->list->draw();
+            // Draw list of items
+            this->list->draw();
 
-        // Draw over list to hide scrolling
-        SDLHelper::setColour(this->theme->getBG());
-        SDLHelper::drawRect(WIDTH/2 - 305, 0, 610, 87);
-        SDLHelper::drawRect(WIDTH/2 - 305, 648, 610, 72);
+            // Draw over list to hide scrolling
+            SDLHelper::setColour(this->theme->getBG());
+            SDLHelper::drawRect(WIDTH/2 - 305, 0, 610, 87);
+            SDLHelper::drawRect(WIDTH/2 - 305, 648, 610, 72);
 
-        // Draw controls
-        this->controls->draw();
+            // Draw controls
+            this->controls->draw();
+        } else {
+            SDLHelper::drawText("Loading...", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
+        }
 
         // Draw fading overlay
         if (this->fade > 0) {

@@ -15,6 +15,9 @@ namespace Screen {
             // List object
             UI::List * list;
 
+            // Copy of user vector
+            std::vector<User *> users;
+
         public:
             UserSelect(std::vector<User *>);
 

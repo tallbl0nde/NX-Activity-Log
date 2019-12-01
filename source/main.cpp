@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "config.hpp"
 #include "screenmanager.hpp"
 #include "SDLHelper.hpp"
@@ -27,8 +26,6 @@ int main(int argc, char * argv[]){
 
     // Vector containing all user objects
     std::vector<User *> users;
-    // Vector contains all title objects
-    std::vector<Title *> titles;
 
     // Start required services
     rc = accountInitialize();
@@ -104,15 +101,6 @@ int main(int argc, char * argv[]){
             sm->setScreen(s);
         }
 
-        // // Stage 2: Get installed titles and create Title objects
-        // if (!error) {
-        //     titles = getTitleObjects(userID);
-        // }
-
-        // if (!error) {
-        //     sm->setScreen(new Screen::Activity(user, titles));
-        // }
-
         // Clock to measure time between draw
         struct Clock clock;
         // Infinite loop until exit
@@ -170,12 +158,6 @@ int main(int argc, char * argv[]){
         users.erase(users.begin());
     }
 
-    // Delete any created titles
-    while (titles.size() > 0) {
-        delete titles[0];
-        titles.erase(titles.begin());
-    }
-
     return 0;
 }
 
@@ -195,65 +177,4 @@ std::vector<User *> getUserObjects() {
 
     // Return empty vector if an error occurred
     return users;
-}
-
-// Reads all installed title IDs and creates Title objects using them
-std::vector<Title *> getTitleObjects(u128 userID) {
-    Result rc;
-
-    // Vector containing all found titleIDs
-    std::vector<u64> titleIDs;
-
-    // Get installed titles (including unplayed)
-    NsApplicationRecord info;
-    size_t count = 0;
-    size_t total = 0;
-    while (true){
-        rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &total);
-        // Break if at the end or no titles
-        if (R_FAILED(rc) || total == 0){
-            break;
-        }
-        count++;
-        titleIDs.push_back(info.titleID);
-    }
-
-    Config * conf = Config::getConfig();
-    if (!conf->getHiddenDeleted()) {
-        // Get played titles (including deleted)
-        FsSaveDataIterator fsIterator;
-        rc = fsOpenSaveDataIterator(&fsIterator, FsSaveDataSpaceId_NandUser);
-        if (R_SUCCEEDED(rc)){
-            // Iterate over all save data to get titleIDs
-            FsSaveDataInfo info;
-            while (true){
-                size_t total = 0;
-                rc = fsSaveDataIteratorRead(&fsIterator, &info, 1, &total);
-                // Break if at the end or no titles
-                if (R_FAILED(rc) || total == 0){
-                    break;
-                }
-                titleIDs.push_back(info.titleID);
-            }
-            fsSaveDataIteratorClose(&fsIterator);
-        }
-    }
-
-    // Remove duplicate titleIDs
-    std::sort(titleIDs.begin(), titleIDs.end());
-    titleIDs.resize(std::distance(titleIDs.begin(), std::unique(titleIDs.begin(), titleIDs.end())));
-
-    // Create Titles
-    std::vector<Title *> titles;
-    for (size_t i = 0; i < titleIDs.size(); i++) {
-        Title * tmp = new Title(titleIDs[i], userID);
-        // Delete if not played
-        if (conf->getHiddenUnplayed() && tmp->getPlaytime() == 0) {
-            delete tmp;
-        } else {
-            titles.push_back(tmp);
-        }
-    }
-
-    return titles;
 }
