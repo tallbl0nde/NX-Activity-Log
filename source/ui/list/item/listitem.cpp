@@ -19,11 +19,11 @@ namespace UI {
 
     }
 
-    unsigned int List_Item::getOffset() {
+    int List_Item::getOffset() {
         return this->offset;
     }
 
-    void List_Item::setOffset(unsigned int o) {
+    void List_Item::setOffset(int o) {
         this->offset = o;
     }
 

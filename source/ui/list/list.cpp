@@ -8,6 +8,8 @@
 #define SCROLL_AMT 1300
 // Decrement scroll velocity by this amount
 #define SCROLL_DEC 20
+// Multiplier for scroll speed when ZL/ZR held
+#define SCROLL_MULT 6
 // Maximum scroll velocity
 #define SCROLL_V_MAX 50
 // Amount touch can deviate (in px) before scrolling
@@ -53,7 +55,7 @@ namespace UI {
         this->max_scroll_pos += this->offset;
 
         // If the summed height of all items is less than the list height don't scroll
-        if (this->max_scroll_pos <= (unsigned int)this->h) {
+        if (this->max_scroll_pos <= this->h) {
             this->max_scroll_pos = 0;
             return;
         }
@@ -88,7 +90,7 @@ namespace UI {
             } else {
                 for (size_t i = this->top_item; i < this->items.size(); i++) {
                     // Break if not being drawn
-                    if ((this->items[i]->getOffset() + this->items[i]->getH()) > this->scroll_pos + this->h - this->offset) {
+                    if ((this->items[i]->getOffset() + this->items[i]->getH()) > this->scroll_pos + this->h - (int)this->offset) {
                         max_pos = i-1;
                         break;
                     }
@@ -96,11 +98,12 @@ namespace UI {
             }
 
             // Scroll if on max position (ie. next selectable element not completely visible) otherwise move highlight
+            bool moved = false;
             if (this->highlight_item < max_pos) {
                 this->items[this->highlight_item]->setSelected(false);
 
                 // Move to next selectable item
-                bool moved = false;
+
                 for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
                     if (this->items[i]->isSelectable()) {
                         moved = true;
@@ -108,14 +111,18 @@ namespace UI {
                         break;
                     }
                 }
+            }
 
-                // Scroll if not moved
-                if (!moved) {
+            // Scroll if not moved
+            if (!moved) {
+                // Scroll faster if ZL/ZR held
+                if (this->button[Utils::key_map[KEY_ZL]].is_pressed || this->button[Utils::key_map[KEY_ZR]].is_pressed) {
+                    this->setScrollPos(this->scroll_pos + SCROLL_MULT*SCROLL_AMT*(dt/1000.0));
+                } else {
                     this->setScrollPos(this->scroll_pos + SCROLL_AMT*(dt/1000.0));
                 }
-            } else {
-                this->setScrollPos(this->scroll_pos + SCROLL_AMT*(dt/1000.0));
             }
+
         } else if (this->button[Utils::key_map[KEY_DUP]].is_pressed && this->button[Utils::key_map[KEY_DUP]].time_held > DELAY_OFFSET) {
             // Find min position
             unsigned int min_pos;
@@ -125,12 +132,12 @@ namespace UI {
                 min_pos = this->top_item + 1;
             }
 
-            // Scroll if on min position (ie. previous selectable element not completely visible) otherwise move highlight
+            // Move selected if next item is fully visible
+            bool moved = false;
             if (this->highlight_item > min_pos) {
                 this->items[this->highlight_item]->setSelected(false);
 
                 // Move to next selectable item
-                bool moved = false;
                 for (int i = this->highlight_item - 1; i >= (int)min_pos; i--) {
                     if (i < 0) {
                         break;
@@ -142,13 +149,16 @@ namespace UI {
                         break;
                     }
                 }
+            }
 
-                // Scroll if not moved
-                if (!moved) {
+            // Scroll if not moved
+            if (!moved) {
+                // Scroll faster if ZL/ZR held
+                if (this->button[Utils::key_map[KEY_ZL]].is_pressed || this->button[Utils::key_map[KEY_ZR]].is_pressed) {
+                    this->setScrollPos(this->scroll_pos - SCROLL_MULT*SCROLL_AMT*(dt/1000.0));
+                } else {
                     this->setScrollPos(this->scroll_pos - SCROLL_AMT*(dt/1000.0));
                 }
-            } else {
-                this->setScrollPos(this->scroll_pos - SCROLL_AMT*(dt/1000.0));
             }
         }
 
@@ -299,7 +309,7 @@ namespace UI {
                 } else {
                     for (size_t i = this->top_item; i < this->items.size(); i++) {
                         // Break if not being drawn
-                        if ((this->items[i]->getOffset() + this->items[i]->getH()) > this->scroll_pos + this->h - this->offset) {
+                        if ((this->items[i]->getOffset() + this->items[i]->getH()) > this->scroll_pos + this->h - (int)this->offset) {
                             max_pos = i-1;
                             break;
                         }
@@ -338,13 +348,13 @@ namespace UI {
                 }
                 // *** End section ***
 
-                // If within area move to next selectable entry
                 if (button == Utils::key_map[KEY_DDOWN]) {
+                    // If within viewable area move to next selectable entry
+                    bool moved = false;
                     if (this->highlight_item < max_pos) {
                         this->items[this->highlight_item]->setSelected(false);
 
                         // Move to next selectable item
-                        bool moved = false;
                         for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
                             if (this->items[i]->isSelectable()) {
                                 moved = true;
@@ -352,20 +362,36 @@ namespace UI {
                                 break;
                             }
                         }
+                    }
 
-                        // Scroll if not moved
+                    // Jump (or scroll) to next selectable item if on the edge
+                    if (!moved) {
+                        // Attempt to jump to next selectable item
+                        moved = false;
+                        for (unsigned int i = this->highlight_item + 1; i < this->items.size(); i++) {
+                            if (this->items[i]->isSelectable()) {
+                                unsigned int prev_item = this->highlight_item;
+                                this->items[this->highlight_item]->setSelected(false);
+                                this->highlight_item = i;
+                                this->items[this->highlight_item]->setSelected(true);
+                                this->setScrollPos(this->scroll_pos + (this->items[this->highlight_item]->getOffset() - this->items[prev_item]->getOffset()));
+                                moved = true;
+                                break;
+                            }
+                        }
+
+                        // If no jump was made (ie. no more selectable in the list), just scroll
                         if (!moved) {
                             this->button[button].time_held = DELAY_OFFSET;
                         }
-                    } else {
-                        this->button[button].time_held = DELAY_OFFSET;
                     }
+
                 } else if (button == Utils::key_map[KEY_DUP]) {
+                    bool moved = false;
                     if (this->highlight_item > min_pos) {
                         this->items[this->highlight_item]->setSelected(false);
 
                         // Move to next selectable item
-                        bool moved = false;
                         for (int i = this->highlight_item - 1; i >= min_pos; i--) {
                             if (i < 0) {
                                 break;
@@ -377,14 +403,30 @@ namespace UI {
                                 break;
                             }
                         }
+                    }
 
-                        // Scroll if not moved
+                    // Jump (or scroll) to previous selectable item if on the edge
+                    if (!moved) {
+                        // Attempt to jump to previous selectable item
+                        moved = false;
+                        for (int i = this->highlight_item - 1; i >= 0; i--) {
+                            if (this->items[i]->isSelectable()) {
+                                unsigned int prev_item = this->highlight_item;
+                                this->items[this->highlight_item]->setSelected(false);
+                                this->highlight_item = i;
+                                this->items[this->highlight_item]->setSelected(true);
+                                this->setScrollPos(this->scroll_pos - (this->items[prev_item]->getOffset() - this->items[this->highlight_item]->getOffset()));
+                                moved = true;
+                                break;
+                            }
+                        }
+
+                        // If no jump was made (ie. no more selectable in the list), just scroll
                         if (!moved) {
                             this->button[button].time_held = DELAY_OFFSET;
                         }
-                    } else {
-                        this->button[button].time_held = DELAY_OFFSET;
                     }
+
                 } else if (button == Utils::key_map[KEY_A]) {
                     this->touched_item = this->highlight_item;
                 }
@@ -398,14 +440,14 @@ namespace UI {
         }
     }
 
-    void List::setScrollPos(unsigned int pos) {
-        // Avoid going from 0 to max uint val
-        if (this->scroll_pos == 0 && pos > this->max_scroll_pos) {
-            return;
-        }
-        this->scroll_pos = pos;
-        if (this->scroll_pos > this->max_scroll_pos) {
+    void List::setScrollPos(int pos) {
+        // Prevent going outside of range
+        if (pos < 0) {
+            this->scroll_pos = 0;
+        } else if (pos > this->max_scroll_pos) {
             this->scroll_pos = this->max_scroll_pos;
+        } else {
+            this->scroll_pos = pos;
         }
 
         // Set top_item

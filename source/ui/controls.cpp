@@ -187,12 +187,20 @@ namespace UI {
                     // Create a button pressed event for the button that was pressed
                     if (this->buttons[i].touched) {
                         if (tx >= this->buttons[i].tex_x - BUTTON_LIGHT && tx <= this->buttons[i].tex_x + this->buttons[i].tex_w + BUTTON_LIGHT && ty >= this->y - BUTTON_LIGHT && ty <= this->y + this->buttons[i].tex_h + BUTTON_LIGHT) {
+                            // Send pushed event
                             SDL_Event event;
                             event.type = SDL_JOYBUTTONDOWN;
                             event.jbutton.which = 99;
                             event.jbutton.button = i;
                             event.jbutton.state = SDL_PRESSED;
                             SDL_PushEvent(&event);
+                            // Send released event (so basically a verrry fast button press)
+                            SDL_Event event2;
+                            event2.type = SDL_JOYBUTTONUP;
+                            event2.jbutton.which = 99;
+                            event2.jbutton.button = i;
+                            event2.jbutton.state = SDL_RELEASED;
+                            SDL_PushEvent(&event2);
                         }
                     }
 

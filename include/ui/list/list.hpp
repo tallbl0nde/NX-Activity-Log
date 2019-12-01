@@ -21,8 +21,8 @@ namespace UI {
 
             // Scroll variables
             bool is_scrolling;
-            unsigned int scroll_pos;
-            unsigned int max_scroll_pos;
+            int scroll_pos;
+            int max_scroll_pos;
             float scroll_velocity;
 
             // Other navigation variables
@@ -58,7 +58,7 @@ namespace UI {
             void handleButton(uint8_t, uint8_t);
 
             // Set scroll_pos (prevents overflow)
-            void setScrollPos(unsigned int);
+            void setScrollPos(int);
 
             // Returns index of chosen element or -1 if nothing is pressed
             int getChosen();

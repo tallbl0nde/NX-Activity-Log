@@ -30,6 +30,8 @@ namespace Screen {
         this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_MINUS, "Sort", 1);
         this->controls->add(KEY_PLUS, "Exit", 2);
+        this->controls->add(KEY_ZR, "(Hold) Fast Scroll", 3);
+        this->controls->disable(KEY_ZR);
 
         // Set active element
         this->active_element = (int)ActiveElement::List;
@@ -102,7 +104,7 @@ namespace Screen {
                     break;
 
                 case SDL_JOYBUTTONUP:
-                    if (events.jbutton.which == 0) {
+                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
                         // Joysticks push appropriate button event
                         if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
                             SDL_Event event;

@@ -13,7 +13,7 @@ namespace UI {
             // Is this item currently selected?
             bool is_selected;
             // Offset/position in list (in pixels)
-            unsigned int offset;
+            int offset;
 
         public:
             // Constructor initializes variables
@@ -27,8 +27,8 @@ namespace UI {
             virtual void pressed();
 
             // Get/set offset
-            unsigned int getOffset();
-            void setOffset(unsigned int);
+            int getOffset();
+            void setOffset(int);
 
             // Adjust is_selected variable
             virtual void setSelected(bool);

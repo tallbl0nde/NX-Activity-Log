@@ -219,7 +219,7 @@ namespace Screen {
                     break;
 
                 case SDL_JOYBUTTONUP:
-                    if (events.jbutton.which == 0) {
+                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
                         // Joysticks push appropriate button event
                         if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
                             SDL_Event event;
