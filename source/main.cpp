@@ -22,6 +22,8 @@ std::vector<Title *> getTitleObjects(u128);
 int main(int argc, char * argv[]){
     // Status variables
     bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit, setInit = false;
+    bool is_mypage = false;
+    u128 mypage_id = 0;
     Result rc = 0;
 
     // Vector containing all user objects
@@ -53,6 +55,33 @@ int main(int argc, char * argv[]){
         setInit = true;
     }
 
+    // Checking if launched as user page and if so get user id
+    AppletType t = appletGetAppletType();
+    if (t == AppletType_LibraryApplet) {
+        // Attempt to get user id from IStorage
+        AppletStorage * s = (AppletStorage *)malloc(sizeof(AppletStorage));
+        // Pop common args IStorage
+        if (R_SUCCEEDED(appletPopInData(s))) {
+            // Pop MyPage-specific args IStorage
+            if (R_SUCCEEDED(appletPopInData(s))) {
+                // Get user id
+                appletStorageRead(s, 0x8, &mypage_id, 0x10);
+
+                // Check if valid
+                u128 userIDs[ACC_USER_LIST_SIZE];
+                size_t num = 0;
+                accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
+                for (size_t i = 0; i < num; i++) {
+                    if (mypage_id == userIDs[i]) {
+                        is_mypage = true;
+                        break;
+                    }
+                }
+            }
+        }
+        free(s);
+    }
+
     // Initialize SDL
     SDLInit = SDLHelper::initSDL();
 
@@ -68,11 +97,15 @@ int main(int argc, char * argv[]){
         // Loading is kinda dodge
         bool error = false;
 
-        // Stage 1: Get User IDs
-        users = getUserObjects();
-        if (users.size() == 0) {
-            error = true;
-            sm->setScreen(new Screen::Error("Unable to get information about users!"));
+        // Stage 1: Get User ID(s)
+        if (is_mypage) {
+            users.push_back(new User(mypage_id));
+        } else {
+            users = getUserObjects();
+            if (users.size() == 0) {
+                error = true;
+                sm->setScreen(new Screen::Error("Unable to get information about users!"));
+            }
         }
 
         // Stage 2: Create UserSelect screen
@@ -103,8 +136,8 @@ int main(int argc, char * argv[]){
 
         // Clock to measure time between draw
         struct Clock clock;
-        // Infinite loop until exit
-        while (sm->loop()) {
+        // Infinite loop until exit (unless user page, in which can't be exited)
+        while (sm->loop() || is_mypage) {
             // Check for events
             sm->event();
 
