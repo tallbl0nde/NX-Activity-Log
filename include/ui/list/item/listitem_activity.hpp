@@ -24,12 +24,9 @@ namespace UI::ListItem {
             int text_scroll_x;
             int text_scroll_pause;
 
-            // TEMPORARY
-            User * user;
-
         public:
             // Constructor accepts the title object
-            Activity(User *, Title *);
+            Activity(Title *);
 
             // Update and draw functions are defined
             void update(uint32_t);

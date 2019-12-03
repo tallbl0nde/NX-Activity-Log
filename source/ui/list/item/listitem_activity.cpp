@@ -16,9 +16,7 @@
 #define TEXT_PAUSE 600
 
 namespace UI::ListItem {
-    Activity::Activity(User * u, Title * t) : List_Item() {
-        this->user = u;
-
+    Activity::Activity(Title * t) : List_Item() {
         this->setH(ITEM_HEIGHT);
 
         // Create textures using title object

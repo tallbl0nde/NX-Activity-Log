@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "config.hpp"
 #include "listitem_activity.hpp"
 #include "screenmanager.hpp"
@@ -5,29 +6,64 @@
 #include "SDLHelper.hpp"
 #include "utils.hpp"
 
-namespace Screen {
-    Activity::Activity(User * u, std::vector<Title *> tls) : Screen::Screen() {
-        u32 total_mins = 0;
-        this->list = new UI::SortedList(&this->touch_active, 400, 110, 850, 515);
+// Maximum number of titles to read using pdm...()
+#define MAX_TITLES 2000
 
-        // Add items to list based on config
-        Config * conf = Config::getConfig();
-        for (size_t i = 0; i < tls.size(); i++) {
-            // Hide deleted if toggled
-            if ((!tls[i]->getInstalled() && conf->getHiddenDeleted())) {
-                continue;
-            }
+// Reads all installed title IDs and creates Title objects using them
+// The caller must deallocate the memory
+static std::vector<Title *> getTitleObjects(u128 userID) {
+    Result rc;
 
-            this->list->addItem(new UI::ListItem::Activity(u, tls[i]));
-            total_mins += tls[i]->getPlaytime();
+    // Get ALL played titles (this doesn't include installed games that haven't been played)
+    u32 playedTotal = 0;
+    u64 * playedIDs = (u64 *)malloc(MAX_TITLES * sizeof(u64));
+    pdmqryGetUserPlayedApplications(userID, playedIDs, MAX_TITLES, &playedTotal);
+
+    // Get all installed titles
+    std::vector<u64> installedIDs;
+    NsApplicationRecord info;
+    size_t count = 0;
+    size_t installedTotal = 0;
+    while (true){
+        rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &installedTotal);
+        // Break if at the end or no titles
+        if (R_FAILED(rc) || installedTotal == 0){
+            break;
         }
-        // "Adding" nullptr finalizes list
-        this->list->addItem(nullptr);
+        count++;
+        installedIDs.push_back(info.titleID);
+    }
 
-        // Create total hours texture
-        std::string str = "Total Playtime: ";
-        str += Utils::formatPlaytime(total_mins, " and ");
-        this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
+    // Create Title objects from IDs
+    std::vector<Title *> titles;
+    for (u32 i = 0; i < playedTotal; i++) {
+        // Loop over installed titles to determine if installed or not
+        bool installed = false;
+        for (size_t j = 0; j < installedIDs.size(); j++) {
+            if (installedIDs[j] == playedIDs[i]) {
+                installed = true;
+                break;
+            }
+        }
+
+        titles.push_back(new Title(playedIDs[i], userID, installed));
+    }
+
+    free(playedIDs);
+
+    return titles;
+}
+
+namespace Screen {
+    Activity::Activity(User * u) : Screen::Screen() {
+        this->hide_deleted = Config::getConfig()->getHiddenDeleted();
+        this->list = nullptr;
+        this->user = u;
+        this->titles = getTitleObjects(this->user->getID());
+        this->total_hours = nullptr;
+
+        // Generate list
+        this->generateList();
 
         // Create side menu
         this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
@@ -35,7 +71,7 @@ namespace Screen {
         this->menu->addItem(new UI::SideItem("Settings"));
         this->menu->setSelected(0);
 
-        this->user = u;
+        // Set controls
         this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_MINUS, "Sort", 1);
         if (!this->is_mypage) {
@@ -228,6 +264,12 @@ namespace Screen {
     void Activity::update(uint32_t dt) {
         Screen::update(dt);
         this->menu->update(dt);
+
+        // Check if hidden option toggled and if so regen list
+        if (this->hide_deleted != Config::getConfig()->getHiddenDeleted()) {
+            this->generateList();
+            this->hide_deleted = Config::getConfig()->getHiddenDeleted();
+        }
         this->list->update(dt);
 
         if (this->touch_active) {
@@ -291,8 +333,47 @@ namespace Screen {
         this->controls->draw();
     }
 
+    void Activity::generateList() {
+        // Delete old list
+        if (this->list != nullptr) {
+            delete this->list;
+        }
+        this->list = new UI::SortedList(&this->touch_active, 400, 110, 850, 515);
+
+        // Add items to list based on config
+        Config * conf = Config::getConfig();
+        u32 total_mins = 0;
+        for (size_t i = 0; i < this->titles.size(); i++) {
+            // Hide deleted if toggled
+            if ((!this->titles[i]->getInstalled() && conf->getHiddenDeleted())) {
+                continue;
+            }
+
+            this->list->addItem(new UI::ListItem::Activity(this->titles[i]));
+            total_mins += this->titles[i]->getPlaytime();
+        }
+        // "Adding" nullptr finalizes list
+        this->list->addItem(nullptr);
+
+        // Create total hours texture
+        std::string str = "Total Playtime: ";
+        str += Utils::formatPlaytime(total_mins, " and ");
+        if (this->total_hours != nullptr) {
+            SDLHelper::destroyTexture(this->total_hours);
+        }
+        this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
+    }
+
     Activity::~Activity() {
-        delete this->list;
+        if (this->list != nullptr) {
+            delete this->list;
+        }
         delete this->menu;
+
+        // Delete title objects
+        while (this->titles.size() > 0) {
+            delete this->titles[0];
+            this->titles.erase(this->titles.begin());
+        }
     }
 }

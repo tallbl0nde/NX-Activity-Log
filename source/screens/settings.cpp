@@ -185,12 +185,10 @@ namespace Screen {
 
         // Create list
         this->list = new UI::List(&this->touch_active, 400, 110, 850, 520);
-        this->list->addItem(new UI::ListItem::ToolTip("Note: All options currently require the application to be restarted to take effect."));
-        this->list->addItem(new UI::ListItem::Separator(10));
         this->list->addItem(new UI::ListItem::Option("Default Sorting", &func_sort));
         this->list->addItem(new UI::ListItem::ToolTip("Sets the sorting used upon application launch."));
         this->list->addItem(new UI::ListItem::Option("Theme", &func_theme));
-        this->list->addItem(new UI::ListItem::ToolTip("Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings."));
+        this->list->addItem(new UI::ListItem::ToolTip("Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings. Note: This requires the app to be restarted to take effect."));
         this->list->addItem(new UI::ListItem::Separator());
         this->list->addItem(new UI::ListItem::Option("Hide Deleted Games", &func_deleted));
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides deleted games from your play activity."));

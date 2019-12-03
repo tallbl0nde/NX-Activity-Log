@@ -134,13 +134,7 @@ DEPENDS	:=	$(OFILES:.o=.d)
 # (I gave up figuring out how to do it properly)
 all: $(OUTPUT).nro
 	@mkdir -p $(TOPDIR)/$(OUTDIR)/switch
-	@mkdir -p $(TOPDIR)/$(OUTDIR)/atmosphere/titles/$(TITLEID)/
-	@mkdir -p $(TOPDIR)/$(OUTDIR)/ReiNX/titles/$(TITLEID)/
-	@mkdir -p $(TOPDIR)/$(OUTDIR)/sxos/titles/$(TITLEID)/
 	@cp $(OUTPUT).nro $(TOPDIR)/$(OUTDIR)/switch/
-	@cp $(TOPDIR)/$(FDIR)/$(FFILE) $(TOPDIR)/$(OUTDIR)/atmosphere/titles/$(TITLEID)/
-	@cp $(TOPDIR)/$(FDIR)/$(FFILE) $(TOPDIR)/$(OUTDIR)/ReiNX/titles/$(TITLEID)/
-	@cp $(TOPDIR)/$(FDIR)/$(FFILE) $(TOPDIR)/$(OUTDIR)/sxos/titles/$(TITLEID)/
 	@echo
 	@echo "All done! Simply copy the folders within ./$(OUTDIR) to your SD card :)"
 
