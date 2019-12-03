@@ -1,3 +1,4 @@
+#include <fstream>
 #include "utils.hpp"
 
 namespace Utils {
@@ -32,6 +33,17 @@ namespace Utils {
         {KEY_SL_LEFT, 26},
         {KEY_SR_RIGHT, 27}
     };
+
+    void copyFile(std::string src, std::string dest) {
+        std::ifstream srcF(src, std::ios::binary);
+        std::ofstream destF(dest, std::ios::binary);
+
+        destF << srcF.rdbuf();
+
+        srcF.close();
+        destF.flush();
+        destF.close();
+    }
 
     // Returns a string with the time since last played
     std::string formatLastPlayed(u32 ts) {

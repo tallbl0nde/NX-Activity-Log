@@ -29,7 +29,9 @@ namespace Screen {
         this->user = u;
         this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_MINUS, "Sort", 1);
-        this->controls->add(KEY_PLUS, "Exit", 2);
+        if (!this->is_mypage) {
+            this->controls->add(KEY_PLUS, "Exit", 2);
+        }
         this->controls->add(KEY_ZR, "(Hold) Fast Scroll", 3);
         this->controls->disable(KEY_ZR);
 
@@ -76,7 +78,9 @@ namespace Screen {
 
                         // Plus exits app
                         } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            ScreenManager::getInstance()->stopLoop();
+                            if (!this->is_mypage) {
+                                ScreenManager::getInstance()->stopLoop();
+                            }
 
                         // Left and right will swap active element
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {

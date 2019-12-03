@@ -21,7 +21,7 @@ std::vector<Title *> getTitleObjects(u128);
 
 int main(int argc, char * argv[]){
     // Status variables
-    bool accInit, fsInit, nsInit, pdmInit, plInit, SDLInit, setInit = false;
+    bool accInit, fsInit, nsInit, pdmInit, plInit, romFsInit, SDLInit, setInit = false;
     bool is_mypage = false;
     u128 mypage_id = 0;
     Result rc = 0;
@@ -49,6 +49,10 @@ int main(int argc, char * argv[]){
     rc = plInitialize();
     if (R_SUCCEEDED(rc)) {
         plInit = true;
+    }
+    rc = romfsInit();
+    if (R_SUCCEEDED(rc)) {
+        romFsInit = true;
     }
     rc = setsysInitialize();
     if (R_SUCCEEDED(rc)) {
@@ -93,7 +97,7 @@ int main(int argc, char * argv[]){
     ScreenManager * sm = ScreenManager::getInstance();
 
     // Only proceed if no errors
-    if (accInit && fsInit && nsInit && pdmInit && plInit && SDLInit) {
+    if (accInit && fsInit && nsInit && pdmInit && plInit && romFsInit && SDLInit) {
         // Loading is kinda dodge
         bool error = false;
 
@@ -110,7 +114,7 @@ int main(int argc, char * argv[]){
 
         // Stage 2: Create UserSelect screen
         if (!error) {
-            Screen::UserSelect * s = new Screen::UserSelect(users);
+            Screen::UserSelect * s = new Screen::UserSelect(users, is_mypage);
 
             // Set theme
             switch (conf->getGeneralTheme()) {
@@ -137,7 +141,7 @@ int main(int argc, char * argv[]){
         // Clock to measure time between draw
         struct Clock clock;
         // Infinite loop until exit (unless user page, in which can't be exited)
-        while (sm->loop() || is_mypage) {
+        while (sm->loop()) {
             // Check for events
             sm->event();
 
@@ -159,9 +163,6 @@ int main(int argc, char * argv[]){
     // Free screen memory
     sm->free();
 
-    // Save config
-    conf->writeConfig();
-
     // Clean up SDL
     SDLHelper::exitSDL();
 
@@ -180,6 +181,9 @@ int main(int argc, char * argv[]){
     }
     if (plInit) {
         plExit();
+    }
+    if (romFsInit) {
+        romfsExit();
     }
     if (setInit) {
         setExit();

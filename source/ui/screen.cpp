@@ -3,6 +3,7 @@
 
 namespace UI {
     // Initalize static variables
+    bool Screen::is_mypage = false;
     bool Screen::touch_active = true;
 
     Screen::Screen() : Drawable(0, 0, WIDTH, HEIGHT) {

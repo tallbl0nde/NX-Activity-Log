@@ -22,6 +22,9 @@ namespace UI {
             // Controls element
             Controls * controls;
 
+            // Is the app running as mypage?
+            static bool is_mypage;
+
             // Variables indicating touch/button state
             static bool touch_active;
             unsigned int active_element;

@@ -161,16 +161,20 @@ bool Config::getHiddenUnplayed() {
 
 void Config::setGeneralSort(SortType v) {
     this->general_sort = v;
+    this->writeConfig();
 }
 
 void Config::setGeneralTheme(ThemeType v) {
     this->general_theme = v;
+    this->writeConfig();
 }
 
 void Config::setHiddenDeleted(bool v) {
     this->hidden_deleted = v;
+    this->writeConfig();
 }
 
 void Config::setHiddenUnplayed(bool v) {
     this->hidden_unplayed = v;
+    this->writeConfig();
 }

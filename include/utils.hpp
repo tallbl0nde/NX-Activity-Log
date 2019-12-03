@@ -14,6 +14,9 @@ namespace Utils {
     #define KEY_MAP_SIZE 28
     extern std::map<HidControllerKeys, int> key_map;
 
+    // Copy file from source path to dest path
+    void copyFile(std::string, std::string);
+
     // Returns a string with the time since last played
     std::string formatLastPlayed(u32);
 

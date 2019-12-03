@@ -69,16 +69,21 @@ std::vector<Title *> getTitleObjects(u128 userID) {
 }
 
 namespace Screen {
-    UserSelect::UserSelect(std::vector<User *> v) : Screen::Screen() {
+    UserSelect::UserSelect(std::vector<User *> v, bool b) : Screen::Screen() {
         this->users = v;
+        this->is_mypage = b;
 
-        // Set fade value
-        this->fade = 255;
+        // Set fade value if not user page
+        if (!is_mypage) {
+            this->fade = 255;
+        } else {
+            this->fade = 1;
+        }
 
         // Create list
         this->list = new UI::List(&this->touch_active, WIDTH/2 - 300, 130, 600, 480);
-        for (size_t i = 0; i < v.size(); i++) {
-            this->list->addItem(new UI::ListItem::User(v[i]->getImage(), v[i]->getUsername()));
+        for (size_t i = 0; i < this->users.size(); i++) {
+            this->list->addItem(new UI::ListItem::User(this->users[i]->getImage(), this->users[i]->getUsername()));
         }
         this->list->setActive(true);
 
@@ -229,8 +234,8 @@ namespace Screen {
             return;
         }
 
-        // If there is only one user proceed straight to stats
-        if (this->users.size() == 1) {
+        // If launched as mypage proceed straight to stats
+        if (this->is_mypage) {
              ScreenManager::getInstance()->setScreen(new Activity(this->users[0], getTitleObjects(this->users[0]->getID())));
              return;
         }
@@ -254,7 +259,7 @@ namespace Screen {
         SDLHelper::drawRect(30, 87, 1220, 1);
         SDLHelper::drawRect(30, 647, 1220, 1);
 
-        if (this->users.size() != 1) {
+        if (!this->is_mypage) {
             // Print UserSelect title
             SDLHelper::drawText("Select a User", this->theme->getText(), 65, 44 - (HEADING_FONT_SIZE/2), HEADING_FONT_SIZE);
 

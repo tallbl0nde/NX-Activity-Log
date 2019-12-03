@@ -19,7 +19,7 @@ namespace Screen {
             std::vector<User *> users;
 
         public:
-            UserSelect(std::vector<User *>);
+            UserSelect(std::vector<User *>, bool);
 
             // See ui/screen.hpp for what these functions do
             void event();

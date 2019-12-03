@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include <filesystem>
 #include "SDLHelper.hpp"
 #include "list.hpp"
 #include "listitem_option.hpp"
@@ -120,6 +121,80 @@ static std::string func_unplayed(bool d) {
     return ret;
 }
 
+// Passed to item to toggle forwarder
+static std::string func_forwarder(bool d) {
+    std::string ret;
+    // Check if forwarder exists
+    bool atms = false;
+    bool rei = false;
+    bool sx = false;
+    bool hasAtms = false;
+    bool hasRei = false;
+    bool hasSx = false;
+    if (std::filesystem::exists("/atmosphere/titles")) {
+        hasAtms = true;
+        if (std::filesystem::exists("/atmosphere/titles/0100000000001013/exefs.nsp")) {
+            atms = true;
+        }
+    }
+    if (std::filesystem::exists("/ReiNX/titles")) {
+        hasRei = true;
+        if (std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp")) {
+            rei = true;
+        }
+    }
+    if (std::filesystem::exists("/sxos/titles")) {
+        hasRei = true;
+        if (std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
+            rei = true;
+        }
+    }
+
+    if (d) {
+        // Delete files
+        if (atms || rei || sx) {
+            if (atms) {
+                std::filesystem::remove("/atmosphere/titles/0100000000001013/exefs.nsp");
+                atms = false;
+            }
+            if (rei) {
+                std::filesystem::remove("/ReiNX/titles/0100000000001013/exefs.nsp");
+                rei = false;
+            }
+            if (sx) {
+                std::filesystem::remove("/sxos/titles/0100000000001013/exefs.nsp");
+                sx = false;
+            }
+
+        // Copy files
+        } else {
+            if (hasAtms) {
+                std::filesystem::create_directory("/atmosphere/titles/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/atmosphere/titles/0100000000001013/exefs.nsp");
+                atms = true;
+            }
+
+            if (hasRei) {
+                std::filesystem::create_directory("/ReiNX/titles/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/ReiNX/titles/0100000000001013/exefs.nsp");
+                rei = true;
+            }
+
+            if (hasSx) {
+                std::filesystem::create_directory("/sxos/titles/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/sxos/titles/0100000000001013/exefs.nsp");
+                sx = true;
+            }
+        }
+    }
+
+    if (atms || rei || sx) {
+        return "Yes";
+    } else {
+        return "No";
+    }
+}
+
 namespace Screen {
     Settings::Settings(User * u) : Screen::Screen() {
         // Create side menu
@@ -141,12 +216,17 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides deleted games from your play activity."));
         this->list->addItem(new UI::ListItem::Option("Hide Unplayed Games", &func_unplayed));
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides games that haven't been played from your play activity."));
+        this->list->addItem(new UI::ListItem::Separator());
+        this->list->addItem(new UI::ListItem::Option("Override User Page", &func_forwarder));
+        this->list->addItem(new UI::ListItem::ToolTip("Uses LayeredFS to override the user page with this app."));
         this->list->addItem(new UI::ListItem::Separator(30));
-        this->list->addItem(new UI::ListItem::ToolTip("NX Activity Log v1.0.0\nThank you for using my app! You can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde"));
+        this->list->addItem(new UI::ListItem::ToolTip("NX Activity Log v1.1.0a\nThank you for using my app! You can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde"));
 
         this->user = u;
         this->controls->add(KEY_A, "OK", 0);
-        this->controls->add(KEY_PLUS, "Exit", 1);
+        if (!this->is_mypage) {
+            this->controls->add(KEY_PLUS, "Exit", 1);
+        }
 
         // Set active element
         this->active_element = (int)ActiveElement::SideMenu;
@@ -191,7 +271,9 @@ namespace Screen {
 
                         // Plus exits app
                         } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            ScreenManager::getInstance()->stopLoop();
+                            if (!this->is_mypage) {
+                                ScreenManager::getInstance()->stopLoop();
+                            }
 
                         // Left and right will swap active element
                         } else if (events.jbutton.button == Utils::key_map[KEY_DLEFT]) {

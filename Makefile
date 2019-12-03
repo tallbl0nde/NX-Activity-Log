@@ -23,7 +23,7 @@ TARGET		:=	NX-Activity-Log
 BUILD		:=	build
 SOURCES		:=	source source/screens source/ui source/ui/list source/ui/list/item source/ui/sidemenu
 INCLUDES	:=	include include/screens include/ui include/ui/list include/ui/list/item include/ui/sidemenu
-# ROMFS		:=	romfs
+ROMFS		:=	romfs
 OUTDIR		:=	sdcard
 FDIR		:=	forwarder
 FFILE		:=	exefs.nsp
@@ -92,12 +92,7 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
 # Add icon and nacp flags (as these will always be present)
 export APP_ICON := $(TOPDIR)/$(ICON)
-export NROFLAGS += --icon=$(APP_ICON) --nacp=$(CURDIR)/$(TARGET).nacp
-
-# Add romfs flag when directory present
-ifneq ($(ROMFS),)
-	export NROFLAGS += --romfsdir=$(CURDIR)/$(ROMFS)
-endif
+export NROFLAGS += --icon=$(APP_ICON) --nacp=$(CURDIR)/$(TARGET).nacp --romfsdir=$(CURDIR)/$(ROMFS)
 
 .PHONY: $(BUILD) clean all
 
@@ -113,6 +108,7 @@ endif
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile
+	@cp $(FDIR)/$(FFILE) $(ROMFS)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
@@ -120,7 +116,7 @@ endif
 #---------------------------------------------------------------------------------
 clean:
 	@echo Cleaning ALL build files...
-	@rm -rf $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf $(OUTDIR)
+	@rm -rf $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf $(OUTDIR) $(ROMFS)/$(FFILE)
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile clean
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile clean
 	@echo Done!
