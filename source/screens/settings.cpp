@@ -101,26 +101,6 @@ static std::string func_sort(bool d) {
     return ret;
 }
 
-// Passed to item to toggle deleted games
-static std::string func_unplayed(bool d) {
-    std::string ret;
-
-    Config * conf = Config::getConfig();
-    bool b = conf->getHiddenUnplayed();
-    if (d) {
-        b = !b;
-        conf->setHiddenUnplayed(b);
-    }
-
-    if (b) {
-        ret = "Yes";
-    } else {
-        ret = "No";
-    }
-
-    return ret;
-}
-
 // Passed to item to toggle forwarder
 static std::string func_forwarder(bool d) {
     std::string ret;
@@ -214,8 +194,6 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::Separator());
         this->list->addItem(new UI::ListItem::Option("Hide Deleted Games", &func_deleted));
         this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides deleted games from your play activity."));
-        this->list->addItem(new UI::ListItem::Option("Hide Unplayed Games", &func_unplayed));
-        this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides games that haven't been played from your play activity."));
         this->list->addItem(new UI::ListItem::Separator());
         this->list->addItem(new UI::ListItem::Option("Override User Page", &func_forwarder));
         this->list->addItem(new UI::ListItem::ToolTip("Uses LayeredFS to override the user page with this app."));

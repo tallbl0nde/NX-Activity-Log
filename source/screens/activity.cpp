@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "listitem_activity.hpp"
 #include "screenmanager.hpp"
 #include "sortedlist.hpp"
@@ -8,7 +9,15 @@ namespace Screen {
     Activity::Activity(User * u, std::vector<Title *> tls) : Screen::Screen() {
         u32 total_mins = 0;
         this->list = new UI::SortedList(&this->touch_active, 400, 110, 850, 515);
+
+        // Add items to list based on config
+        Config * conf = Config::getConfig();
         for (size_t i = 0; i < tls.size(); i++) {
+            // Hide deleted if toggled
+            if ((!tls[i]->getInstalled() && conf->getHiddenDeleted())) {
+                continue;
+            }
+
             this->list->addItem(new UI::ListItem::Activity(u, tls[i]));
             total_mins += tls[i]->getPlaytime();
         }

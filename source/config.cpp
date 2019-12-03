@@ -25,7 +25,6 @@ void Config::initConfigFile() {
 
     simpleIniParser::IniSection * section_hidden = new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, "hidden");
     section_hidden->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, "deleted", "false"));
-    section_hidden->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, "unplayed", "false"));
     ini->sections.push_back(section_hidden);
 
     simpleIniParser::IniSection * section_offset = new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, "offset");
@@ -85,13 +84,6 @@ void Config::readConfig() {
         this->hidden_deleted = false;
     }
 
-    option = ini->findSection("hidden")->findFirstOption("unplayed", false);
-    if (option->value == "true") {
-        this->hidden_unplayed = true;
-    } else {
-        this->hidden_unplayed = false;
-    }
-
     delete ini;
 }
 
@@ -132,13 +124,6 @@ void Config::writeConfig() {
         option->value = "false";
     }
 
-    option = ini->findSection("hidden")->findFirstOption("unplayed", false);
-    if (this->hidden_unplayed == true) {
-        option->value = "true";
-    } else if (this->hidden_unplayed == false) {
-        option->value = "false";
-    }
-
     ini->writeToFile(CONFIG_FILE);
     delete ini;
 }
@@ -155,10 +140,6 @@ bool Config::getHiddenDeleted() {
     return this->hidden_deleted;
 }
 
-bool Config::getHiddenUnplayed() {
-    return this->hidden_unplayed;
-}
-
 void Config::setGeneralSort(SortType v) {
     this->general_sort = v;
     this->writeConfig();
@@ -171,10 +152,5 @@ void Config::setGeneralTheme(ThemeType v) {
 
 void Config::setHiddenDeleted(bool v) {
     this->hidden_deleted = v;
-    this->writeConfig();
-}
-
-void Config::setHiddenUnplayed(bool v) {
-    this->hidden_unplayed = v;
     this->writeConfig();
 }

@@ -20,7 +20,6 @@ class Config {
         SortType general_sort;
         ThemeType general_theme;
         bool hidden_deleted;
-        bool hidden_unplayed;
 
     public:
         // Creates instance if doesn't exist, otherwise returns pointer
@@ -36,12 +35,10 @@ class Config {
         SortType getGeneralSort();
         ThemeType getGeneralTheme();
         bool getHiddenDeleted();
-        bool getHiddenUnplayed();
 
         void setGeneralSort(SortType);
         void setGeneralTheme(ThemeType);
         void setHiddenDeleted(bool);
-        void setHiddenUnplayed(bool);
 };
 
 #endif

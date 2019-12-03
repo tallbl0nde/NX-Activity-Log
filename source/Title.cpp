@@ -2,8 +2,9 @@
 #include "Title.hpp"
 #include <time.h>
 
-Title::Title(u64 titleID, u128 userID) {
+Title::Title(u64 titleID, u128 userID, bool installed) {
     this->titleID = titleID;
+    this->is_installed = installed;
 
     // Defaults in case fetch fails
     this->first_timestamp = 0;
@@ -44,6 +45,10 @@ Title::Title(u64 titleID, u128 userID) {
 
 u64 Title::getTitleID() {
     return this->titleID;
+}
+
+bool Title::getInstalled() {
+    return this->is_installed;
 }
 
 std::string Title::getName() {

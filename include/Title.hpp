@@ -11,6 +11,8 @@ class Title {
     private:
         // Game's titleID
         u64 titleID;
+        // Is the game installed?
+        bool is_installed;
         // Game's name
         std::string name;
         // POSIX timestamps of first and last play time
@@ -25,10 +27,11 @@ class Title {
 
     public:
         // The constructor derives all relevant info from given titleID
-        Title(u64, u128);
+        Title(u64, u128, bool);
 
         // These functions return Title's data
         u64 getTitleID();
+        bool getInstalled();
         std::string getName();
         u32 getFirstPlayed();
         u32 getLastPlayed();

@@ -5,65 +5,51 @@
 #include "SDLHelper.hpp"
 #include "utils.hpp"
 
+// Maximum number of titles to read using pdm...()
+#define MAX_TITLES 2000
+
 // Reads all installed title IDs and creates Title objects using them
 // NOTE: These objects are never deleted, I need to fix this at some point!
 // (doesn't matter yet as they are used until the program exits)
 std::vector<Title *> getTitleObjects(u128 userID) {
     Result rc;
 
-    // Vector containing all found titleIDs
-    std::vector<u64> titleIDs;
+    // Get ALL played titles (this doesn't include installed games that haven't been played)
+    u32 playedTotal = 0;
+    u64 * playedIDs = (u64 *)malloc(MAX_TITLES * sizeof(u64));
+    pdmqryGetUserPlayedApplications(userID, playedIDs, MAX_TITLES, &playedTotal);
 
-    // Get installed titles (including unplayed)
+    // Get all installed titles
+    std::vector<u64> installedIDs;
     NsApplicationRecord info;
     size_t count = 0;
-    size_t total = 0;
+    size_t installedTotal = 0;
     while (true){
-        rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &total);
+        rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &installedTotal);
         // Break if at the end or no titles
-        if (R_FAILED(rc) || total == 0){
+        if (R_FAILED(rc) || installedTotal == 0){
             break;
         }
         count++;
-        titleIDs.push_back(info.titleID);
+        installedIDs.push_back(info.titleID);
     }
 
-    Config * conf = Config::getConfig();
-    if (!conf->getHiddenDeleted()) {
-        // Get played titles (including deleted)
-        FsSaveDataIterator fsIterator;
-        rc = fsOpenSaveDataIterator(&fsIterator, FsSaveDataSpaceId_NandUser);
-        if (R_SUCCEEDED(rc)){
-            // Iterate over all save data to get titleIDs
-            FsSaveDataInfo info;
-            while (true){
-                size_t total = 0;
-                rc = fsSaveDataIteratorRead(&fsIterator, &info, 1, &total);
-                // Break if at the end or no titles
-                if (R_FAILED(rc) || total == 0){
-                    break;
-                }
-                titleIDs.push_back(info.titleID);
-            }
-            fsSaveDataIteratorClose(&fsIterator);
-        }
-    }
-
-    // Remove duplicate titleIDs
-    std::sort(titleIDs.begin(), titleIDs.end());
-    titleIDs.resize(std::distance(titleIDs.begin(), std::unique(titleIDs.begin(), titleIDs.end())));
-
-    // Create Titles
+    // Create Title objects from IDs
     std::vector<Title *> titles;
-    for (size_t i = 0; i < titleIDs.size(); i++) {
-        Title * tmp = new Title(titleIDs[i], userID);
-        // Delete if not played
-        if (conf->getHiddenUnplayed() && tmp->getPlaytime() == 0) {
-            delete tmp;
-        } else {
-            titles.push_back(tmp);
+    for (u32 i = 0; i < playedTotal; i++) {
+        // Loop over installed titles to determine if installed or not
+        bool installed = false;
+        for (size_t j = 0; j < installedIDs.size(); j++) {
+            if (installedIDs[j] == playedIDs[i]) {
+                installed = true;
+                break;
+            }
         }
+
+        titles.push_back(new Title(playedIDs[i], userID, installed));
     }
+
+    free(playedIDs);
 
     return titles;
 }

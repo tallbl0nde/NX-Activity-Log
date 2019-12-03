@@ -108,6 +108,7 @@ endif
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile
+	@mkdir -p $(ROMFS)
 	@cp $(FDIR)/$(FFILE) $(ROMFS)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
@@ -135,9 +136,11 @@ all: $(OUTPUT).nro
 	@mkdir -p $(TOPDIR)/$(OUTDIR)/switch
 	@mkdir -p $(TOPDIR)/$(OUTDIR)/atmosphere/titles/$(TITLEID)/
 	@mkdir -p $(TOPDIR)/$(OUTDIR)/ReiNX/titles/$(TITLEID)/
+	@mkdir -p $(TOPDIR)/$(OUTDIR)/sxos/titles/$(TITLEID)/
 	@cp $(OUTPUT).nro $(TOPDIR)/$(OUTDIR)/switch/
 	@cp $(TOPDIR)/$(FDIR)/$(FFILE) $(TOPDIR)/$(OUTDIR)/atmosphere/titles/$(TITLEID)/
 	@cp $(TOPDIR)/$(FDIR)/$(FFILE) $(TOPDIR)/$(OUTDIR)/ReiNX/titles/$(TITLEID)/
+	@cp $(TOPDIR)/$(FDIR)/$(FFILE) $(TOPDIR)/$(OUTDIR)/sxos/titles/$(TITLEID)/
 	@echo
 	@echo "All done! Simply copy the folders within ./$(OUTDIR) to your SD card :)"
 
