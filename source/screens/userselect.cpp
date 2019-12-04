@@ -171,7 +171,7 @@ namespace Screen {
 
         // If launched as mypage proceed straight to stats
         if (this->is_mypage) {
-             ScreenManager::getInstance()->setScreen(new Activity(this->users[0]));
+             ScreenManager::getInstance()->setScreen(new AllActivity(this->users[0]));
              return;
         }
 
@@ -180,7 +180,7 @@ namespace Screen {
 
         // Change to loading screen with chosen user and titles
         if (this->list->getChosen() != -1) {
-            ScreenManager::getInstance()->setScreen(new Activity(this->users[this->list->getChosen()]));
+            ScreenManager::getInstance()->setScreen(new AllActivity(this->users[this->list->getChosen()]));
         }
     }
 

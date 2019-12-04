@@ -3,6 +3,7 @@
 
 #include "controls.hpp"
 #include "drawable.hpp"
+#include "sidemenu.hpp"
 
 // Default font sizes
 #define HEADING_FONT_SIZE 28
@@ -21,6 +22,10 @@ namespace UI {
         protected:
             // Controls element
             Controls * controls;
+
+            // SideMenu is shared across screens
+            // But can be hidden if needed
+            static SideMenu * menu;
 
             // Is the app running as mypage?
             static bool is_mypage;

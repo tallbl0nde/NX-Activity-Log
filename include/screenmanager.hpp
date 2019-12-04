@@ -1,9 +1,10 @@
 #ifndef SCREENMANAGER_HPP
 #define SCREENMANAGER_HPP
 
-#include "activity.hpp"
+#include "allactivity.hpp"
 #include "details.hpp"
 #include "error.hpp"
+#include "recentactivity.hpp"
 #include "settings.hpp"
 #include <stack>
 #include "userselect.hpp"

@@ -2,7 +2,6 @@
 #include "config.hpp"
 #include "listitem_activity.hpp"
 #include "screenmanager.hpp"
-#include "sortedlist.hpp"
 #include "SDLHelper.hpp"
 #include "utils.hpp"
 
@@ -55,7 +54,7 @@ static std::vector<Title *> getTitleObjects(u128 userID) {
 }
 
 namespace Screen {
-    Activity::Activity(User * u) : Screen::Screen() {
+    AllActivity::AllActivity(User * u) : Screen::Screen() {
         this->hide_deleted = Config::getConfig()->getHiddenDeleted();
         this->list = nullptr;
         this->user = u;
@@ -66,10 +65,10 @@ namespace Screen {
         this->generateList();
 
         // Create side menu
-        this->menu = new UI::SideMenu(&this->touch_active, 30, 130, 400, 500);
-        this->menu->addItem(new UI::SideItem("Play Activity"));
+        this->menu->addItem(new UI::SideItem("Recent Activity"));
+        this->menu->addItem(new UI::SideItem("All Activity"));
         this->menu->addItem(new UI::SideItem("Settings"));
-        this->menu->setSelected(0);
+        this->menu->setSelected(1);
 
         // Set controls
         this->controls->add(KEY_A, "OK", 0);
@@ -86,7 +85,7 @@ namespace Screen {
         this->list->setActive(true);
     }
 
-    void Activity::event(){
+    void AllActivity::event(){
         // Poll events
         SDL_Event events;
         while (SDL_PollEvent(&events)) {
@@ -261,7 +260,7 @@ namespace Screen {
         }
     }
 
-    void Activity::update(uint32_t dt) {
+    void AllActivity::update(uint32_t dt) {
         Screen::update(dt);
         this->menu->update(dt);
 
@@ -279,10 +278,20 @@ namespace Screen {
         }
 
         // Change screen if menu selected
-        if (this->menu->getSelected() == 1) {
-            ScreenManager::getInstance()->pushScreen();
-            ScreenManager::getInstance()->setScreen(new Settings(this->user));
-            this->menu->setSelected(0);
+        switch (this->menu->getSelected()) {
+            // Recent Activity
+            case 0:
+                ScreenManager::getInstance()->pushScreen();
+                ScreenManager::getInstance()->setScreen(new RecentActivity(this->user));
+                break;
+            // All Activity (this one so do nothing)
+            case 1:
+                break;
+            // Settings
+            case 2:
+                ScreenManager::getInstance()->pushScreen();
+                ScreenManager::getInstance()->setScreen(new Settings(this->user));
+                break;
         }
 
         // Change to details if listitem chosen
@@ -292,7 +301,7 @@ namespace Screen {
         }
     }
 
-    void Activity::draw() {
+    void AllActivity::draw() {
         // Clear screen (draw background)
         SDLHelper::setColour(this->theme->getBG());
         SDLHelper::clearScreen();
@@ -333,7 +342,7 @@ namespace Screen {
         this->controls->draw();
     }
 
-    void Activity::generateList() {
+    void AllActivity::generateList() {
         // Delete old list
         if (this->list != nullptr) {
             delete this->list;
@@ -360,15 +369,19 @@ namespace Screen {
         str += Utils::formatPlaytime(total_mins, " and ");
         if (this->total_hours != nullptr) {
             SDLHelper::destroyTexture(this->total_hours);
+            this->total_hours = nullptr;
         }
         this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
     }
 
-    Activity::~Activity() {
+    AllActivity::~AllActivity() {
         if (this->list != nullptr) {
             delete this->list;
         }
-        delete this->menu;
+
+        if (this->total_hours != nullptr) {
+            SDLHelper::destroyTexture(this->total_hours);
+        }
 
         // Delete title objects
         while (this->titles.size() > 0) {

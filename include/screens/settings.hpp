@@ -3,7 +3,6 @@
 
 #include "list.hpp"
 #include "screen.hpp"
-#include "sidemenu.hpp"
 #include "User.hpp"
 
 namespace Screen {
@@ -11,8 +10,6 @@ namespace Screen {
         private:
             // List object
             UI::List * list;
-            // Left menu object
-            UI::SideMenu * menu;
             // Used to print/render user name and image
             User * user;
 
