@@ -10,8 +10,9 @@ namespace Screen {
         // Set controls
         this->controls->add(KEY_A, "OK", 0);
         if (!this->is_mypage) {
-            this->controls->add(KEY_PLUS, "Exit", 2);
+            this->controls->add(KEY_PLUS, "Exit", 1);
         }
+        this->controls->add(KEY_X, "Popup!", 2);
 
         // Set active element
         this->active_element = (int)ActiveElement::SideMenu;
@@ -26,9 +27,9 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     // Break on first press (ie. only active highlighting)
-                    if (this->touch_active && events.jbutton.which != 99) {
+                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
                         if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            this->touch_active = false;
+                            ScreenManager::getInstance()->touch_active = false;
                         }
                         if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
                             break;
@@ -58,6 +59,14 @@ namespace Screen {
                             if (!this->is_mypage) {
                                 ScreenManager::getInstance()->stopLoop();
                             }
+
+                        // X opens selection
+                        } else if (events.jbutton.button == Utils::key_map[KEY_X]) {
+                            std::vector<std::string> v;
+                            v.push_back("Day");
+                            v.push_back("Month");
+                            v.push_back("Year");
+                            ScreenManager::getInstance()->createSelection("View by", v);
 
                         // All other buttons get handled by active element
                         } else {
@@ -102,7 +111,7 @@ namespace Screen {
 
                 // Touch (pressed)
                 case SDL_FINGERDOWN: {
-                    this->touch_active = true;
+                    ScreenManager::getInstance()->touch_active = true;
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
@@ -163,7 +172,7 @@ namespace Screen {
         Screen::update(dt);
         this->menu->update(dt);
 
-        if (this->touch_active) {
+        if (ScreenManager::getInstance()->touch_active) {
             this->controls->disable(KEY_A);
         } else {
             this->controls->enable(KEY_A);
@@ -218,6 +227,8 @@ namespace Screen {
         // int tw, th;
         // SDLHelper::getDimensions(this->total_hours, &tw, &th);
         // SDLHelper::drawTexture(this->total_hours, this->theme->getMutedText(), 1215 - tw, 44 - th/2);
+
+        SDLHelper::drawText(std::to_string(ScreenManager::getInstance()->getSelectionValue()).c_str(), this->theme->getText(), 500, 200, 30);
 
         // Draw controls
         this->controls->draw();

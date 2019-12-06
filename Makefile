@@ -1,3 +1,7 @@
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
+
 # Check for DevkitPro before attempting to compile
 ifeq ($(strip $(DEVKITPRO)),)
 $(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
@@ -17,17 +21,15 @@ include $(DEVKITPRO)/libnx/switch_rules
 # OUTDIR: Directory to structure sdcard contents
 # FDIR: Directory where forwarder makefile/files/output is
 # FFILE: Name of forwarder nsp
-# TITLEID: TitleID of applet to override (only affects directory name)
 #---------------------------------------------------------------------------------
 TARGET		:=	NX-Activity-Log
 BUILD		:=	build
-SOURCES		:=	source source/screens source/ui source/ui/list source/ui/list/item source/ui/sidemenu
-INCLUDES	:=	include include/screens include/ui include/ui/list include/ui/list/item include/ui/sidemenu
+SOURCES		:=	source source/screens source/ui source/ui/list source/ui/list/item source/ui/sidemenu source/ui/selection
+INCLUDES	:=	include include/screens include/ui include/ui/list include/ui/list/item include/ui/sidemenu include/ui/selection
 ROMFS		:=	romfs
 OUTDIR		:=	sdcard
 FDIR		:=	forwarder
 FFILE		:=	exefs.nsp
-TITLEID		:=	0100000000001013
 
 #---------------------------------------------------------------------------------
 # Options for .nacp information
@@ -141,6 +143,16 @@ all: $(OUTPUT).nro
 $(OUTPUT).nro	:	$(OUTPUT).elf $(OUTPUT).nacp
 $(OUTPUT).elf	:	$(OFILES)
 $(OFILES_SRC)	: $(HFILES_BIN)
+
+#---------------------------------------------------------------------------------
+# you need a rule like this for each extension you use as binary data
+#---------------------------------------------------------------------------------
+%.bin.o	%_bin.h :	%.bin
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	@$(bin2o)
+
+-include $(DEPENDS)
 
 #---------------------------------------------------------------------------------------
 endif

@@ -31,7 +31,6 @@ namespace UI {
             static bool is_mypage;
 
             // Variables indicating touch/button state
-            static bool touch_active;
             unsigned int active_element;
 
         public:

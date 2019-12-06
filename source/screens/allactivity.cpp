@@ -93,9 +93,9 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     // Break on first press (ie. only active highlighting)
-                    if (this->touch_active && events.jbutton.which != 99) {
+                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
                         if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            this->touch_active = false;
+                            ScreenManager::getInstance()->touch_active = false;
                         }
                         if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
                             break;
@@ -187,7 +187,7 @@ namespace Screen {
 
                 // Touch (pressed)
                 case SDL_FINGERDOWN: {
-                    this->touch_active = true;
+                    ScreenManager::getInstance()->touch_active = true;
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
@@ -271,7 +271,7 @@ namespace Screen {
         }
         this->list->update(dt);
 
-        if (this->touch_active) {
+        if (ScreenManager::getInstance()->touch_active) {
             this->controls->disable(KEY_A);
         } else {
             this->controls->enable(KEY_A);
@@ -347,7 +347,7 @@ namespace Screen {
         if (this->list != nullptr) {
             delete this->list;
         }
-        this->list = new UI::SortedList(&this->touch_active, 400, 110, 850, 515);
+        this->list = new UI::SortedList(&ScreenManager::getInstance()->touch_active, 400, 110, 850, 515);
 
         // Add items to list based on config
         Config * conf = Config::getConfig();

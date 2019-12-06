@@ -5,12 +5,13 @@
 #include "details.hpp"
 #include "error.hpp"
 #include "recentactivity.hpp"
+#include "selection.hpp"
 #include "settings.hpp"
 #include <stack>
 #include "userselect.hpp"
 
 // The screen manager is a singleton class used to swap between
-// screens at any point in the code/program using a "ScreenID".
+// screens at any point in the code/program and handling panels.
 class ScreenManager {
     private:
         // Single instance of this class
@@ -28,21 +29,33 @@ class ScreenManager {
         // Current screen
         UI::Screen * screen_ptr;
 
+        // Pointer to "selection" panel
+        // Can be invoked and "covers" screen
+        UI::Selection * selection;
+        bool selection_active;
+
         // Stack storing screens to return to
         std::stack<UI::Screen *> stack;
 
     public:
+        // THIS WON'T BE PUBLIC FOREVER
+        // Bool representing if touch is active
+        bool touch_active;
+
         // (Creates and) returns instance pointer
         static ScreenManager * getInstance();
 
         // "Overwrite" current screen
         void setScreen(UI::Screen *);
-
         // Push current screen on stack to return to
         void pushScreen();
-
         // Pop screen from stack and return to it
         void popScreen();
+
+        // Activates selection panel
+        void createSelection(std::string, std::vector<std::string>);
+        // Returns index of selected item or -2 if no selector, -1 if cancelled + deletes selection
+        int getSelectionValue();
 
         // Wrappers for current screen functions
         void event();

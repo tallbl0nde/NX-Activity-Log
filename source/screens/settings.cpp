@@ -178,7 +178,7 @@ static std::string func_forwarder(bool d) {
 namespace Screen {
     Settings::Settings(User * u) : Screen::Screen() {
         // Create list
-        this->list = new UI::List(&this->touch_active, 400, 110, 850, 520);
+        this->list = new UI::List(&ScreenManager::getInstance()->touch_active, 400, 110, 850, 520);
         this->list->addItem(new UI::ListItem::Separator(15));
         this->list->addItem(new UI::ListItem::Option("Default Sorting", &func_sort));
         this->list->addItem(new UI::ListItem::ToolTip("Sets the sorting used upon application launch."));
@@ -213,9 +213,9 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     // Break on first press (ie. only active highlighting)
-                    if (this->touch_active && events.jbutton.which != 99) {
+                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
                         if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            this->touch_active = false;
+                            ScreenManager::getInstance()->touch_active = false;
                         }
                         if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
                             break;
@@ -307,7 +307,7 @@ namespace Screen {
 
                 // Touch (pressed)
                 case SDL_FINGERDOWN: {
-                    this->touch_active = true;
+                    ScreenManager::getInstance()->touch_active = true;
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
@@ -385,7 +385,7 @@ namespace Screen {
         this->menu->update(dt);
         this->list->update(dt);
 
-        if (this->touch_active) {
+        if (ScreenManager::getInstance()->touch_active) {
             this->controls->disable(KEY_A);
         } else {
             this->controls->enable(KEY_A);

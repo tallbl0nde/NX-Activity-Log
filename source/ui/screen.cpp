@@ -1,11 +1,11 @@
 #include "screen.hpp"
+#include "screenmanager.hpp"
 #include "utils.hpp"
 
 namespace UI {
     // Initalize static variables
     bool Screen::is_mypage = false;
-    SideMenu * Screen::menu = new SideMenu(&Screen::touch_active, 30, 130, 400, 500);
-    bool Screen::touch_active = true;
+    SideMenu * Screen::menu = new SideMenu(&ScreenManager::getInstance()->touch_active, 30, 130, 400, 500);
 
     Screen::Screen() : Drawable(0, 0, WIDTH, HEIGHT) {
         this->active_element = 0;

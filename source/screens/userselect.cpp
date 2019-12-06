@@ -16,7 +16,7 @@ namespace Screen {
         }
 
         // Create list
-        this->list = new UI::List(&this->touch_active, WIDTH/2 - 300, 130, 600, 480);
+        this->list = new UI::List(&ScreenManager::getInstance()->touch_active, WIDTH/2 - 300, 130, 600, 480);
         for (size_t i = 0; i < this->users.size(); i++) {
             this->list->addItem(new UI::ListItem::User(this->users[i]->getImage(), this->users[i]->getUsername()));
         }
@@ -40,9 +40,9 @@ namespace Screen {
                 // Button pressed
                 case SDL_JOYBUTTONDOWN:
                     // Break on first press (ie. only active highlighting)
-                    if (this->touch_active && events.jbutton.which != 99) {
+                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
                         if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            this->touch_active = false;
+                            ScreenManager::getInstance()->touch_active = false;
                         }
                         if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
                             break;
@@ -106,7 +106,7 @@ namespace Screen {
 
                 // Touch (pressed)
                 case SDL_FINGERDOWN: {
-                    this->touch_active = true;
+                    ScreenManager::getInstance()->touch_active = true;
                     float x = WIDTH * events.tfinger.x;
                     float y = HEIGHT * events.tfinger.y;
 
