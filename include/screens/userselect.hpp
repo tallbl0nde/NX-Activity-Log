@@ -22,7 +22,7 @@ namespace Screen {
             UserSelect(std::vector<User *>, bool);
 
             // See ui/screen.hpp for what these functions do
-            void event();
+            void event(SDL_Event);
             void update(uint32_t dt);
             void draw();
 

@@ -27,132 +27,79 @@ namespace Screen {
         this->controls->add(KEY_PLUS, "Exit", 1);
     }
 
-    void UserSelect::event() {
+    void UserSelect::event(SDL_Event e) {
         // Do nothing until fade is complete
         if (this->fade > 0) {
             return;
         }
 
-        // Poll events
-        SDL_Event events;
-        while (SDL_PollEvent(&events)) {
-            switch (events.type) {
-                // Button pressed
-                case SDL_JOYBUTTONDOWN:
-                    // Break on first press (ie. only active highlighting)
-                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
-                        if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            ScreenManager::getInstance()->touch_active = false;
-                        }
-                        if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
-                            break;
-                        }
+        switch (e.type) {
+            // Button pressed
+            case SDL_JOYBUTTONDOWN:
+                if (e.jbutton.which == 0 || e.jbutton.which == 99) {
+                    if (e.jbutton.button == Utils::key_map[KEY_PLUS] || e.jbutton.button == Utils::key_map[KEY_B]) {
+                        ScreenManager::getInstance()->stopLoop();
+
+                    // All other buttons get handled by list
+                    } else {
+                        this->list->handleButton(e.jbutton.button, e.jbutton.state);
                     }
-
-                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
-                        // Joysticks push appropriate button event
-                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
-                            SDL_Event event;
-                            event.type = SDL_JOYBUTTONDOWN;
-                            event.jbutton.which = 0;
-                            event.jbutton.state = SDL_PRESSED;
-                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
-                                event.jbutton.button = Utils::key_map[KEY_DUP];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
-                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
-                            }
-                            SDL_PushEvent(&event);
-
-                        // Plus exits app
-                        } else if (events.jbutton.button == Utils::key_map[KEY_PLUS] || events.jbutton.button == Utils::key_map[KEY_B]) {
-                            ScreenManager::getInstance()->stopLoop();
-
-                        // All other buttons get handled by list
-                        } else {
-                            this->list->handleButton(events.jbutton.button, events.jbutton.state);
-                        }
-                    }
-                    break;
-
-                case SDL_JOYBUTTONUP:
-                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
-                        // Joysticks push appropriate button event
-                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
-                            SDL_Event event;
-                            event.type = SDL_JOYBUTTONUP;
-                            event.jbutton.which = 0;
-                            event.jbutton.state = SDL_RELEASED;
-                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
-                                event.jbutton.button = Utils::key_map[KEY_DUP];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
-                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
-                            }
-                            SDL_PushEvent(&event);
-
-                        // All other buttons get handled by list
-                        } else {
-                            this->list->handleButton(events.jbutton.button, events.jbutton.state);
-                        }
-                    }
-                    break;
-
-                // Touch (pressed)
-                case SDL_FINGERDOWN: {
-                    ScreenManager::getInstance()->touch_active = true;
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-
-                    // Pressed within list
-                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
-                        this->list->touched(events.type, x, y);
-
-                    // Pass event to controls object if below bottom line
-                    } else if (y > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
                 }
+                break;
 
-                // Touch (moved)
-                case SDL_FINGERMOTION: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-                    float dx = WIDTH * events.tfinger.dx;
-                    float dy = HEIGHT * events.tfinger.dy;
-
-                    // List scrolling overrides any other actions
-                    if (this->list->isTouched()) {
-                        this->list->touched(events.type, x, y, dx, dy);
-
-                    // Pass event to controls object if was below or originally below line
-                    } else if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
+            case SDL_JOYBUTTONUP:
+                if (e.jbutton.which == 0 || e.jbutton.which == CONTROLS_ID) {
+                    this->list->handleButton(e.jbutton.button, e.jbutton.state);
                 }
+                break;
 
-                // Touch (released)
-                case SDL_FINGERUP: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
+            // Touch (pressed)
+            case SDL_FINGERDOWN: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                    if (this->list->isTouched()) {
-                        this->list->touched(events.type, x, y, (WIDTH * events.tfinger.dx), (HEIGHT * events.tfinger.dy));
+                // Pressed within list
+                if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                    this->list->touched(e.type, x, y);
 
-                    // Pass event to controls object if below bottom line
-                    } else if (y > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
+                // Pass event to controls object if below bottom line
+                } else if (y > 647) {
+                    this->controls->touched(e.type, x, y);
                 }
+                break;
+            }
+
+            // Touch (moved)
+            case SDL_FINGERMOTION: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
+                float dx = WIDTH * e.tfinger.dx;
+                float dy = HEIGHT * e.tfinger.dy;
+
+                // List scrolling overrides any other actions
+                if (this->list->isTouched()) {
+                    this->list->touched(e.type, x, y, dx, dy);
+
+                // Pass event to controls object if was below or originally below line
+                } else if (y > 647 || (HEIGHT * (e.tfinger.y - e.tfinger.dy)) > 647) {
+                    this->controls->touched(e.type, x, y);
+                }
+                break;
+            }
+
+            // Touch (released)
+            case SDL_FINGERUP: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
+
+                if (this->list->isTouched()) {
+                    this->list->touched(e.type, x, y, (WIDTH * e.tfinger.dx), (HEIGHT * e.tfinger.dy));
+
+                // Pass event to controls object if below bottom line
+                } else if (y > 647) {
+                    this->controls->touched(e.type, x, y);
+                }
+                break;
             }
         }
     }

@@ -28,77 +28,73 @@ namespace UI {
         this->title = SDLHelper::renderText(s.c_str(), TITLE_FONT_SIZE);
     }
 
-    void Selection::event() {
-         // Poll events
-        SDL_Event events;
-        while (SDL_PollEvent(&events)) {
-            switch (events.type) {
-                case SDL_JOYBUTTONDOWN:
-                    this->list->handleButton(events.jbutton.button, events.jbutton.state);
-                    break;
+    void Selection::event(SDL_Event e) {
+        switch (e.type) {
+            case SDL_JOYBUTTONDOWN:
+                this->list->handleButton(e.jbutton.button, e.jbutton.state);
+                break;
 
-                case SDL_JOYBUTTONUP:
-                    if (events.jbutton.button == Utils::key_map[KEY_B]) {
-                        this->is_active = false;
-                    } else {
-                        this->list->handleButton(events.jbutton.button, events.jbutton.state);
+            case SDL_JOYBUTTONUP:
+                if (e.jbutton.button == Utils::key_map[KEY_B]) {
+                    this->is_active = false;
+                } else {
+                    this->list->handleButton(e.jbutton.button, e.jbutton.state);
+                }
+                break;
+
+            // Touch (pressed)
+            case SDL_FINGERDOWN: {
+                float x = e.tfinger.x * WIDTH;
+                float y = e.tfinger.y * HEIGHT;
+
+                // Pressed within list
+                if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                    this->list->touched(e.type, x, y);
+
+                // Pass event to controls object if below bottom line
+                } else if (y > 647) {
+                    this->controls->touched(e.type, x, y);
+                }
+                break;
+            }
+
+            // Touch (moved)
+            case SDL_FINGERMOTION: {
+                float x = e.tfinger.x * WIDTH;
+                float y = e.tfinger.y * HEIGHT;
+                float dx = e.tfinger.dx * WIDTH;
+                float dy = e.tfinger.dy * HEIGHT;
+
+                // List scrolling overrides any other actions
+                if (this->list->isTouched()) {
+                    this->list->touched(e.type, x, y, dx, dy);
+
+                } else {
+                    // Pass event to controls object if was below or originally below line
+                    if (y > 647 || (HEIGHT * (y - dy)) > 647) {
+                        this->controls->touched(e.type, x, y);
                     }
-                    break;
+                }
+                break;
+            }
 
-                // Touch (pressed)
-                case SDL_FINGERDOWN: {
-                    float x = events.tfinger.x * WIDTH;
-                    float y = events.tfinger.y * HEIGHT;
+            // Touch (released)
+            case SDL_FINGERUP: {
+                float x = e.tfinger.x * WIDTH;
+                float y = e.tfinger.y * HEIGHT;
+                float dx = e.tfinger.dx * WIDTH;
+                float dy = e.tfinger.dy * HEIGHT;
 
-                    // Pressed within list
-                    if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
-                        this->list->touched(events.type, x, y);
+                if (this->list->isTouched()) {
+                    this->list->touched(e.type, x, y, (WIDTH * dx), (HEIGHT * dy));
 
+                } else {
                     // Pass event to controls object if below bottom line
-                    } else if (y > 647) {
-                        this->controls->touched(events.type, x, y);
+                    if (y > 647) {
+                        this->controls->touched(e.type, x, y);
                     }
-                    break;
                 }
-
-                // Touch (moved)
-                case SDL_FINGERMOTION: {
-                    float x = events.tfinger.x * WIDTH;
-                    float y = events.tfinger.y * HEIGHT;
-                    float dx = events.tfinger.dx * WIDTH;
-                    float dy = events.tfinger.dy * HEIGHT;
-
-                    // List scrolling overrides any other actions
-                    if (this->list->isTouched()) {
-                        this->list->touched(events.type, x, y, dx, dy);
-
-                    } else {
-                        // Pass event to controls object if was below or originally below line
-                        if (y > 647 || (HEIGHT * (y - dy)) > 647) {
-                            this->controls->touched(events.type, x, y);
-                        }
-                    }
-                    break;
-                }
-
-                // Touch (released)
-                case SDL_FINGERUP: {
-                    float x = events.tfinger.x * WIDTH;
-                    float y = events.tfinger.y * HEIGHT;
-                    float dx = events.tfinger.dx * WIDTH;
-                    float dy = events.tfinger.dy * HEIGHT;
-
-                    if (this->list->isTouched()) {
-                        this->list->touched(events.type, x, y, (WIDTH * dx), (HEIGHT * dy));
-
-                    } else {
-                        // Pass event to controls object if below bottom line
-                        if (y > 647) {
-                            this->controls->touched(events.type, x, y);
-                        }
-                    }
-                    break;
-                }
+                break;
             }
         }
     }
@@ -108,7 +104,7 @@ namespace UI {
 
         // Close when an item is chosen
         if (this->list->getChosen() != -1) {
-            // this->setActive(false);
+            // this->is_active = false;
         }
     }
 

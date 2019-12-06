@@ -11,61 +11,54 @@ namespace Screen {
         this->controls->add(KEY_PLUS, "Exit", 0);
     }
 
-    void Error::event() {
-        SDL_Event events;
-        while (SDL_PollEvent(&events)) {
-            switch (events.type) {
-                // Button pressed down
-                case SDL_JOYBUTTONDOWN:
-                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
-                        // + button
-                        if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            ScreenManager::getInstance()->stopLoop();
-                        }
+    void Error::event(SDL_Event e) {
+        switch (e.type) {
+            // Button pressed down
+            case SDL_JOYBUTTONDOWN:
+                if (e.jbutton.which == 0 || e.jbutton.which == CONTROLS_ID) {
+                    // + button
+                    if (e.jbutton.button == Utils::key_map[KEY_PLUS]) {
+                        ScreenManager::getInstance()->stopLoop();
                     }
-                    break;
-
-                // Touch (pressed)
-                case SDL_FINGERDOWN: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-
-                    // Pass event to controls object if below bottom line
-                    if (y > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
                 }
+                break;
 
-                // Touch (moved)
-                case SDL_FINGERMOTION: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
+            // Touch (pressed)
+            case SDL_FINGERDOWN: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                    // Pass event to controls object if was below or originally below line
-                    if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
+                // Pass event to controls object if below bottom line
+                if (y > 647) {
+                    this->controls->touched(e.type, x, y);
                 }
+                break;
+            }
 
-                // Touch (released)
-                case SDL_FINGERUP: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
+            // Touch (moved)
+            case SDL_FINGERMOTION: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                    // Pass event to controls object if below bottom line
-                    if (y > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
+                // Pass event to controls object if was below or originally below line
+                if (y > 647 || (HEIGHT * (e.tfinger.y - e.tfinger.dy)) > 647) {
+                    this->controls->touched(e.type, x, y);
                 }
+                break;
+            }
+
+            // Touch (released)
+            case SDL_FINGERUP: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
+
+                // Pass event to controls object if below bottom line
+                if (y > 647) {
+                    this->controls->touched(e.type, x, y);
+                }
+                break;
             }
         }
-    }
-
-    void Error::update(uint32_t dt) {
-        Screen::update(dt);
     }
 
     void Error::draw() {

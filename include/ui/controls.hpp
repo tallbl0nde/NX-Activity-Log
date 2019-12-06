@@ -18,6 +18,9 @@ struct Button {
     bool touched = false;
 };
 
+// Dummy controller ID for button presses
+#define CONTROLS_ID 99
+
 namespace UI {
     // Controls is the element where controls are shown along the bottom of the screen
     // Buttons can easily be added/removed and enabled/disabled

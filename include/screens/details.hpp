@@ -38,10 +38,9 @@ namespace Screen {
             // Renders relevant textures for current title object
             void renderTextures();
 
-            void event();
-
+            // See ui/screen.hpp for what these functions do
+            void event(SDL_Event);
             void update(uint32_t dt);
-
             void draw();
 
             ~Details();

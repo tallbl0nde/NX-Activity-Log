@@ -14,10 +14,8 @@ namespace Screen {
         public:
             Error(std::string);
 
-            void event();
-
-            void update(uint32_t dt);
-
+            // See ui/screen.hpp for what these functions do
+            void event(SDL_Event);
             void draw();
 
             ~Error();

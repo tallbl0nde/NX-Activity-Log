@@ -38,7 +38,7 @@ namespace UI {
             Screen();
 
             // Called before update, handles any events
-            virtual void event() = 0;
+            virtual void event(SDL_Event) = 0;
 
             // Called before draw, update any relevant variables here
             // dt is the time since last update call

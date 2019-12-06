@@ -19,151 +19,99 @@ namespace Screen {
         this->menu->setActive(true);
     }
 
-    void RecentActivity::event(){
-        // Poll events
-        SDL_Event events;
-        while (SDL_PollEvent(&events)) {
-            switch (events.type) {
-                // Button pressed
-                case SDL_JOYBUTTONDOWN:
-                    // Break on first press (ie. only active highlighting)
-                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
-                        if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            ScreenManager::getInstance()->touch_active = false;
+    void RecentActivity::event(SDL_Event e){
+        switch (e.type) {
+            // Button pressed
+            case SDL_JOYBUTTONDOWN:
+                if (e.jbutton.which == 0 || e.jbutton.which == 99) {
+                    // Plus exits app
+                    if (e.jbutton.button == Utils::key_map[KEY_PLUS]) {
+                        if (!this->is_mypage) {
+                            ScreenManager::getInstance()->stopLoop();
                         }
-                        if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
+
+                    // X opens selection
+                    } else if (e.jbutton.button == Utils::key_map[KEY_X]) {
+                        std::vector<std::string> v;
+                        v.push_back("Day");
+                        v.push_back("Month");
+                        v.push_back("Year");
+                        ScreenManager::getInstance()->createSelection("View by", v);
+
+                    // All other buttons get handled by active element
+                    } else {
+                        switch (this->active_element) {
+                            case (int)ActiveElement::SideMenu:
+                                this->menu->handleButton(e.jbutton.button, e.jbutton.state);
+                                break;
+                        }
+                    }
+                }
+                break;
+
+            case SDL_JOYBUTTONUP:
+                if (e.jbutton.which == 0 || e.jbutton.which == 99) {
+                    switch (this->active_element) {
+                        case (int)ActiveElement::SideMenu:
+                            this->menu->handleButton(e.jbutton.button, e.jbutton.state);
                             break;
-                        }
                     }
+                }
+                break;
 
-                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
-                        // Joysticks push appropriate button event
-                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
-                            SDL_Event event;
-                            event.type = SDL_JOYBUTTONDOWN;
-                            event.jbutton.which = 0;
-                            event.jbutton.state = SDL_PRESSED;
-                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
-                                event.jbutton.button = Utils::key_map[KEY_DUP];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
-                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
-                            }
-                            SDL_PushEvent(&event);
+            // Touch (pressed)
+            case SDL_FINGERDOWN: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                        // Plus exits app
-                        } else if (events.jbutton.button == Utils::key_map[KEY_PLUS]) {
-                            if (!this->is_mypage) {
-                                ScreenManager::getInstance()->stopLoop();
-                            }
+                // Pressed within menu
+                if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
+                    this->menu->touched(e.type, x, y);
+                    this->active_element = (int)ActiveElement::SideMenu;
 
-                        // X opens selection
-                        } else if (events.jbutton.button == Utils::key_map[KEY_X]) {
-                            std::vector<std::string> v;
-                            v.push_back("Day");
-                            v.push_back("Month");
-                            v.push_back("Year");
-                            ScreenManager::getInstance()->createSelection("View by", v);
+                // Pass event to controls object if below bottom line
+                } else if (y > 647) {
+                    this->controls->touched(e.type, x, y);
+                }
+                break;
+            }
 
-                        // All other buttons get handled by active element
-                        } else {
-                            switch (this->active_element) {
-                                case (int)ActiveElement::SideMenu:
-                                    this->menu->handleButton(events.jbutton.button, events.jbutton.state);
-                                    break;
-                            }
-                        }
+            // Touch (moved)
+            case SDL_FINGERMOTION: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
+                float dx = WIDTH * e.tfinger.dx;
+                float dy = HEIGHT * e.tfinger.dy;
+
+                // Moved after being in menu
+                if ((x-dx) >= this->menu->getX() && (x-dx) <= this->menu->getX() + this->menu->getW() && (y-dy) >= this->menu->getY() && (y-dy) <= this->menu->getY() + this->menu->getH()) {
+                    this->menu->touched(e.type, x, y);
+
+                } else {
+                    // Pass event to controls object if was below or originally below line
+                    if (y > 647 || (HEIGHT * (e.tfinger.y - e.tfinger.dy)) > 647) {
+                        this->controls->touched(e.type, x, y);
                     }
-                    break;
+                }
+                break;
+            }
 
-                case SDL_JOYBUTTONUP:
-                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
-                        // Joysticks push appropriate button event
-                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
-                            SDL_Event event;
-                            event.type = SDL_JOYBUTTONUP;
-                            event.jbutton.which = 0;
-                            event.jbutton.state = SDL_RELEASED;
-                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
-                                event.jbutton.button = Utils::key_map[KEY_DUP];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
-                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
-                            }
-                            SDL_PushEvent(&event);
+            // Touch (released)
+            case SDL_FINGERUP: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                        // All other buttons get handled by active element
-                        } else {
-                            switch (this->active_element) {
-                                case (int)ActiveElement::SideMenu:
-                                    this->menu->handleButton(events.jbutton.button, events.jbutton.state);
-                                    break;
-                            }
-                        }
-                    }
-                    break;
+                // Released within menu
+                if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
+                    this->menu->touched(e.type, x, y);
 
-                // Touch (pressed)
-                case SDL_FINGERDOWN: {
-                    ScreenManager::getInstance()->touch_active = true;
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-
-                    // Pressed within menu
-                    if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
-                        this->menu->touched(events.type, x, y);
-                        this->active_element = (int)ActiveElement::SideMenu;
-
+                } else {
                     // Pass event to controls object if below bottom line
-                    } else if (y > 647) {
-                        this->controls->touched(events.type, x, y);
+                    if (y > 647) {
+                        this->controls->touched(e.type, x, y);
                     }
-                    break;
                 }
-
-                // Touch (moved)
-                case SDL_FINGERMOTION: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-                    float dx = WIDTH * events.tfinger.dx;
-                    float dy = HEIGHT * events.tfinger.dy;
-
-                    // Moved after being in menu
-                    if ((x-dx) >= this->menu->getX() && (x-dx) <= this->menu->getX() + this->menu->getW() && (y-dy) >= this->menu->getY() && (y-dy) <= this->menu->getY() + this->menu->getH()) {
-                        this->menu->touched(events.type, x, y);
-
-                    } else {
-                        // Pass event to controls object if was below or originally below line
-                        if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
-                            this->controls->touched(events.type, x, y);
-                        }
-                    }
-                    break;
-                }
-
-                // Touch (released)
-                case SDL_FINGERUP: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-
-                    // Released within menu
-                    if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
-                        this->menu->touched(events.type, x, y);
-
-                    } else {
-                        // Pass event to controls object if below bottom line
-                        if (y > 647) {
-                            this->controls->touched(events.type, x, y);
-                        }
-                    }
-                    break;
-                }
+                break;
             }
         }
     }

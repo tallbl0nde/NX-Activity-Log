@@ -25,7 +25,7 @@ namespace UI {
             // Constructor takes title string and vector of strings for items
             Selection(bool *, std::string, std::vector<std::string>);
 
-            void event();
+            void event(SDL_Event);
             void update(uint32_t);
             void draw();
 

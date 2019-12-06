@@ -1,4 +1,5 @@
 #include "screenmanager.hpp"
+#include "utils.hpp"
 
 ScreenManager * ScreenManager::instance = nullptr;
 
@@ -64,13 +65,64 @@ int ScreenManager::getSelectionValue() {
 }
 
 void ScreenManager::event() {
-    if (this->selection_active) {
-        this->selection->event();
-        return;
-    }
+    // Parse events and pass to screen (and selection panel if active)
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {
+        switch (e.type) {
+            // Button pressed/released
+            case SDL_JOYBUTTONDOWN:
+            case SDL_JOYBUTTONUP:
+                // Joysticks push appropriate button event
+                if (e.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && e.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
+                    SDL_Event event;
+                    event.type = e.type;
+                    event.jbutton.which = 0;
+                    event.jbutton.state = e.jbutton.state;
+                    if (e.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || e.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
+                        event.jbutton.button = Utils::key_map[KEY_DLEFT];
+                    } else if (e.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || e.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
+                        event.jbutton.button = Utils::key_map[KEY_DRIGHT];
+                    } else if (e.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || e.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
+                        event.jbutton.button = Utils::key_map[KEY_DUP];
+                    } else if (e.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || e.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
+                        event.jbutton.button = Utils::key_map[KEY_DDOWN];
+                    }
+                    SDL_PushEvent(&event);
+                    break;
+                }
 
-    if (this->screen_ptr != nullptr && !this->changed) {
-        this->screen_ptr->event();
+                // Break on first press (ie. only activate highlighting)
+                if (this->touch_active && e.jbutton.which != CONTROLS_ID) {
+                    this->touch_active = false;
+                }
+
+                // Pass events to active screen (and selection)
+                if (this->selection_active) {
+                    this->selection->event(e);
+                    break;
+                }
+
+                if (this->screen_ptr != nullptr && !this->changed) {
+                    this->screen_ptr->event(e);
+                }
+                break;
+
+            case SDL_FINGERDOWN:
+            case SDL_FINGERMOTION:
+            case SDL_FINGERUP:
+                this->touch_active = true;
+
+                // Pass events to active screen (and selection)
+                if (this->selection_active) {
+                    this->selection->event(e);
+                    break;
+                }
+
+                if (this->screen_ptr != nullptr && !this->changed) {
+                    this->screen_ptr->event(e);
+                }
+                break;
+        }
     }
 }
 

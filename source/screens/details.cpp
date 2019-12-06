@@ -95,120 +95,66 @@ namespace Screen {
         }
     }
 
-    void Details::event() {
-        // Poll events
-        SDL_Event events;
-        while (SDL_PollEvent(&events)) {
-            switch (events.type) {
-                // Button pressed
-                case SDL_JOYBUTTONDOWN:
-                    // Break on first press (ie. only active highlighting)
-                    if (ScreenManager::getInstance()->touch_active && events.jbutton.which != 99) {
-                        if (!(events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN])) {
-                            ScreenManager::getInstance()->touch_active = false;
+    void Details::event(SDL_Event e) {
+        switch (e.type) {
+            // Button pressed
+            case SDL_JOYBUTTONDOWN:
+                if (e.jbutton.which == 0 || e.jbutton.which == CONTROLS_ID) {
+                    // B returns to previous screen
+                    if (e.jbutton.button == Utils::key_map[KEY_B]) {
+                        ScreenManager::getInstance()->popScreen();
+
+                    // L moves "up" a title
+                    } else if (e.jbutton.button == Utils::key_map[KEY_L]) {
+                        if (this->title > 0) {
+                            this->title--;
                         }
-                        if (events.jbutton.button >= Utils::key_map[KEY_DLEFT] && events.jbutton.button <= Utils::key_map[KEY_DDOWN] && this->active_element != (int)ActiveElement::List) {
-                            break;
+                        this->renderTextures();
+
+                    // R moves "down" a title
+                    } else if (e.jbutton.button == Utils::key_map[KEY_R]) {
+                        if (this->title < this->titles.size() - 1) {
+                            this->title++;
                         }
+                        this->renderTextures();
                     }
-
-                    if (events.jbutton.which == 0 || events.jbutton.which == 99) {
-                        // Joysticks push appropriate button event
-                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
-                            SDL_Event event;
-                            event.type = SDL_JOYBUTTONDOWN;
-                            event.jbutton.which = 0;
-                            event.jbutton.state = SDL_PRESSED;
-                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
-                                event.jbutton.button = Utils::key_map[KEY_DUP];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
-                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
-                            }
-                            SDL_PushEvent(&event);
-
-                        // B returns to previous screen
-                        } else if (events.jbutton.button == Utils::key_map[KEY_B]) {
-                            ScreenManager::getInstance()->popScreen();
-
-                        // L moves "up" a title
-                        } else if (events.jbutton.button == Utils::key_map[KEY_L]) {
-                            if (this->title > 0) {
-                                this->title--;
-                            }
-                            this->renderTextures();
-
-                        // R moves "down" a title
-                        } else if (events.jbutton.button == Utils::key_map[KEY_R]) {
-                            if (this->title < this->titles.size() - 1) {
-                                this->title++;
-                            }
-                            this->renderTextures();
-                        }
-                    }
-                    break;
-
-                case SDL_JOYBUTTONUP:
-                    if (events.jbutton.which == 0) {
-                        // Joysticks push appropriate button event
-                        if (events.jbutton.button >= Utils::key_map[KEY_LSTICK_LEFT] && events.jbutton.button <= Utils::key_map[KEY_RSTICK_DOWN]) {
-                            SDL_Event event;
-                            event.type = SDL_JOYBUTTONUP;
-                            event.jbutton.which = 0;
-                            event.jbutton.state = SDL_RELEASED;
-                            if (events.jbutton.button == Utils::key_map[KEY_LSTICK_LEFT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_LEFT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DLEFT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_RIGHT] || events.jbutton.button == Utils::key_map[KEY_RSTICK_RIGHT]) {
-                                event.jbutton.button = Utils::key_map[KEY_DRIGHT];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_UP] || events.jbutton.button == Utils::key_map[KEY_RSTICK_UP]) {
-                                event.jbutton.button = Utils::key_map[KEY_DUP];
-                            } else if (events.jbutton.button == Utils::key_map[KEY_LSTICK_DOWN] || events.jbutton.button == Utils::key_map[KEY_RSTICK_DOWN]) {
-                                event.jbutton.button = Utils::key_map[KEY_DDOWN];
-                            }
-                            SDL_PushEvent(&event);
-                        }
-                    }
-                    break;
-
-                // Touch (pressed)
-                case SDL_FINGERDOWN: {
-                    ScreenManager::getInstance()->touch_active = true;
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
-
-                    // Pass event to controls object if below bottom line
-                    if (y > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
                 }
+                break;
 
-                // Touch (moved)
-                case SDL_FINGERMOTION: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
+            // Touch (pressed)
+            case SDL_FINGERDOWN: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                    // Pass event to controls object if was below or originally below line
-                    if (y > 647 || (HEIGHT * (events.tfinger.y - events.tfinger.dy)) > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
+                // Pass event to controls object if below bottom line
+                if (y > 647) {
+                    this->controls->touched(e.type, x, y);
                 }
+                break;
+            }
 
-                // Touch (released)
-                case SDL_FINGERUP: {
-                    float x = WIDTH * events.tfinger.x;
-                    float y = HEIGHT * events.tfinger.y;
+            // Touch (moved)
+            case SDL_FINGERMOTION: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
 
-                    // Pass event to controls object if below bottom line
-                    if (y > 647) {
-                        this->controls->touched(events.type, x, y);
-                    }
-                    break;
+                // Pass event to controls object if was below or originally below line
+                if (y > 647 || (HEIGHT * (e.tfinger.y - e.tfinger.dy)) > 647) {
+                    this->controls->touched(e.type, x, y);
                 }
+                break;
+            }
+
+            // Touch (released)
+            case SDL_FINGERUP: {
+                float x = WIDTH * e.tfinger.x;
+                float y = HEIGHT * e.tfinger.y;
+
+                // Pass event to controls object if below bottom line
+                if (y > 647) {
+                    this->controls->touched(e.type, x, y);
+                }
+                break;
             }
         }
     }

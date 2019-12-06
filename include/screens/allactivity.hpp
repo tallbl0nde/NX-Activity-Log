@@ -29,7 +29,8 @@ namespace Screen {
             // Additionally takes a user object
             AllActivity(User *);
 
-            void event();
+            // See ui/screen.hpp for what these functions do
+            void event(SDL_Event);
             void update(uint32_t dt);
             void draw();
 

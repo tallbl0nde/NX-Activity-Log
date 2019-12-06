@@ -21,7 +21,7 @@ namespace Screen {
             // Additionally takes a user object
             RecentActivity(User *);
 
-            void event();
+            void event(SDL_Event);
             void update(uint32_t dt);
             void draw();
 

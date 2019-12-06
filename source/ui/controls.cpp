@@ -190,14 +190,14 @@ namespace UI {
                             // Send pushed event
                             SDL_Event event;
                             event.type = SDL_JOYBUTTONDOWN;
-                            event.jbutton.which = 99;
+                            event.jbutton.which = CONTROLS_ID;
                             event.jbutton.button = i;
                             event.jbutton.state = SDL_PRESSED;
                             SDL_PushEvent(&event);
                             // Send released event (so basically a verrry fast button press)
                             SDL_Event event2;
                             event2.type = SDL_JOYBUTTONUP;
-                            event2.jbutton.which = 99;
+                            event2.jbutton.which = CONTROLS_ID;
                             event2.jbutton.button = i;
                             event2.jbutton.state = SDL_RELEASED;
                             SDL_PushEvent(&event2);
