@@ -1,6 +1,8 @@
 #ifndef SCREEN_RECENTACTIVITY_HPP
 #define SCREEN_RECENTACTIVITY_HPP
 
+#include "list.hpp"
+#include "PlayData.hpp"
 #include "screen.hpp"
 #include "selection.hpp"
 #include "User.hpp"
@@ -9,8 +11,10 @@
 namespace Screen {
     class RecentActivity : public UI::Screen {
         private:
-            // Selection object
-            UI::Selection * selection;
+            // List
+            UI::List * list;
+            // PlayData object
+            PlayData * playdata;
             // Top right time texture
             SDL_Texture * total_hours;
             // Used to print/render user name and image

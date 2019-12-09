@@ -1,11 +1,18 @@
+#include "listitem_recentactivity.hpp"
 #include "screenmanager.hpp"
 #include "SDLHelper.hpp"
 #include "utils.hpp"
 
 namespace Screen {
     RecentActivity::RecentActivity(User * u) : Screen::Screen() {
+        this->list = new UI::List(&ScreenManager::getInstance()->touch_active, 400, 110, 850, 515);
+        this->playdata = new PlayData();
         this->user = u;
         this->total_hours = nullptr;
+
+        RecentPlayStatistics * stats = this->playdata->getRecentStatisticsForUser(0x01007ef00011e000, 0, 1575887936, this->user->getID());
+        this->list->addItem(new UI::ListItem::RecentActivity(stats));
+        delete stats;
 
         // Set controls
         this->controls->add(KEY_A, "OK", 0);
@@ -17,6 +24,7 @@ namespace Screen {
         // Set active element
         this->active_element = (int)ActiveElement::SideMenu;
         this->menu->setActive(true);
+        this->list->setActive(false);
     }
 
     void RecentActivity::event(SDL_Event e){
@@ -30,11 +38,25 @@ namespace Screen {
                             ScreenManager::getInstance()->stopLoop();
                         }
 
+                    // Left and right will swap active element
+                    } else if (e.jbutton.button == Utils::key_map[KEY_DLEFT]) {
+                        this->active_element = (int)ActiveElement::SideMenu;
+                        this->menu->setActive(true);
+                        this->list->setActive(false);
+                    } else if (e.jbutton.button == Utils::key_map[KEY_DRIGHT]) {
+                        this->active_element = (int)ActiveElement::List;
+                        this->menu->setActive(false);
+                        this->list->setActive(true);
+
                     // All other buttons get handled by active element
                     } else {
                         switch (this->active_element) {
                             case (int)ActiveElement::SideMenu:
                                 this->menu->handleButton(e.jbutton.button, e.jbutton.state);
+                                break;
+
+                            case (int)ActiveElement::List:
+                                this->list->handleButton(e.jbutton.button, e.jbutton.state);
                                 break;
                         }
                     }
@@ -47,6 +69,10 @@ namespace Screen {
                         case (int)ActiveElement::SideMenu:
                             this->menu->handleButton(e.jbutton.button, e.jbutton.state);
                             break;
+
+                        case (int)ActiveElement::List:
+                            this->list->handleButton(e.jbutton.button, e.jbutton.state);
+                            break;
                     }
                 }
                 break;
@@ -56,10 +82,19 @@ namespace Screen {
                 float x = WIDTH * e.tfinger.x;
                 float y = HEIGHT * e.tfinger.y;
 
+                // Pressed within list
+                if (x >= this->list->getX() && x <= this->list->getX() + this->list->getW() && y >= this->list->getY() && y <= this->list->getY() + this->list->getH()) {
+                    this->list->touched(e.type, x, y);
+                    this->active_element = (int)ActiveElement::List;
+                    this->menu->setActive(false);
+                    this->list->setActive(true);
+
                 // Pressed within menu
-                if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
+                } else if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
                     this->menu->touched(e.type, x, y);
                     this->active_element = (int)ActiveElement::SideMenu;
+                    this->menu->setActive(true);
+                    this->list->setActive(false);
 
                 // Pass event to controls object if below bottom line
                 } else if (y > 647) {
@@ -75,8 +110,12 @@ namespace Screen {
                 float dx = WIDTH * e.tfinger.dx;
                 float dy = HEIGHT * e.tfinger.dy;
 
+                // List scrolling overrides any other actions
+                if (this->list->isTouched()) {
+                    this->list->touched(e.type, x, y, dx, dy);
+
                 // Moved after being in menu
-                if ((x-dx) >= this->menu->getX() && (x-dx) <= this->menu->getX() + this->menu->getW() && (y-dy) >= this->menu->getY() && (y-dy) <= this->menu->getY() + this->menu->getH()) {
+                } else if ((x-dx) >= this->menu->getX() && (x-dx) <= this->menu->getX() + this->menu->getW() && (y-dy) >= this->menu->getY() && (y-dy) <= this->menu->getY() + this->menu->getH()) {
                     this->menu->touched(e.type, x, y);
 
                 } else {
@@ -93,8 +132,11 @@ namespace Screen {
                 float x = WIDTH * e.tfinger.x;
                 float y = HEIGHT * e.tfinger.y;
 
+                if (this->list->isTouched()) {
+                    this->list->touched(e.type, x, y, (WIDTH * e.tfinger.dx), (HEIGHT * e.tfinger.dy));
+
                 // Released within menu
-                if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
+                } else if (x >= this->menu->getX() && x <= this->menu->getX() + this->menu->getW() && y >= this->menu->getY() && y <= this->menu->getY() + this->menu->getH()) {
                     this->menu->touched(e.type, x, y);
 
                 } else {
@@ -117,6 +159,7 @@ namespace Screen {
         } else {
             this->controls->enable(KEY_A);
         }
+        this->list->update(dt);
 
         // Change screen if menu selected
         switch (this->menu->getSelected()) {
@@ -146,6 +189,9 @@ namespace Screen {
         SDLHelper::setColour(this->theme->getAltBG());
         SDLHelper::drawRect(400, 88, 850, 560);
 
+        // Draw list of items
+        this->list->draw();
+
         // Draw over list to hide scrolling
         SDLHelper::setColour(this->theme->getBG());
         SDLHelper::drawRect(430, 0, 780, 87);
@@ -173,6 +219,7 @@ namespace Screen {
     }
 
     RecentActivity::~RecentActivity() {
-
+        delete this->list;
+        delete this->playdata;
     }
 }
