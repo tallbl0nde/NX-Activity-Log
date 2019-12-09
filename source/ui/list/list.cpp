@@ -103,7 +103,6 @@ namespace UI {
                 this->items[this->highlight_item]->setSelected(false);
 
                 // Move to next selectable item
-
                 for (unsigned int i = this->highlight_item + 1; i <= max_pos; i++) {
                     if (this->items[i]->isSelectable()) {
                         moved = true;
@@ -191,8 +190,10 @@ namespace UI {
 
         for (; i < this->items.size(); i++) {
             // Break out of loop if element is not seen
-            if (this->items[i]->getOffset() > this->scroll_pos + this->h) {
-                break;
+            if (i > 0) {
+                if (this->items[i-1]->getOffset() > this->scroll_pos + this->h) {
+                    break;
+                }
             }
 
             // Highlight appropriate entry
@@ -464,6 +465,26 @@ namespace UI {
 
     int List::getChosen() {
         return this->chosen;
+    }
+
+    void List::setH(int h) {
+        Drawable::setH(h);
+
+        // Update maximum scroll pos
+        this->max_scroll_pos = 0;
+        for (size_t i = 0; i < this->items.size(); i++) {
+            this->items[i]->setOffset(this->max_scroll_pos);
+            this->max_scroll_pos += this->items[i]->getH();
+        }
+        this->max_scroll_pos += this->offset;
+
+        // If the summed height of all items is less than the list height don't scroll
+        if (this->max_scroll_pos <= this->h) {
+            this->max_scroll_pos = 0;
+            return;
+        }
+
+        this->max_scroll_pos -= this->h;
     }
 
     List::~List() {

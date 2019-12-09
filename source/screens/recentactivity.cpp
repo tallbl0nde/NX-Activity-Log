@@ -30,14 +30,6 @@ namespace Screen {
                             ScreenManager::getInstance()->stopLoop();
                         }
 
-                    // X opens selection
-                    } else if (e.jbutton.button == Utils::key_map[KEY_X]) {
-                        std::vector<std::string> v;
-                        v.push_back("Day");
-                        v.push_back("Month");
-                        v.push_back("Year");
-                        ScreenManager::getInstance()->createSelection("View by", v);
-
                     // All other buttons get handled by active element
                     } else {
                         switch (this->active_element) {
@@ -175,8 +167,6 @@ namespace Screen {
         // int tw, th;
         // SDLHelper::getDimensions(this->total_hours, &tw, &th);
         // SDLHelper::drawTexture(this->total_hours, this->theme->getMutedText(), 1215 - tw, 44 - th/2);
-
-        SDLHelper::drawText(std::to_string(ScreenManager::getInstance()->getSelectionValue()).c_str(), this->theme->getText(), 500, 200, 30);
 
         // Draw controls
         this->controls->draw();

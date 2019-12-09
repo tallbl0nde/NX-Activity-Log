@@ -4,6 +4,7 @@
 #include "allactivity.hpp"
 #include "details.hpp"
 #include "error.hpp"
+#include <functional>
 #include "recentactivity.hpp"
 #include "selection.hpp"
 #include "settings.hpp"
@@ -33,6 +34,7 @@ class ScreenManager {
         // Can be invoked and "covers" screen
         UI::Selection * selection;
         bool selection_active;
+        std::function<void(int)> selection_callback;
 
         // Stack storing screens to return to
         std::stack<UI::Screen *> stack;
@@ -53,9 +55,7 @@ class ScreenManager {
         void popScreen();
 
         // Activates selection panel
-        void createSelection(std::string, std::vector<std::string>);
-        // Returns index of selected item or -2 if no selector, -1 if cancelled + deletes selection
-        int getSelectionValue();
+        void createSelection(std::string, std::vector<std::string>, std::function<void(int)>);
 
         // Wrappers for current screen functions
         void event();

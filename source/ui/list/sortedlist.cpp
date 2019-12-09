@@ -11,15 +11,13 @@
 
 namespace UI {
     SortedList::SortedList(bool * b, int x, int y, int w, int h) : List(b, x, y, w, h, LIST_OFFSET) {
-        this->sorting = SortType::AlphaAsc;
         this->sort_text = nullptr;
     }
 
     void SortedList::addItem(List_Item * item) {
         // Sort list using saved config if no item provided
         if (item == nullptr) {
-            Config * conf = Config::getConfig();
-            this->sort(conf->getGeneralSort());
+            this->sort(Config::getConfig()->getGeneralSort());
 
         // Otherwise add item
         } else {
@@ -38,45 +36,9 @@ namespace UI {
 
     void SortedList::handleButton(uint8_t button, uint8_t state) {
         List::handleButton(button, state);
-
-        // Perform sort when minus pressed
-        if (state == SDL_PRESSED) {
-            if (button == Utils::key_map[KEY_MINUS]) {
-                switch (this->sorting) {
-                    case AlphaAsc:
-                        this->sort(HoursAsc);
-                        break;
-                    case HoursAsc:
-                        this->sort(HoursDec);
-                        break;
-                    case HoursDec:
-                        this->sort(LaunchAsc);
-                        break;
-                    case LaunchAsc:
-                        this->sort(LaunchDec);
-                        break;
-                    case LaunchDec:
-                        this->sort(FirstPlayed);
-                        break;
-                    case FirstPlayed:
-                        this->sort(LastPlayed);
-                        break;
-                    case LastPlayed:
-                        this->sort(AlphaAsc);
-                        break;
-                }
-
-                this->setScrollPos(0);
-            }
-        }
     }
 
     void SortedList::sort(SortType type) {
-        // Always sort alphabetically first
-        std::sort(this->items.begin(), this->items.end(), [](List_Item * lhs, List_Item * rhs){
-            return static_cast<ListItem::Activity *>(lhs)->getTitleObj()->getName() < static_cast<ListItem::Activity *>(rhs)->getTitleObj()->getName();
-        });
-
         std::string str;
         switch (type){
             case AlphaAsc:
@@ -123,17 +85,15 @@ namespace UI {
                 break;
         }
 
-        // Set sorted type
-        this->sorting = type;
-
         // Stop scrolling
         this->is_scrolling = false;
         this->highlight_item = 0;
+        this->setScrollPos(0);
 
         // Refresh item rankings
         unsigned int offset = 0;
         for (size_t i = 0; i < this->items.size(); i++) {
-            if (this->sorting != AlphaAsc) {
+            if (type != AlphaAsc) {
                 static_cast<ListItem::Activity *>(this->items[i])->setRank(i + 1);
             } else {
                 static_cast<ListItem::Activity *>(this->items[i])->setRank(0);

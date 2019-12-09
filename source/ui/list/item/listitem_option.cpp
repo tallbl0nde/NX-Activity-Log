@@ -12,7 +12,6 @@ namespace UI::ListItem {
         // Create text textures
         this->text = SDLHelper::renderText(str.c_str(), TEXT_SIZE);
         std::string s = (*f)(false);
-        this->value = SDLHelper::renderText(s.c_str(), TEXT_SIZE);
 
         // Store function pointer
         this->selected_func = f;
@@ -32,18 +31,18 @@ namespace UI::ListItem {
 
         // Draw text
         SDLHelper::drawTexture(this->text, this->theme->getText(), this->x + INDENT, this->y + (BOX_HEIGHT-TEXT_SIZE)/2);
+        SDL_Texture * tex = SDLHelper::renderText((*this->selected_func)(false).c_str(), TEXT_SIZE);
         int tw, th;
-        SDLHelper::getDimensions(this->value, &tw, &th);
-        SDLHelper::drawTexture(this->value, this->theme->getAccent(), this->x + this->w - tw - INDENT, this->y + (BOX_HEIGHT-TEXT_SIZE)/2);
+        SDLHelper::getDimensions(tex, &tw, &th);
+        SDLHelper::drawTexture(tex, this->theme->getAccent(), this->x + this->w - tw - INDENT, this->y + (BOX_HEIGHT-TEXT_SIZE)/2);
+        SDLHelper::destroyTexture(tex);
     }
 
     void Option::pressed() {
         std::string s = (*this->selected_func)(true);
-        this->value = SDLHelper::renderText(s.c_str(), TEXT_SIZE);
     }
 
     Option::~Option() {
         SDLHelper::destroyTexture(this->text);
-        SDLHelper::destroyTexture(this->value);
     }
 };

@@ -1,12 +1,10 @@
 #include "config.hpp"
 #include <filesystem>
-#include "SDLHelper.hpp"
 #include "list.hpp"
 #include "listitem_option.hpp"
 #include "listitem_tooltip.hpp"
 #include "listitem_separator.hpp"
 #include "screenmanager.hpp"
-#include "utils.hpp"
 
 // FUNCTIONS PASSED TO ITEMS //
 // Passed to item to toggle deleted games
@@ -31,21 +29,35 @@ static std::string func_deleted(bool d) {
 
 // Passed to item to change theme
 static std::string func_theme(bool d) {
-    std::string ret;
-
     Config * conf = Config::getConfig();
-    ThemeType t = conf->getGeneralTheme();
+
+    // If tapped...
     if (d) {
-        if (t == T_Light) {
-            t = T_Dark;
-        } else if (t == T_Dark) {
-            t = T_Auto;
-        } else if (t == T_Auto) {
-            t = T_Light;
-        }
-        conf->setGeneralTheme(t);
+        std::vector<std::string> v;
+        v.push_back("Auto");
+        v.push_back("Dark");
+        v.push_back("Light");
+        ScreenManager::getInstance()->createSelection("Theme", v, [conf](int c){
+            switch (c) {
+                case -1:
+                    // Do nothing if nothing selected
+                    break;
+                case 0:
+                    conf->setGeneralTheme(T_Auto);
+                    break;
+                case 1:
+                    conf->setGeneralTheme(T_Dark);
+                    break;
+                case 2:
+                    conf->setGeneralTheme(T_Light);
+                    break;
+            }
+        });
     }
 
+    // Return theme stored in config
+    std::string ret;
+    ThemeType t = conf->getGeneralTheme();
     if (t == T_Light) {
         ret = "Light";
     } else if (t == T_Dark) {
@@ -59,29 +71,51 @@ static std::string func_theme(bool d) {
 
 // Passed to item to change default sort
 static std::string func_sort(bool d) {
-    std::string ret;
-
     Config * conf = Config::getConfig();
-    SortType s = conf->getGeneralSort();
+
+    // If tapped...
     if (d) {
-        if (s == AlphaAsc) {
-            s = HoursAsc;
-        } else if (s == HoursAsc) {
-            s = HoursDec;
-        } else if (s == HoursDec) {
-            s = LaunchAsc;
-        } else if (s == LaunchAsc) {
-            s = LaunchDec;
-        } else if (s == LaunchDec) {
-            s = FirstPlayed;
-        } else if (s == FirstPlayed) {
-            s = LastPlayed;
-        } else if (s == LastPlayed) {
-            s = AlphaAsc;
-        }
-        conf->setGeneralSort(s);
+        std::vector<std::string> v;
+        v.push_back("Alphabetically");
+        v.push_back("Most Played");
+        v.push_back("Least Played");
+        v.push_back("Most Launched");
+        v.push_back("Least Launched");
+        v.push_back("First Played");
+        v.push_back("Recently Played");
+        ScreenManager::getInstance()->createSelection("Default Sort Method", v, [conf](int c){
+            switch (c) {
+                case -1:
+                    // Do nothing if nothing selected
+                    break;
+                case 0:
+                    conf->setGeneralSort(AlphaAsc);
+                    break;
+                case 1:
+                    conf->setGeneralSort(HoursAsc);
+                    break;
+                case 2:
+                    conf->setGeneralSort(HoursDec);
+                    break;
+                case 3:
+                    conf->setGeneralSort(LaunchAsc);
+                    break;
+                case 4:
+                    conf->setGeneralSort(LaunchDec);
+                    break;
+                case 5:
+                    conf->setGeneralSort(FirstPlayed);
+                    break;
+                case 6:
+                    conf->setGeneralSort(LastPlayed);
+                    break;
+            }
+        });
     }
 
+    // Return sort method stored in config
+    std::string ret;
+    SortType s = conf->getGeneralSort();
     if (s == AlphaAsc) {
         ret = "Alphabetically";
     } else if (s == HoursAsc) {
@@ -111,9 +145,9 @@ static std::string func_forwarder(bool d) {
     bool hasAtms = false;
     bool hasRei = false;
     bool hasSx = false;
-    if (std::filesystem::exists("/atmosphere/titles")) {
+    if (std::filesystem::exists("/atmosphere/contents")) {
         hasAtms = true;
-        if (std::filesystem::exists("/atmosphere/titles/0100000000001013/exefs.nsp")) {
+        if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp")) {
             atms = true;
         }
     }
@@ -134,7 +168,7 @@ static std::string func_forwarder(bool d) {
         // Delete files
         if (atms || rei || sx) {
             if (atms) {
-                std::filesystem::remove("/atmosphere/titles/0100000000001013/exefs.nsp");
+                std::filesystem::remove("/atmosphere/contents/0100000000001013/exefs.nsp");
                 atms = false;
             }
             if (rei) {
@@ -149,8 +183,8 @@ static std::string func_forwarder(bool d) {
         // Copy files
         } else {
             if (hasAtms) {
-                std::filesystem::create_directory("/atmosphere/titles/0100000000001013");
-                Utils::copyFile("romfs:/exefs.nsp", "/atmosphere/titles/0100000000001013/exefs.nsp");
+                std::filesystem::create_directory("/atmosphere/contents/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/atmosphere/contents/0100000000001013/exefs.nsp");
                 atms = true;
             }
 
@@ -180,8 +214,8 @@ namespace Screen {
         // Create list
         this->list = new UI::List(&ScreenManager::getInstance()->touch_active, 400, 110, 850, 520);
         this->list->addItem(new UI::ListItem::Separator(15));
-        this->list->addItem(new UI::ListItem::Option("Default Sorting", &func_sort));
-        this->list->addItem(new UI::ListItem::ToolTip("Sets the sorting used upon application launch."));
+        this->list->addItem(new UI::ListItem::Option("Default Sort Method", &func_sort));
+        this->list->addItem(new UI::ListItem::ToolTip("Sets the sort method used upon application launch."));
         this->list->addItem(new UI::ListItem::Option("Theme", &func_theme));
         this->list->addItem(new UI::ListItem::ToolTip("Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings. Note: This requires the app to be restarted to take effect."));
         this->list->addItem(new UI::ListItem::Separator());

@@ -106,6 +106,45 @@ namespace Screen {
                         this->menu->setActive(false);
                         this->list->setActive(true);
 
+                    // Minus presents sort selection
+                    } else if (e.jbutton.button == Utils::key_map[KEY_MINUS]) {
+                        std::vector<std::string> v;
+                        v.push_back("Alphabetically");
+                        v.push_back("Most Played");
+                        v.push_back("Least Played");
+                        v.push_back("Most Launched");
+                        v.push_back("Least Launched");
+                        v.push_back("First Played");
+                        v.push_back("Recently Played");
+                        ScreenManager::getInstance()->createSelection("Sort by", v, [this](int c){
+                            switch (c) {
+                                case -1:
+                                    // Do nothing if nothing selected
+                                    break;
+                                case 0:
+                                    this->list->sort(AlphaAsc);
+                                    break;
+                                case 1:
+                                    this->list->sort(HoursAsc);
+                                    break;
+                                case 2:
+                                    this->list->sort(HoursDec);
+                                    break;
+                                case 3:
+                                    this->list->sort(LaunchAsc);
+                                    break;
+                                case 4:
+                                    this->list->sort(LaunchDec);
+                                    break;
+                                case 5:
+                                    this->list->sort(FirstPlayed);
+                                    break;
+                                case 6:
+                                    this->list->sort(LastPlayed);
+                                    break;
+                            }
+                        });
+
                     // All other buttons get handled by active element
                     } else {
                         switch (this->active_element) {
@@ -302,7 +341,7 @@ namespace Screen {
         u32 total_mins = 0;
         for (size_t i = 0; i < this->titles.size(); i++) {
             // Hide deleted if toggled
-            if ((!this->titles[i]->getInstalled() && conf->getHiddenDeleted())) {
+            if (!this->titles[i]->getInstalled() && conf->getHiddenDeleted()) {
                 continue;
             }
 
@@ -320,6 +359,39 @@ namespace Screen {
             this->total_hours = nullptr;
         }
         this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
+    }
+
+    void AllActivity::sort_callback(int c) {
+        if (c == -1) {
+            return;
+        }
+
+        SortType s = AlphaAsc;
+        switch (c) {
+            case 0:
+                s = AlphaAsc;
+                break;
+            case 1:
+                s = HoursAsc;
+                break;
+            case 2:
+                s = HoursDec;
+                break;
+            case 3:
+                s = LaunchAsc;
+                break;
+            case 4:
+                s = LaunchDec;
+                break;
+            case 5:
+                s = FirstPlayed;
+                break;
+            case 6:
+                s = LastPlayed;
+                break;
+        }
+
+        this->list->sort(s);
     }
 
     AllActivity::~AllActivity() {

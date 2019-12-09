@@ -21,13 +21,8 @@ namespace UI {
     // A sorted list essentially is just a list but can sort the items
     class SortedList : public List {
         private:
-            // Current sorting type
-            SortType sorting;
             // Texture for sorting text
             SDL_Texture * sort_text;
-
-            // Sorts with given type
-            void sort(SortType);
 
         public:
             // The constructor does not accept ListItems
@@ -40,6 +35,9 @@ namespace UI {
 
             // Handles button presses
             void handleButton(uint8_t, uint8_t);
+
+            // Sorts with given type
+            void sort(SortType);
 
             // Returns vector containing titles objects in current order
             std::vector<Title *> getTitleVector();

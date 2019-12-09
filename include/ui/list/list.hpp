@@ -63,6 +63,9 @@ namespace UI {
             // Returns index of chosen element or -1 if nothing is pressed
             int getChosen();
 
+            // Calculate scroll when height adjusted
+            void setH(int);
+
             // Destructor frees stored ListItems
             ~List();
     };

@@ -12,7 +12,6 @@ namespace UI::ListItem {
         private:
             // Textures for text
             SDL_Texture * text;
-            SDL_Texture * value;
 
             // Function pointer
             std::string (*selected_func)(bool);
@@ -21,7 +20,6 @@ namespace UI::ListItem {
             // Constructor takes string and function to call when tapped
             Option(std::string, std::string(*)(bool));
 
-            // Draw the item
             void draw();
 
             // Calls stored function pointer

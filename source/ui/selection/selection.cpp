@@ -4,13 +4,14 @@
 
 // Dimensions
 #define LIST_WIDTH 725
-#define PANEL_HEIGHT 420
+#define MAX_HEIGHT 480
+#define LIST_GAP 40
 
 // Font size
-#define TITLE_FONT_SIZE 24
+#define TITLE_FONT_SIZE 26
 
 namespace UI {
-    Selection::Selection(bool * b, std::string s, std::vector<std::string> v) : Drawable(0, HEIGHT-PANEL_HEIGHT, WIDTH, PANEL_HEIGHT) {
+    Selection::Selection(bool * b, std::string s, std::vector<std::string> v) : Drawable(0, 0, WIDTH, HEIGHT) {
         this->is_active = true;
 
         // Set up controls
@@ -18,12 +19,28 @@ namespace UI {
         this->controls->add(KEY_A, "OK", 0);
         this->controls->add(KEY_B, "Back", 1);
 
-        // Prepare objects
-        this->list = new List(b, (WIDTH - LIST_WIDTH)/2, this->y + 115, LIST_WIDTH, 210);
+        // Prepare list and use list items to determine max height
+        this->list = new List(b, (WIDTH - LIST_WIDTH)/2, 0, LIST_WIDTH, HEIGHT);
         this->list->setActive(true);
+        unsigned int total_height = 0;
         for (size_t i = 0; i < v.size(); i++) {
-            this->list->addItem(new UI::ListItem::TextEntry(v[i]));
+            UI::ListItem::TextEntry * tmp = new UI::ListItem::TextEntry(v[i]);
+            this->list->addItem(tmp);
+            total_height += tmp->getH();
         }
+
+        // If all items can't fit use max height
+        if (total_height >= MAX_HEIGHT - 160 - 2*LIST_GAP) {
+            this->y = HEIGHT - MAX_HEIGHT;
+            this->h = MAX_HEIGHT;
+
+        // Adjust height to fit
+        } else {
+            this->y = HEIGHT - total_height - 160 - 2*LIST_GAP;
+            this->h = total_height + 160 + 2*LIST_GAP;
+        }
+        this->list->setY(this->y + 80 + LIST_GAP);
+        this->list->setH(this->h - 160 - 2*LIST_GAP);
 
         this->title = SDLHelper::renderText(s.c_str(), TITLE_FONT_SIZE);
     }
@@ -104,7 +121,7 @@ namespace UI {
 
         // Close when an item is chosen
         if (this->list->getChosen() != -1) {
-            // this->is_active = false;
+            this->is_active = false;
         }
     }
 
@@ -129,7 +146,7 @@ namespace UI {
         // Draw title + controls
         int tw, th;
         SDLHelper::getDimensions(this->title, &tw, &th);
-        SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + 72, this->y + 36 - th/2);
+        SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + 72, this->y + 40 - th/2);
 
         this->controls->draw();
     }
@@ -140,7 +157,6 @@ namespace UI {
 
     int Selection::getChosen() {
         return this->list->getChosen();
-
     }
 
     Selection::~Selection() {
