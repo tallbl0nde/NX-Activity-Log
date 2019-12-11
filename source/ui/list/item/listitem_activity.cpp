@@ -1,5 +1,6 @@
 #include "listitem_activity.hpp"
 #include "screenmanager.hpp"
+#include "TimeHelper.hpp"
 #include "utils.hpp"
 
 // Font sizes
@@ -22,10 +23,11 @@ namespace UI::ListItem {
         // Create textures using title object
         this->icon = t->getIcon();
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
-        std::string str = "Played for " + Utils::formatPlaytime(t->getPlaytime(), " and ");
+        std::string str = "Played for " + TimeH::playtimeToString(t->getPlaytime() * 60, " and ");
         this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
-        this->lastplayed = SDLHelper::renderText(Utils::formatLastPlayed(t->getLastPlayed()).c_str(), SUB_FONT_SIZE);
-        str = "Played " + std::to_string(t->getLaunches()) + " times";
+        this->lastplayed = SDLHelper::renderText(TimeH::lastTimestampToString(pdmPlayTimestampToPosix(t->getLastPlayed())).c_str(), SUB_FONT_SIZE);
+        str = "Played " + std::to_string(t->getLaunches());
+        (t->getLaunches() == 1) ? str += " time" : str += " times";
         this->launches = SDLHelper::renderText(str.c_str(), LAUNCH_FONT_SIZE);
         this->rank = nullptr;
 

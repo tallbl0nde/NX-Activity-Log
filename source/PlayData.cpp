@@ -107,7 +107,7 @@ std::vector<u64> PlayData::getLoggedTitleIDs() {
     std::vector<u64> ids;
     for (size_t i = 0; i < this->events.size(); i++) {
         if (this->events[i]->type == PlayEvent_Applet) {
-            // Exclude this title (I dunno what it is)
+            // Exclude this title (I dunno what it is but it causes crashes)
             if (this->events[i]->ID == 0x0100000000001012) {
                 continue;
             }
@@ -236,8 +236,6 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
         // If not "valid" just add launch
         stats->launches++;
     }
-
-    stats->playtime /= 60;
 
     return stats;
 }

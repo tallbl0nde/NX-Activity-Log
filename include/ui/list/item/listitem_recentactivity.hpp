@@ -22,8 +22,8 @@ namespace UI::ListItem {
             int text_scroll_pause;
 
         public:
-            // Constructor accepts RecentPlayStatistics
-            RecentActivity(RecentPlayStatistics *);
+            // Constructor accepts RecentPlayStatistics and ranking
+            RecentActivity(RecentPlayStatistics *, unsigned int);
 
             // Update and draw functions are defined
             void update(uint32_t);

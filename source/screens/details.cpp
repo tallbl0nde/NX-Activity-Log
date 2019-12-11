@@ -1,5 +1,6 @@
 #include "screenmanager.hpp"
 #include "SDLHelper.hpp"
+#include "TimeHelper.hpp"
 #include "utils.hpp"
 
 // Gap between username and icon
@@ -51,17 +52,17 @@ namespace Screen {
         if (this->average_time != nullptr) {
             SDLHelper::destroyTexture(this->average_time);
         }
-        this->average_time = SDLHelper::renderText(Utils::formatPlaytime(this->titles[this->title]->getPlaytime() / this->titles[this->title]->getLaunches(), ", ").c_str(), STAT_FONT_SIZE);
+        this->average_time = SDLHelper::renderText(TimeH::playtimeToString((this->titles[this->title]->getPlaytime() * 60) / this->titles[this->title]->getLaunches(), ", ").c_str(), STAT_FONT_SIZE);
 
         if (this->first_played != nullptr) {
             SDLHelper::destroyTexture(this->first_played);
         }
-        this->first_played = SDLHelper::renderText(Utils::formatTimestamp(this->titles[this->title]->getFirstPlayed()).c_str(), STAT_FONT_SIZE);
+        this->first_played = SDLHelper::renderText(TimeH::timestampToString(pdmPlayTimestampToPosix(this->titles[this->title]->getFirstPlayed())).c_str(), STAT_FONT_SIZE);
 
         if (this->last_played != nullptr) {
             SDLHelper::destroyTexture(this->last_played);
         }
-        this->last_played = SDLHelper::renderText(Utils::formatTimestamp(this->titles[this->title]->getLastPlayed()).c_str(), STAT_FONT_SIZE);
+        this->last_played = SDLHelper::renderText(TimeH::timestampToString(pdmPlayTimestampToPosix(this->titles[this->title]->getLastPlayed())).c_str(), STAT_FONT_SIZE);
 
         if (this->launches != nullptr) {
             SDLHelper::destroyTexture(this->launches);
@@ -71,7 +72,7 @@ namespace Screen {
         if (this->playtime != nullptr) {
             SDLHelper::destroyTexture(this->playtime);
         }
-        this->playtime = SDLHelper::renderText(Utils::formatPlaytime(this->titles[this->title]->getPlaytime(), ", ").c_str(), STAT_FONT_SIZE);
+        this->playtime = SDLHelper::renderText(TimeH::playtimeToString(this->titles[this->title]->getPlaytime() * 60, ", ").c_str(), STAT_FONT_SIZE);
 
         if (this->index != nullptr) {
             SDLHelper::destroyTexture(this->index);

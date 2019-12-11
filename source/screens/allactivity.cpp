@@ -3,6 +3,7 @@
 #include "listitem_activity.hpp"
 #include "screenmanager.hpp"
 #include "SDLHelper.hpp"
+#include "TimeHelper.hpp"
 #include "utils.hpp"
 
 // Maximum number of titles to read using pdm...()
@@ -72,12 +73,10 @@ namespace Screen {
 
         // Set controls
         this->controls->add(KEY_A, "OK", 0);
-        this->controls->add(KEY_MINUS, "Sort", 1);
+        this->controls->add(KEY_X, "Sort", 1);
         if (!this->is_mypage) {
             this->controls->add(KEY_PLUS, "Exit", 2);
         }
-        this->controls->add(KEY_ZR, "(Hold) Fast Scroll", 3);
-        this->controls->disable(KEY_ZR);
 
         // Set active element
         this->active_element = (int)ActiveElement::List;
@@ -106,8 +105,8 @@ namespace Screen {
                         this->menu->setActive(false);
                         this->list->setActive(true);
 
-                    // Minus presents sort selection
-                    } else if (e.jbutton.button == Utils::key_map[KEY_MINUS]) {
+                    // X presents sort selection
+                    } else if (e.jbutton.button == Utils::key_map[KEY_X]) {
                         std::vector<std::string> v;
                         v.push_back("By Name");
                         v.push_back("By Most Played");
@@ -116,6 +115,8 @@ namespace Screen {
                         v.push_back("By Least Launched");
                         v.push_back("By First Playtime");
                         v.push_back("By Recently Played");
+                        this->list->setActive(false);
+                        this->menu->setActive(false);
                         ScreenManager::getInstance()->createSelection("Sort Titles", v, [this](int c){
                             switch (c) {
                                 case -1:
@@ -353,7 +354,7 @@ namespace Screen {
 
         // Create total hours texture
         std::string str = "Total Playtime: ";
-        str += Utils::formatPlaytime(total_mins, " and ");
+        str += TimeH::playtimeToString(total_mins * 60, " and ");
         if (this->total_hours != nullptr) {
             SDLHelper::destroyTexture(this->total_hours);
             this->total_hours = nullptr;

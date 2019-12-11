@@ -2,9 +2,7 @@
 #define UI_SORTEDLIST_HPP
 
 #include "list.hpp"
-#include "SDLHelper.hpp"
 #include "Title.hpp"
-#include <vector>
 
 // Enumerations for sorting methods
 enum SortType {

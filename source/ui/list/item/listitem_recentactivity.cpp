@@ -1,15 +1,15 @@
 #include "listitem_recentactivity.hpp"
 #include "screenmanager.hpp"
+#include "TimeHelper.hpp"
 #include "Title.hpp"
 #include "utils.hpp"
 
 // Font sizes
 #define TITLE_FONT_SIZE 22
 #define SUB_FONT_SIZE 18
-#define LAUNCH_FONT_SIZE 16
 
 // Height of items
-#define ITEM_HEIGHT 80
+#define ITEM_HEIGHT 120
 
 // Text scroll speed (in ms)
 #define TEXT_SPEED 120
@@ -17,7 +17,7 @@
 #define TEXT_PAUSE 600
 
 namespace UI::ListItem {
-    RecentActivity::RecentActivity(RecentPlayStatistics * stats) : List_Item() {
+    RecentActivity::RecentActivity(RecentPlayStatistics * stats, unsigned int r) : List_Item() {
         this->setH(ITEM_HEIGHT);
 
         // Create textures using titleID + stats
@@ -39,10 +39,13 @@ namespace UI::ListItem {
             this->icon = SDLHelper::renderImage(data.icon, icon_size);
         }
 
-        std::string str = "Played for " + Utils::formatPlaytime(stats->playtime, " and ");
+        std::string str = "Played for " + TimeH::playtimeToString(stats->playtime, " and ");
         this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
-        str = "Played " + std::to_string(stats->launches) + " times";
-        this->launches = SDLHelper::renderText(str.c_str(), LAUNCH_FONT_SIZE);
+        str = "Played " + std::to_string(stats->launches);
+        (stats->launches == 1) ? str += " time" : str += " times";
+        this->launches = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
+        str = "#" + std::to_string(r);
+        this->rank = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
 
         // Initialize all other variables
         this->text_scroll_x = 0;
@@ -89,28 +92,13 @@ namespace UI::ListItem {
             SDLHelper::drawTexture(this->title, this->theme->getText(), this->x + this->h + 10, this->y + 15);
         }
         SDLHelper::drawTexture(this->playtime, this->theme->getAccent(), this->x + this->h + 10, this->y + 51);
-        SDLHelper::getDimensions(this->launches, &tw, &th);
-        SDLHelper::drawTexture(this->launches, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 51 + (SUB_FONT_SIZE - LAUNCH_FONT_SIZE));
+        SDLHelper::drawTexture(this->launches, this->theme->getMutedText(), this->x + this->h + 10, this->y + 83);
+        SDLHelper::getDimensions(this->rank, &tw, &th);
+        SDLHelper::drawTexture(this->rank, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 15);
     }
 
     void RecentActivity::pressed() {
 
-    }
-
-    void RecentActivity::setRank(unsigned int i) {
-        if (this->rank != nullptr) {
-            SDLHelper::destroyTexture(this->rank);
-        }
-
-        // If set to zero remove texture
-        if (i == 0) {
-            this->rank = nullptr;
-            return;
-        }
-
-        // Otherwise create new texture
-        std::string str = "#" + std::to_string(i);
-        this->rank = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
     }
 
     void RecentActivity::setSelected(bool b) {

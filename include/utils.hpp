@@ -1,11 +1,11 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
-#include <ctime>
 #include <map>
-#include <SDL2/SDL.h>
+#include <string>
 #include <switch.h>
 
+// Dimensions of renderer/screen size in pixels
 #define WIDTH 1280
 #define HEIGHT 720
 
@@ -17,17 +17,8 @@ namespace Utils {
     // Copy file from source path to dest path
     void copyFile(std::string, std::string);
 
-    // Returns a string with the time since last played
-    std::string formatLastPlayed(u32);
-
     // Add commas to provided number
     std::string formatNumberComma(u32);
-
-    // Nicely format a time with given separator (from zero)
-    std::string formatPlaytime(u32, std::string);
-
-    // Nicely format a timestamp
-    std::string formatTimestamp(u32);
 };
 
 #endif

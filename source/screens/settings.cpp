@@ -76,13 +76,13 @@ static std::string func_sort(bool d) {
     // If tapped...
     if (d) {
         std::vector<std::string> v;
-        v.push_back("Alphabetically");
-        v.push_back("Most Played");
-        v.push_back("Least Played");
-        v.push_back("Most Launched");
-        v.push_back("Least Launched");
-        v.push_back("First Played");
-        v.push_back("Recently Played");
+        v.push_back("By Name");
+        v.push_back("By Most Played");
+        v.push_back("By Least Played");
+        v.push_back("By Most Launched");
+        v.push_back("By Least Launched");
+        v.push_back("By First Playtime");
+        v.push_back("By Recently Played");
         ScreenManager::getInstance()->createSelection("Default Sort Method", v, [conf](int c){
             switch (c) {
                 case -1:

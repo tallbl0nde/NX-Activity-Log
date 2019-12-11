@@ -21,7 +21,7 @@ std::vector<Title *> getTitleObjects(u128);
 
 int main(int argc, char * argv[]){
     // Status variables
-    bool accInit, fsInit, nsInit, pdmInit, plInit, romFsInit, SDLInit, setInit = false;
+    bool accInit = false, fsInit = false, nsInit = false, pdmInit = false, plInit = false, romFsInit = false, SDLInit = false, setInit = false;
     bool is_mypage = false;
     u128 mypage_id = 0;
     Result rc = 0;
