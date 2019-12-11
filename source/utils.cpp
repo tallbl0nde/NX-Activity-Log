@@ -1,6 +1,14 @@
 #include <fstream>
 #include "utils.hpp"
 
+// Comparison of AccountUids
+bool operator == (const AccountUid &a, const AccountUid &b) {
+    if (a.uid[0] == b.uid[0] && a.uid[1] == b.uid[1]) {
+        return true;
+    }
+    return false;
+}
+
 namespace Utils {
     // Map from HidControllerKeys -> int
     std::map<HidControllerKeys, int> key_map = {

@@ -2,7 +2,7 @@
 #include "Title.hpp"
 #include <time.h>
 
-Title::Title(u64 titleID, u128 userID, bool installed) {
+Title::Title(u64 titleID, AccountUid userID, bool installed) {
     this->titleID = titleID;
     this->is_installed = installed;
 
@@ -28,7 +28,7 @@ Title::Title(u64 titleID, u128 userID, bool installed) {
     NsApplicationControlData data;
     NacpLanguageEntry * lang = nullptr;
     size_t nacp_size;
-    rc = nsGetApplicationControlData(1, this->titleID, &data, sizeof(NsApplicationControlData), &nacp_size);
+    rc = nsGetApplicationControlData(NsApplicationControlSource_Storage, this->titleID, &data, sizeof(NsApplicationControlData), &nacp_size);
     if (R_SUCCEEDED(rc)){
         // Get name
         rc = nacpGetLanguageEntry(&data.nacp, &lang);

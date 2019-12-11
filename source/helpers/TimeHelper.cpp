@@ -114,8 +114,8 @@ namespace TimeH {
 
             // If not in this year show year as well
             struct tm now = getTmForCurrentTime();
-            if (now.tm_year != stamp.tm_year) {
-                str += ", " + std::to_string(stamp.tm_year + 1900);
+            if (now.tm_year != tmp.tm_year) {
+                str += ", " + std::to_string(tmp.tm_year + 1900);
             }
         }
 

@@ -22,8 +22,9 @@ enum EventType {
 
 // PlayEvents are parsed PdmPlayEvents containing only necessary information
 struct PlayEvent {
-    PlayEventType type;     // Type of PlayEvent (important for ID + type)
-    u128 ID;                // UserID / TitleID
+    PlayEventType type;     // Type of PlayEvent
+    AccountUid userID;      // UserID
+    u64 titleID;            // TitleID
     EventType eventType;    // See EventType enum
     u64 clockTimestamp;     // Time of event
     u64 steadyTimestamp;    // Steady timestamp (used for calculating duration)
@@ -54,7 +55,7 @@ class PlayData {
         std::vector<u64> getLoggedTitleIDs();
 
         // Returns a RecentPlayStatistics for the given time range and user ID
-        RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, u64, u128);
+        RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, u64, AccountUid);
 
         // The destructor deletes PlayEvents (frees memory)
         ~PlayData();

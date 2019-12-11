@@ -11,32 +11,32 @@
 
 // Reads all installed title IDs and creates Title objects using them
 // The caller must deallocate the memory
-static std::vector<Title *> getTitleObjects(u128 userID) {
+static std::vector<Title *> getTitleObjects(AccountUid userID) {
     Result rc;
 
     // Get ALL played titles (this doesn't include installed games that haven't been played)
-    u32 playedTotal = 0;
-    u64 * playedIDs = (u64 *)malloc(MAX_TITLES * sizeof(u64));
-    pdmqryGetUserPlayedApplications(userID, playedIDs, MAX_TITLES, &playedTotal);
+    s32 playedTotal = 0;
+    u64 * playedIDs = new u64[MAX_TITLES];
+    pdmqryQueryRecentlyPlayedApplication(userID, playedIDs, MAX_TITLES, &playedTotal);
 
     // Get all installed titles
     std::vector<u64> installedIDs;
-    NsApplicationRecord info;
-    size_t count = 0;
-    size_t installedTotal = 0;
+    NsApplicationRecord * records = new NsApplicationRecord[MAX_TITLES];
+    s32 count = 0;
+    s32 installedTotal = 0;
     while (true){
-        rc = nsListApplicationRecord(&info, sizeof(NsApplicationRecord), count, &installedTotal);
+        rc = nsListApplicationRecord(records, MAX_TITLES, count, &installedTotal);
         // Break if at the end or no titles
         if (R_FAILED(rc) || installedTotal == 0){
             break;
         }
         count++;
-        installedIDs.push_back(info.titleID);
+        installedIDs.push_back(records->application_id);
     }
 
     // Create Title objects from IDs
     std::vector<Title *> titles;
-    for (u32 i = 0; i < playedTotal; i++) {
+    for (s32 i = 0; i < playedTotal; i++) {
         // Loop over installed titles to determine if installed or not
         bool installed = false;
         for (size_t j = 0; j < installedIDs.size(); j++) {
@@ -49,7 +49,8 @@ static std::vector<Title *> getTitleObjects(u128 userID) {
         titles.push_back(new Title(playedIDs[i], userID, installed));
     }
 
-    free(playedIDs);
+    delete[] playedIDs;
+    delete[] records;
 
     return titles;
 }

@@ -1,6 +1,6 @@
 #include "User.hpp"
 
-User::User(u128 ID){
+User::User(AccountUid ID){
     this->ID = ID;
 
     // Get username and icon
@@ -14,12 +14,12 @@ User::User(u128 ID){
         // Get username
         rc = accountProfileGet(&profile, NULL, &profile_base);
         if (R_SUCCEEDED(rc)){
-            this->username = profile_base.username;
+            this->username = profile_base.nickname;
         }
 
         // Get icon and render to texture
         u8 * buffer;
-        size_t img_size, tmp;
+        u32 img_size, tmp;
         // Get image size and allocate memory
         rc = accountProfileGetImageSize(&profile, &img_size);
         if (R_SUCCEEDED(rc)) {
@@ -39,7 +39,7 @@ User::User(u128 ID){
     }
 }
 
-u128 User::getID() {
+AccountUid User::getID() {
     return this->ID;
 }
 

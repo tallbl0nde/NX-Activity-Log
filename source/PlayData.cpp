@@ -1,12 +1,13 @@
 #include <algorithm>
 #include "PlayData.hpp"
+#include "utils.hpp"
 
 // Maximum number of entries to process in one iteration
 #define MAX_PROCESS_ENTRIES 1000
 
 PlayData::PlayData() {
     // Position of first event to read
-    u32 offset = 0;
+    s32 offset = 0;
     // Total events read in iteration
     s32 total_read = 1;
 
@@ -35,10 +36,10 @@ PlayData::PlayData() {
                         event->type = PlayEvent_Account;
 
                         // UserID words are wrong way around (why Nintendo?)
-                        event->ID = pEvents[i].eventData.account.userID[2];
-                        event->ID = (event->ID << 32) | pEvents[i].eventData.account.userID[3];
-                        event->ID = (event->ID << 32) | pEvents[i].eventData.account.userID[0];
-                        event->ID = (event->ID << 32) | pEvents[i].eventData.account.userID[1];
+                        event->userID.uid[0] = pEvents[i].eventData.account.uid[0];
+                        event->userID.uid[0] = (event->userID.uid[0] << 32) | pEvents[i].eventData.account.uid[1];
+                        event->userID.uid[1] = (event->userID.uid[1] << 32) | pEvents[i].eventData.account.uid[2];
+                        event->userID.uid[1] = (event->userID.uid[1] << 32) | pEvents[i].eventData.account.uid[3];
 
                         // Set account event type
                         switch (pEvents[i].eventData.account.type) {
@@ -60,8 +61,8 @@ PlayData::PlayData() {
                         event->type = PlayEvent_Applet;
 
                         // Join two halves of title ID
-                        event->ID = pEvents[i].eventData.applet.titleID[0];
-                        event->ID = (event->ID << 32) | pEvents[i].eventData.applet.titleID[1];
+                        event->titleID = pEvents[i].eventData.applet.program_id[0];
+                        event->titleID = (event->titleID << 32) | pEvents[i].eventData.applet.program_id[1];
 
                         // Set applet event type
                         switch (pEvents[i].eventData.applet.eventType) {
@@ -108,12 +109,12 @@ std::vector<u64> PlayData::getLoggedTitleIDs() {
     for (size_t i = 0; i < this->events.size(); i++) {
         if (this->events[i]->type == PlayEvent_Applet) {
             // Exclude this title (I dunno what it is but it causes crashes)
-            if (this->events[i]->ID == 0x0100000000001012) {
+            if (this->events[i]->titleID == 0x0100000000001012) {
                 continue;
             }
 
-            if (std::find(ids.begin(), ids.end(), (u64)this->events[i]->ID) == ids.end()) {
-                ids.push_back((u64)this->events[i]->ID);
+            if (std::find(ids.begin(), ids.end(), this->events[i]->titleID) == ids.end()) {
+                ids.push_back(this->events[i]->titleID);
             }
         }
     }
@@ -126,7 +127,7 @@ struct PlaySession {
     size_t num;
 };
 
-RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 start_ts, u64 end_ts, u128 userID) {
+RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 start_ts, u64 end_ts, AccountUid userID) {
     // Break each "session" apart and keep if matching titleID and userID
     std::vector<PlaySession> sessions;
     size_t a = 0;
@@ -137,7 +138,7 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
             bool time_c = false;
             bool titleID_c = false;
             bool userID_c = false;
-            if (this->events[a]->ID == titleID) {
+            if (this->events[a]->titleID == titleID) {
                 titleID_c = true;
             }
 
@@ -153,7 +154,7 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
                     // Check userID whenever account event encountered
                     case Account_Active:
                     case Account_Inactive:
-                        if (this->events[a]->ID == userID) {
+                        if (this->events[a]->userID == userID) {
                             userID_c = true;
                         }
                         break;

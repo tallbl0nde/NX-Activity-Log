@@ -25,7 +25,7 @@ namespace UI::ListItem {
         NsApplicationControlData data;
         NacpLanguageEntry * lang = nullptr;
         size_t nacp_size;
-        Result rc = nsGetApplicationControlData(1, stats->titleID, &data, sizeof(NsApplicationControlData), &nacp_size);
+        Result rc = nsGetApplicationControlData(NsApplicationControlSource_Storage, stats->titleID, &data, sizeof(NsApplicationControlData), &nacp_size);
         if (R_SUCCEEDED(rc)){
             // Get name
             rc = nacpGetLanguageEntry(&data.nacp, &lang);

@@ -9,6 +9,9 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
+// Comparison of AccountUid
+bool operator ==(const AccountUid &a, const AccountUid &b);
+
 namespace Utils {
     // Map from HidControllerKeys -> int
     #define KEY_MAP_SIZE 28

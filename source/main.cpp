@@ -2,6 +2,7 @@
 #include "screenmanager.hpp"
 #include "SDLHelper.hpp"
 #include <string>
+#include "utils.hpp"
 
 // Struct representing a "clock", which stores time between ticks
 struct Clock {
@@ -16,21 +17,20 @@ struct Clock {
 };
 
 // Forward declarations of functions because I like them at the end :)
-std::vector<User *> getUserObjects();
-std::vector<Title *> getTitleObjects(u128);
+std::vector<User *> getUserObjects();;
 
 int main(int argc, char * argv[]){
     // Status variables
     bool accInit = false, fsInit = false, nsInit = false, pdmInit = false, plInit = false, romFsInit = false, SDLInit = false, setInit = false;
     bool is_mypage = false;
-    u128 mypage_id = 0;
+    AccountUid mypage_id;
     Result rc = 0;
 
     // Vector containing all user objects
     std::vector<User *> users;
 
     // Start required services
-    rc = accountInitialize();
+    rc = accountInitialize(AccountServiceType_System);
     if (R_SUCCEEDED(rc)) {
         accInit = true;
     }
@@ -72,10 +72,10 @@ int main(int argc, char * argv[]){
                 appletStorageRead(s, 0x8, &mypage_id, 0x10);
 
                 // Check if valid
-                u128 userIDs[ACC_USER_LIST_SIZE];
-                size_t num = 0;
+                AccountUid userIDs[ACC_USER_LIST_SIZE];
+                s32 num = 0;
                 accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
-                for (size_t i = 0; i < num; i++) {
+                for (s32 i = 0; i < num; i++) {
                     if (mypage_id == userIDs[i]) {
                         is_mypage = true;
                         break;
@@ -202,12 +202,12 @@ int main(int argc, char * argv[]){
 std::vector<User *> getUserObjects() {
     // Get IDs
     std::vector<User *> users;
-    u128 userIDs[ACC_USER_LIST_SIZE];
-    size_t num = 0;
+    AccountUid userIDs[ACC_USER_LIST_SIZE];
+    s32 num = 0;
     Result rc = accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
     if (R_SUCCEEDED(rc)) {
         // Create objects and insert into vector
-        for (size_t i = 0; i < num; i++) {
+        for (s32 i = 0; i < num; i++) {
             users.push_back(new User(userIDs[i]));
         }
     }

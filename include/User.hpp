@@ -10,7 +10,7 @@
 class User {
     private:
         // The selected user's ID (set to zero when an error occurs)
-        u128 ID;
+        AccountUid ID;
         // The user's username
         std::string username;
         // The user's profile image
@@ -18,10 +18,10 @@ class User {
 
     public:
         // Constructor takes ID and derives username and icon texture
-        User(u128);
+        User(AccountUid);
 
         // Returns private members
-        u128 getID();
+        AccountUid getID();
         std::string getUsername();
         SDL_Texture * getImage();
 

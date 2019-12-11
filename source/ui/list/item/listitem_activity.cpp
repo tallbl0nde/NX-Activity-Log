@@ -25,7 +25,7 @@ namespace UI::ListItem {
         this->title = SDLHelper::renderText(t->getName().c_str(), TITLE_FONT_SIZE);
         std::string str = "Played for " + TimeH::playtimeToString(t->getPlaytime() * 60, " and ");
         this->playtime = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
-        this->lastplayed = SDLHelper::renderText(TimeH::lastTimestampToString(pdmPlayTimestampToPosix(t->getLastPlayed())).c_str(), SUB_FONT_SIZE);
+        this->lastplayed = SDLHelper::renderText(TimeH::lastPlayedTimestampToString(pdmPlayTimestampToPosix(t->getLastPlayed())).c_str(), SUB_FONT_SIZE);
         str = "Played " + std::to_string(t->getLaunches());
         (t->getLaunches() == 1) ? str += " time" : str += " times";
         this->launches = SDLHelper::renderText(str.c_str(), LAUNCH_FONT_SIZE);
