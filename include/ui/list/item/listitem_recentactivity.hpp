@@ -14,6 +14,7 @@ namespace UI::ListItem {
             SDL_Texture * icon;
             SDL_Texture * launches;
             SDL_Texture * playtime;
+            SDL_Texture * rank;
             SDL_Texture * title;
 
             // Scrolling text variables
@@ -29,7 +30,10 @@ namespace UI::ListItem {
             void draw();
 
             // Pressed does nothing yet
-            void pressed();;
+            void pressed();
+
+            // Set the "rank" of the current item
+            void setRank(unsigned int);
 
             void setSelected(bool);
 

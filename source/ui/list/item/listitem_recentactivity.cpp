@@ -9,7 +9,7 @@
 #define LAUNCH_FONT_SIZE 16
 
 // Height of items
-#define ITEM_HEIGHT 120
+#define ITEM_HEIGHT 80
 
 // Text scroll speed (in ms)
 #define TEXT_SPEED 120
@@ -90,11 +90,27 @@ namespace UI::ListItem {
         }
         SDLHelper::drawTexture(this->playtime, this->theme->getAccent(), this->x + this->h + 10, this->y + 51);
         SDLHelper::getDimensions(this->launches, &tw, &th);
-        SDLHelper::drawTexture(this->launches, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 82 + (SUB_FONT_SIZE - LAUNCH_FONT_SIZE));
+        SDLHelper::drawTexture(this->launches, this->theme->getMutedText(), this->x + this->w - tw - 15, this->y + 51 + (SUB_FONT_SIZE - LAUNCH_FONT_SIZE));
     }
 
     void RecentActivity::pressed() {
 
+    }
+
+    void RecentActivity::setRank(unsigned int i) {
+        if (this->rank != nullptr) {
+            SDLHelper::destroyTexture(this->rank);
+        }
+
+        // If set to zero remove texture
+        if (i == 0) {
+            this->rank = nullptr;
+            return;
+        }
+
+        // Otherwise create new texture
+        std::string str = "#" + std::to_string(i);
+        this->rank = SDLHelper::renderText(str.c_str(), SUB_FONT_SIZE);
     }
 
     void RecentActivity::setSelected(bool b) {

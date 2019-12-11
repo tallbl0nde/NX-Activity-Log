@@ -24,9 +24,6 @@ namespace Screen {
             // Populates this->list with this->titles objects and calculates total hours
             void generateList();
 
-            // Sort list with given SortType
-            void sort_callback(int);
-
         // See ui/screen.hpp for what these functions do
         public:
             // Additionally takes a user object

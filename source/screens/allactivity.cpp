@@ -109,14 +109,14 @@ namespace Screen {
                     // Minus presents sort selection
                     } else if (e.jbutton.button == Utils::key_map[KEY_MINUS]) {
                         std::vector<std::string> v;
-                        v.push_back("Alphabetically");
-                        v.push_back("Most Played");
-                        v.push_back("Least Played");
-                        v.push_back("Most Launched");
-                        v.push_back("Least Launched");
-                        v.push_back("First Played");
-                        v.push_back("Recently Played");
-                        ScreenManager::getInstance()->createSelection("Sort by", v, [this](int c){
+                        v.push_back("By Name");
+                        v.push_back("By Most Played");
+                        v.push_back("By Least Played");
+                        v.push_back("By Most Launched");
+                        v.push_back("By Least Launched");
+                        v.push_back("By First Playtime");
+                        v.push_back("By Recently Played");
+                        ScreenManager::getInstance()->createSelection("Sort Titles", v, [this](int c){
                             switch (c) {
                                 case -1:
                                     // Do nothing if nothing selected
@@ -359,39 +359,6 @@ namespace Screen {
             this->total_hours = nullptr;
         }
         this->total_hours = SDLHelper::renderText(str.c_str(), BODY_FONT_SIZE);
-    }
-
-    void AllActivity::sort_callback(int c) {
-        if (c == -1) {
-            return;
-        }
-
-        SortType s = AlphaAsc;
-        switch (c) {
-            case 0:
-                s = AlphaAsc;
-                break;
-            case 1:
-                s = HoursAsc;
-                break;
-            case 2:
-                s = HoursDec;
-                break;
-            case 3:
-                s = LaunchAsc;
-                break;
-            case 4:
-                s = LaunchDec;
-                break;
-            case 5:
-                s = FirstPlayed;
-                break;
-            case 6:
-                s = LastPlayed;
-                break;
-        }
-
-        this->list->sort(s);
     }
 
     AllActivity::~AllActivity() {

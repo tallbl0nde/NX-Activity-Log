@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "PlayData.hpp"
 
 // Maximum number of entries to process in one iteration
@@ -102,14 +103,91 @@ PlayData::PlayData() {
     delete[] pEvents;
 }
 
-RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 start_ts, u64 end_ts, u128 userID) {
-    // Get indexes of valid PlayEvents (should support out of order events?)
-    std::vector<size_t> idxs;
+std::vector<u64> PlayData::getLoggedTitleIDs() {
+    std::vector<u64> ids;
     for (size_t i = 0; i < this->events.size(); i++) {
-        if (this->events[i]->type == PlayEvent_Applet && this->events[i]->ID == titleID) {
-            if (this->events[i]->clockTimestamp >= start_ts && this->events[i]->clockTimestamp <= end_ts) {
-                idxs.push_back(i);
+        if (this->events[i]->type == PlayEvent_Applet) {
+            // Exclude this title (I dunno what it is)
+            if (this->events[i]->ID == 0x0100000000001012) {
+                continue;
             }
+
+            if (std::find(ids.begin(), ids.end(), (u64)this->events[i]->ID) == ids.end()) {
+                ids.push_back((u64)this->events[i]->ID);
+            }
+        }
+    }
+
+    return ids;
+}
+
+struct PlaySession {
+    size_t index;
+    size_t num;
+};
+
+RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 start_ts, u64 end_ts, u128 userID) {
+    // Break each "session" apart and keep if matching titleID and userID
+    std::vector<PlaySession> sessions;
+    size_t a = 0;
+    while (a < this->events.size()) {
+        if (this->events[a]->eventType == Applet_Launch) {
+            // Find end of session (or start of next session if switch crashed before exit)
+            size_t s = a;
+            bool time_c = false;
+            bool titleID_c = false;
+            bool userID_c = false;
+            if (this->events[a]->ID == titleID) {
+                titleID_c = true;
+            }
+
+            a++;
+            bool end = false;
+            while (a < this->events.size() && !end) {
+                // Check if every event is in the required range
+                if (this->events[a]->clockTimestamp >= start_ts && this->events[a]->clockTimestamp <= end_ts) {
+                    time_c = true;
+                }
+
+                switch (this->events[a]->eventType) {
+                    // Check userID whenever account event encountered
+                    case Account_Active:
+                    case Account_Inactive:
+                        if (this->events[a]->ID == userID) {
+                            userID_c = true;
+                        }
+                        break;
+
+                    // Exit indicates end of session
+                    case Applet_Exit:
+                        if (time_c && titleID_c && userID_c) {
+                            struct PlaySession st;
+                            st.index = s;
+                            st.num = a - s + 1;
+                            sessions.push_back(st);
+                        }
+                        end = true;
+                        break;
+
+                    // Encountering another launch also indicates end of session (due to crash)
+                    case Applet_Launch:
+                        if (time_c && titleID_c && userID_c) {
+                            struct PlaySession st;
+                            st.index = s;
+                            st.num = a - s;
+                            sessions.push_back(st);
+                        }
+                        end = true;
+                        a--;
+                        break;
+
+                    default:
+                        break;
+                }
+                a++;
+            }
+        } else {
+            a++;
         }
     }
 
@@ -118,26 +196,48 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
     stats->titleID = titleID;
     stats->playtime = 0;
     stats->launches = 0;
-    stats->percentage = 42.69;
 
-    // Was the last event InFocus?
-    bool last_in = false;
-    // Timestamp of last in_focus
-    u64 last_ts = 0;
-
-    for (size_t i = 0; i < idxs.size(); i++) {
-        if (this->events[idxs[i]]->eventType == Applet_Launch) {
-            stats->launches++;
-        } else if (this->events[idxs[i]]->eventType == Applet_InFocus) {
-            last_in = true;
-            last_ts = this->events[idxs[i]]->steadyTimestamp;
-        } else if (this->events[idxs[i]]->eventType == Applet_OutFocus) {
-            if (last_in) {
-                stats->playtime += (this->events[idxs[i]]->steadyTimestamp-last_ts)/60;
-            }
-            last_in = false;
-        }
+    if (sessions.size() == 0) {
+        return stats;
     }
+
+    // Iterate over valid sessions to calculate statistics
+    for (size_t i = 0; i < sessions.size(); i++) {
+        // A "valid" session must have at least 6 events (launch, in, login, out, logout, exit)
+        if (sessions[i].num >= 6) {
+            u64 last_ts = 0;
+            for (size_t j = sessions[i].index; j < sessions[i].index + sessions[i].num; j++) {
+                switch (this->events[j]->eventType) {
+                    case Applet_Launch:
+                    case Applet_Exit:
+                    case Account_Active:
+                    case Account_Inactive:
+                        break;
+
+                    case Applet_InFocus:
+                        last_ts = this->events[j]->steadyTimestamp;
+                        break;
+
+                    case Applet_OutFocus:
+                        // Move to last out focus (I don't know why the log has multiple)
+                        while (j+1 < this->events.size()) {
+                            if (this->events[j+1]->eventType == Applet_OutFocus) {
+                                j++;
+                            } else {
+                                break;
+                            }
+                        }
+                        stats->playtime += (this->events[j]->steadyTimestamp - last_ts);
+                        break;
+                }
+            }
+        }
+
+        // If not "valid" just add launch
+        stats->launches++;
+    }
+
+    stats->playtime /= 60;
 
     return stats;
 }

@@ -33,9 +33,8 @@ struct PlayEvent {
 // only contains recent values
 struct RecentPlayStatistics {
     u64 titleID;            // TitleID of these statistics
-    u32 playtime;           // Total playtime in minutes
+    u32 playtime;           // Total playtime in seconds
     u32 launches;           // Total launches
-    float percentage;       // Percentage of overall play time
 };
 
 // PlayData stores PlayEvents which are created from processing PlayEvent.dat using pdm.
@@ -50,6 +49,9 @@ class PlayData {
     public:
         // The constructor creates PlayEvents
         PlayData();
+
+        // Returns all titleIDs found within the play log (some may no longer be valid?)
+        std::vector<u64> getLoggedTitleIDs();
 
         // Returns a RecentPlayStatistics for the given time range and user ID
         RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, u64, u128);
