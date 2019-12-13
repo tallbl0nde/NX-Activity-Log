@@ -225,7 +225,7 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::Option("Override User Page", &func_forwarder));
         this->list->addItem(new UI::ListItem::ToolTip("Uses LayeredFS to override the user page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported."));
         this->list->addItem(new UI::ListItem::Separator(30));
-        this->list->addItem(new UI::ListItem::ToolTip("NX Activity Log v1.1.0a\nThank you for using my app! You can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde"));
+        this->list->addItem(new UI::ListItem::ToolTip("NX Activity Log v1.1.0\nThank you for using my app! You can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde"));
 
         this->user = u;
         this->controls->add(KEY_A, "OK", 0);

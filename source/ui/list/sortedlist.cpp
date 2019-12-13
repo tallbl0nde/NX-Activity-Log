@@ -42,6 +42,9 @@ namespace UI {
         std::string str;
         switch (type){
             case AlphaAsc:
+                std::sort(this->items.begin(), this->items.end(), [](List_Item * lhs, List_Item * rhs){
+                    return static_cast<ListItem::Activity *>(lhs)->getTitleObj()->getName() < static_cast<ListItem::Activity *>(rhs)->getTitleObj()->getName();
+                });
                 str = "Sorting: Alphabetically";
                 break;
             case HoursAsc:
