@@ -55,7 +55,7 @@ class ScreenManager {
         void popScreen();
 
         // Activates selection panel
-        void createSelection(std::string, std::vector<std::string>, std::function<void(int)>);
+        void createSelection(std::string, std::vector<std::string>, int, std::function<void(int)>);
 
         // Wrappers for current screen functions
         void event();

@@ -118,7 +118,7 @@ namespace Screen {
                         v.push_back("By Recently Played");
                         this->list->setActive(false);
                         this->menu->setActive(false);
-                        ScreenManager::getInstance()->createSelection("Sort Titles", v, [this](int c){
+                        ScreenManager::getInstance()->createSelection("Sort Titles", v, -1, [this](int c){
                             switch (c) {
                                 case -1:
                                     // Do nothing if nothing selected

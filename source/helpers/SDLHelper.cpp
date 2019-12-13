@@ -152,6 +152,26 @@ namespace SDLHelper {
     }
 
     // === RENDERING FUNCTIONS ===
+    SDL_Texture * renderCircle(int r) {
+        SDL_Texture * tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, r*2 + 3, r*2 + 3);
+
+        // Change rendering target to texture
+        SDL_SetRenderTarget(renderer, tex);
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+        SDL_RenderClear(renderer);
+
+        // Draw white circle
+        filledCircleRGBA(renderer, r, r, r, 255, 255, 255, 254);
+
+        // Reset renderer
+        SDL_RenderPresent(renderer);
+        SDL_SetRenderTarget(renderer, nullptr);
+
+        return tex;
+    }
+
+
     SDL_Texture * renderImage(u8 * ptr, size_t size) {
         SDL_Surface * tmp = IMG_Load_RW(SDL_RWFromMem(ptr, size), 1);
         SDL_Texture * tex = SDL_CreateTextureFromSurface(renderer, tmp);

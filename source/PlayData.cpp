@@ -204,38 +204,59 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
 
     // Iterate over valid sessions to calculate statistics
     for (size_t i = 0; i < sessions.size(); i++) {
+        stats->launches++;
+
         // A "valid" session must have at least 6 events (launch, in, login, out, logout, exit)
-        if (sessions[i].num >= 6) {
-            u64 last_ts = 0;
-            for (size_t j = sessions[i].index; j < sessions[i].index + sessions[i].num; j++) {
-                switch (this->events[j]->eventType) {
-                    case Applet_Launch:
-                    case Applet_Exit:
-                    case Account_Active:
-                    case Account_Inactive:
-                        break;
+        u64 last_ts = 0;
+        u64 last_clock = 0;
+        bool in_before = false;
+        bool done = false;
+        for (size_t j = sessions[i].index; j < sessions[i].index + sessions[i].num; j++) {
+            if (done) {
+                break;
+            }
 
-                    case Applet_InFocus:
-                        last_ts = this->events[j]->steadyTimestamp;
-                        break;
+            switch (this->events[j]->eventType) {
+                case Applet_Launch:
+                case Applet_Exit:
+                case Account_Active:
+                case Account_Inactive:
+                    break;
 
-                    case Applet_OutFocus:
-                        // Move to last out focus (I don't know why the log has multiple)
-                        while (j+1 < this->events.size()) {
-                            if (this->events[j+1]->eventType == Applet_OutFocus) {
-                                j++;
-                            } else {
-                                break;
-                            }
+                case Applet_InFocus:
+                    last_ts = this->events[j]->steadyTimestamp;
+                    last_clock = this->events[j]->clockTimestamp;
+                    in_before = false;
+                    if (this->events[j]->clockTimestamp < start_ts) {
+                        last_clock = start_ts;
+                        in_before = true;
+                    } else if (this->events[j]->clockTimestamp >= end_ts) {
+                        done = true;
+                    }
+                    break;
+
+                case Applet_OutFocus:
+                    if (this->events[j]->clockTimestamp >= end_ts) {
+                        stats->playtime += (end_ts - last_clock);
+                    } else if (this->events[j]->clockTimestamp >= start_ts) {
+                        if (in_before) {
+                            stats->playtime += (this->events[j]->clockTimestamp - last_clock);
+                        } else {
+                            stats->playtime += (this->events[j]->steadyTimestamp - last_ts);
                         }
-                        stats->playtime += (this->events[j]->steadyTimestamp - last_ts);
-                        break;
-                }
+                    }
+
+                    // Move to last out focus (I don't know why the log has multiple)
+                    while (j+1 < this->events.size()) {
+                        if (this->events[j+1]->eventType == Applet_OutFocus) {
+                            j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
             }
         }
-
-        // If not "valid" just add launch
-        stats->launches++;
     }
 
     return stats;

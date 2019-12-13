@@ -164,13 +164,16 @@ namespace Screen {
                         v.push_back("By Year");
                         this->list->setActive(false);
                         this->menu->setActive(false);
-                        ScreenManager::getInstance()->createSelection("View Activity", v, [this](int c) {
+                        ScreenManager::getInstance()->createSelection("View Activity", v, (int)this->view_period, [this](int c) {
                             switch (c) {
                                 case -1:
                                     // Do nothing if nothing selected
                                     break;
 
                                 case 0: {
+                                    if (this->view_period == TP_Day) {
+                                        break;
+                                    }
                                     // Set to day
                                     this->view_period = TP_Day;
                                     this->start_tm = TimeH::getTmForCurrentTime();
@@ -182,6 +185,9 @@ namespace Screen {
                                 }
 
                                 case 1: {
+                                    if (this->view_period == TP_Month) {
+                                        break;
+                                    }
                                     // Set to month
                                     this->view_period = TP_Month;
                                     this->start_tm = TimeH::getTmForCurrentTime();
@@ -194,6 +200,9 @@ namespace Screen {
                                 }
 
                                 case 2: {
+                                    if (this->view_period == TP_Year) {
+                                        break;
+                                    }
                                     // Set to year
                                     this->view_period = TP_Year;
                                     this->start_tm = TimeH::getTmForCurrentTime();

@@ -2,6 +2,7 @@
 #define SDLHELPER_HPP
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <switch.h>
@@ -49,6 +50,9 @@ namespace SDLHelper {
     // === RENDERING FUNCTIONS ===
     // -> Draw to a texture and return it
     // -> The caller must destroy the texture
+
+    // Draw a circle with specified radius
+    SDL_Texture * renderCircle(int);
 
     // Merges two textures to one side by side (with optional spacing)
     SDL_Texture * renderMergeTextures(SDL_Texture *, SDL_Texture *, int = 0);

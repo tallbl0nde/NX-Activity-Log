@@ -35,9 +35,9 @@ static std::string func_theme(bool d) {
     if (d) {
         std::vector<std::string> v;
         v.push_back("Auto");
-        v.push_back("Dark");
-        v.push_back("Light");
-        ScreenManager::getInstance()->createSelection("Theme", v, [conf](int c){
+        v.push_back("Basic White");
+        v.push_back("Basic Black");
+        ScreenManager::getInstance()->createSelection("Theme", v, (int)conf->getGeneralTheme(), [conf](int c){
             switch (c) {
                 case -1:
                     // Do nothing if nothing selected
@@ -46,10 +46,10 @@ static std::string func_theme(bool d) {
                     conf->setGeneralTheme(T_Auto);
                     break;
                 case 1:
-                    conf->setGeneralTheme(T_Dark);
+                    conf->setGeneralTheme(T_Light);
                     break;
                 case 2:
-                    conf->setGeneralTheme(T_Light);
+                    conf->setGeneralTheme(T_Dark);
                     break;
             }
         });
@@ -59,9 +59,9 @@ static std::string func_theme(bool d) {
     std::string ret;
     ThemeType t = conf->getGeneralTheme();
     if (t == T_Light) {
-        ret = "Light";
+        ret = "Basic White";
     } else if (t == T_Dark) {
-        ret = "Dark";
+        ret = "Basic Black";
     } else if (t == T_Auto) {
         ret = "Auto";
     }
@@ -83,7 +83,7 @@ static std::string func_sort(bool d) {
         v.push_back("By Least Launched");
         v.push_back("By First Playtime");
         v.push_back("By Recently Played");
-        ScreenManager::getInstance()->createSelection("Default Sort Method", v, [conf](int c){
+        ScreenManager::getInstance()->createSelection("Default Sort Method", v, (int)conf->getGeneralSort(), [conf](int c){
             switch (c) {
                 case -1:
                     // Do nothing if nothing selected
@@ -217,13 +217,13 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::Option("Default Sort Method", &func_sort));
         this->list->addItem(new UI::ListItem::ToolTip("Sets the sort method used upon application launch."));
         this->list->addItem(new UI::ListItem::Option("Theme", &func_theme));
-        this->list->addItem(new UI::ListItem::ToolTip("Sets the theme for the application. Auto will choose the dark/light theme based on your switch settings. Note: This requires the app to be restarted to take effect."));
+        this->list->addItem(new UI::ListItem::ToolTip("Sets the theme for the application. Auto will choose the black/white theme based on your switch settings. Note: This requires the app to be restarted to take effect."));
         this->list->addItem(new UI::ListItem::Separator());
         this->list->addItem(new UI::ListItem::Option("Hide Deleted Games", &func_deleted));
-        this->list->addItem(new UI::ListItem::ToolTip("Excludes and hides deleted games from your play activity."));
+        this->list->addItem(new UI::ListItem::ToolTip("Excludes deleted games from 'All Activity'."));
         this->list->addItem(new UI::ListItem::Separator());
         this->list->addItem(new UI::ListItem::Option("Override User Page", &func_forwarder));
-        this->list->addItem(new UI::ListItem::ToolTip("Uses LayeredFS to override the user page with this app."));
+        this->list->addItem(new UI::ListItem::ToolTip("Uses LayeredFS to override the user page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported."));
         this->list->addItem(new UI::ListItem::Separator(30));
         this->list->addItem(new UI::ListItem::ToolTip("NX Activity Log v1.1.0a\nThank you for using my app! You can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde"));
 

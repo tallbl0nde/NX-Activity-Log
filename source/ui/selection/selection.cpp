@@ -11,7 +11,7 @@
 #define TITLE_FONT_SIZE 26
 
 namespace UI {
-    Selection::Selection(bool * b, std::string s, std::vector<std::string> v) : Drawable(0, 0, WIDTH, HEIGHT) {
+    Selection::Selection(bool * b, std::string s, std::vector<std::string> v, int t) : Drawable(0, 0, WIDTH, HEIGHT) {
         this->is_active = true;
 
         // Set up controls
@@ -24,7 +24,11 @@ namespace UI {
         this->list->setActive(true);
         unsigned int total_height = 0;
         for (size_t i = 0; i < v.size(); i++) {
-            UI::ListItem::TextEntry * tmp = new UI::ListItem::TextEntry(v[i]);
+            bool tick = false;
+            if (i == t) {
+                tick = true;
+            }
+            UI::ListItem::TextEntry * tmp = new UI::ListItem::TextEntry(v[i], tick);
             this->list->addItem(tmp);
             total_height += tmp->getH();
         }

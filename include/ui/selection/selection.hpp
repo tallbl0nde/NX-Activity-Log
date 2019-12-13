@@ -23,7 +23,7 @@ namespace UI {
 
         public:
             // Constructor takes title string and vector of strings for items
-            Selection(bool *, std::string, std::vector<std::string>);
+            Selection(bool *, std::string, std::vector<std::string>, int = -1);
 
             void event(SDL_Event);
             void update(uint32_t);

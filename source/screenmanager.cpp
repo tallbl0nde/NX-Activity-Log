@@ -45,11 +45,11 @@ void ScreenManager::popScreen() {
     }
 }
 
-void ScreenManager::createSelection(std::string t, std::vector<std::string> v, std::function<void(int)> f) {
+void ScreenManager::createSelection(std::string t, std::vector<std::string> v, int ti, std::function<void(int)> f) {
     if (this->selection != nullptr) {
         delete this->selection;
     }
-    this->selection = new UI::Selection(&this->touch_active, t, v);
+    this->selection = new UI::Selection(&this->touch_active, t, v, ti);
     this->selection_active = true;
     this->selection_callback = f;
 }

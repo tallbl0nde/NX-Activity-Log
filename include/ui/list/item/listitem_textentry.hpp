@@ -11,10 +11,13 @@ namespace UI::ListItem {
         private:
             // Texture for text
             SDL_Texture * tex;
+            // Should a tick be displayed?
+            bool ticked;
+            SDL_Texture * tick_tex;
 
         public:
             // Creates texture using string
-            TextEntry(std::string);
+            TextEntry(std::string, bool);
 
             void draw();
 

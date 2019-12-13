@@ -44,7 +44,7 @@ ICON 		:= 	img/icon.jpg
 # LIBS: Libraries to link against
 # (I dunno what the rest is)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
+LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
 
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
