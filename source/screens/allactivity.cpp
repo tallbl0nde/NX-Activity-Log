@@ -145,6 +145,7 @@ namespace Screen {
                                     this->list->sort(LastPlayed);
                                     break;
                             }
+                            this->list->setActive(true);
                         });
 
                     // All other buttons get handled by active element
