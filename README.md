@@ -49,8 +49,6 @@ There is absolutely no obligation, however if you have found this software usefu
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/J3J718RRQ)
 
-Knowing this software is being used is enough to motivate me to keep working on it!
-
 ## Thanks to
 
 * AtlasNX for [SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
