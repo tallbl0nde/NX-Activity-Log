@@ -41,13 +41,13 @@ _Note: The data shown in Recent Activity may be slightly inaccurate over larger 
 * Tapping on a game in 'Recent Activity' does nothing
   * Again, not an issue as I haven't added anything to appear just yet
 
-_Note that no support will be given by me for SX OS as I do not intend to run their CFW. I am happy to merge pull requests that fix bugs on SX OS should there be any, though._
-
 ## Support
 
 There is absolutely no obligation, however if you have found this software useful you can support me on Ko-fi!
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/J3J718RRQ)
+
+Knowing my software is being used is enough to motivate we to continue work on it!
 
 ## Thanks to
 
