@@ -1,9 +1,78 @@
 #include <algorithm>
 #include "PlayData.hpp"
+#include "TimeHelper.hpp"
 #include "utils.hpp"
 
 // Maximum number of entries to process in one iteration
 #define MAX_PROCESS_ENTRIES 1000
+
+std::vector<PD_Session> PlayData::getPDSessions(u64 titleID, AccountUid userID, u64 start_ts, u64 end_ts) {
+    // Break each "session" apart and keep if matching titleID and userID
+    std::vector<PD_Session> sessions;
+    size_t a = 0;
+    while (a < this->events.size()) {
+        if (this->events[a]->eventType == Applet_Launch) {
+            // Find end of session (or start of next session if switch crashed before exit)
+            size_t s = a;
+            bool time_c = false;
+            bool titleID_c = false;
+            bool userID_c = false;
+            if (this->events[a]->titleID == titleID) {
+                titleID_c = true;
+            }
+
+            a++;
+            bool end = false;
+            while (a < this->events.size() && !end) {
+                // Check if every event is in the required range
+                if (this->events[a]->clockTimestamp >= start_ts && this->events[a]->clockTimestamp <= end_ts) {
+                    time_c = true;
+                }
+
+                switch (this->events[a]->eventType) {
+                    // Check userID whenever account event encountered
+                    case Account_Active:
+                    case Account_Inactive:
+                        if (this->events[a]->userID == userID) {
+                            userID_c = true;
+                        }
+                        break;
+
+                    // Exit indicates end of session
+                    case Applet_Exit:
+                        if (time_c && titleID_c && userID_c) {
+                            struct PD_Session st;
+                            st.index = s;
+                            st.num = a - s + 1;
+                            sessions.push_back(st);
+                        }
+                        end = true;
+                        break;
+
+                    // Encountering another launch also indicates end of session (due to crash)
+                    case Applet_Launch:
+                        if (time_c && titleID_c && userID_c) {
+                            struct PD_Session st;
+                            st.index = s;
+                            st.num = a - s;
+                            sessions.push_back(st);
+                        }
+                        end = true;
+                        a--;
+                        break;
+
+                    default:
+                        break;
+                }
+                a++;
+            }
+        } else {
+            a++;
+        }
+    }
+
+    return sessions;
+}
 
 PlayData::PlayData() {
     // Position of first event to read
@@ -122,75 +191,66 @@ std::vector<u64> PlayData::getLoggedTitleIDs() {
     return ids;
 }
 
-struct PlaySession {
-    size_t index;
-    size_t num;
-};
+std::vector<PlaySession> PlayData::getPlaySessionsForUser(u64 titleID, AccountUid userID) {
+    // Get list of pd_sessions
+    struct tm end = TimeH::getTmForCurrentTime();
+    std::vector<PD_Session> pd_sessions = this->getPDSessions(titleID, userID, 0, std::mktime(&end));
+
+    // Create PlaySessions for each PD_Session
+    std::vector<PlaySession> sessions;
+    for (size_t i = 0; i < pd_sessions.size(); i++) {
+        struct PlaySession p;
+        p.playtime = 0;
+        p.startTimestamp = 0;
+        p.endTimestamp = 0;
+
+        // A "valid" session must have at least 6 events (launch, in, login, out, logout, exit)
+        u64 last_ts = 0;
+        for (size_t j = pd_sessions[i].index; j < pd_sessions[i].index + pd_sessions[i].num; j++) {
+            switch (this->events[j]->eventType) {
+                // Ignore account events
+                case Account_Active:
+                case Account_Inactive:
+                    break;
+
+                // Set start/end timestamps
+                case Applet_Launch:
+                    p.startTimestamp = this->events[j]->clockTimestamp;
+                    break;
+
+                case Applet_Exit:
+                    p.endTimestamp = this->events[j]->clockTimestamp;
+                    break;
+
+                // Calculate playtime when in focus
+                case Applet_InFocus:
+                    last_ts = this->events[j]->steadyTimestamp;
+                    break;
+
+                case Applet_OutFocus:
+                    p.playtime += (this->events[j]->steadyTimestamp - last_ts);
+
+                    // Move to last out focus (I don't know why the log has multiple)
+                    while (j+1 < this->events.size()) {
+                        if (this->events[j+1]->eventType == Applet_OutFocus) {
+                            j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        sessions.push_back(p);
+    }
+
+    return sessions;
+}
 
 RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 start_ts, u64 end_ts, AccountUid userID) {
-    // Break each "session" apart and keep if matching titleID and userID
-    std::vector<PlaySession> sessions;
-    size_t a = 0;
-    while (a < this->events.size()) {
-        if (this->events[a]->eventType == Applet_Launch) {
-            // Find end of session (or start of next session if switch crashed before exit)
-            size_t s = a;
-            bool time_c = false;
-            bool titleID_c = false;
-            bool userID_c = false;
-            if (this->events[a]->titleID == titleID) {
-                titleID_c = true;
-            }
-
-            a++;
-            bool end = false;
-            while (a < this->events.size() && !end) {
-                // Check if every event is in the required range
-                if (this->events[a]->clockTimestamp >= start_ts && this->events[a]->clockTimestamp <= end_ts) {
-                    time_c = true;
-                }
-
-                switch (this->events[a]->eventType) {
-                    // Check userID whenever account event encountered
-                    case Account_Active:
-                    case Account_Inactive:
-                        if (this->events[a]->userID == userID) {
-                            userID_c = true;
-                        }
-                        break;
-
-                    // Exit indicates end of session
-                    case Applet_Exit:
-                        if (time_c && titleID_c && userID_c) {
-                            struct PlaySession st;
-                            st.index = s;
-                            st.num = a - s + 1;
-                            sessions.push_back(st);
-                        }
-                        end = true;
-                        break;
-
-                    // Encountering another launch also indicates end of session (due to crash)
-                    case Applet_Launch:
-                        if (time_c && titleID_c && userID_c) {
-                            struct PlaySession st;
-                            st.index = s;
-                            st.num = a - s;
-                            sessions.push_back(st);
-                        }
-                        end = true;
-                        a--;
-                        break;
-
-                    default:
-                        break;
-                }
-                a++;
-            }
-        } else {
-            a++;
-        }
-    }
+    // Get valid sessions
+    std::vector<PD_Session> sessions = this->getPDSessions(titleID, userID, start_ts, end_ts);
 
     // Count playtime + launches
     RecentPlayStatistics * stats = new RecentPlayStatistics;

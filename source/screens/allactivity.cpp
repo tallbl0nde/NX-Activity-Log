@@ -287,7 +287,7 @@ namespace Screen {
         // Change to details if listitem chosen
         if (this->list->getChosen() != -1) {
             ScreenManager::getInstance()->pushScreen();
-            ScreenManager::getInstance()->setScreen(new Details(this->user, this->list->getTitleVector(), this->list->getChosen()));
+            ScreenManager::getInstance()->setScreen(new Details(this->user, this->list->getTitleVector()[this->list->getChosen()]));
         }
     }
 
