@@ -32,6 +32,9 @@ namespace UI::ListItem {
         struct tm sTm = TimeH::getTm(s);
         struct tm nTm = TimeH::getTmForCurrentTime();
         bool isAM = ((sTm.tm_hour < 12) ? true : false);
+        if (sTm.tm_hour == 0) {
+            sTm.tm_hour = 12;
+        }
         str = TimeH::tmToString(sTm, true, true, !(sTm.tm_year == nTm.tm_year)) + " - " \
             + std::to_string(((isAM) ? sTm.tm_hour : sTm.tm_hour - 12)) + ":" \
             + ((sTm.tm_min < 10) ? "0" : "" ) + std::to_string(sTm.tm_min) \

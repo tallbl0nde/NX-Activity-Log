@@ -10,6 +10,7 @@ namespace UI {
         protected:
             // Can this element be selected?
             bool is_selectable;
+            bool auto_highlight;
             // Is this item currently selected?
             bool is_selected;
             // Offset/position in list (in pixels)
@@ -35,6 +36,9 @@ namespace UI {
 
             // Returns true if this item is selectable
             bool isSelectable();
+
+            // Returns true if this item has it's own highlight code
+            bool hasOwnHighlighting();
 
             // Destructor does nothing
             ~List_Item();

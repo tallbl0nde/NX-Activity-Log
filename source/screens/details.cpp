@@ -32,7 +32,13 @@ namespace Screen {
         this->list->addItem(new UI::ListItem::Statistic("First Played", TimeH::timestampToString(pdmPlayTimestampToPosix(t->getFirstPlayed()))));
         this->list->addItem(new UI::ListItem::Statistic("Last Played", TimeH::timestampToString(pdmPlayTimestampToPosix(t->getLastPlayed()))));
         this->list->addItem(new UI::ListItem::Separator(50));
-        this->list->addItem(new UI::ListItem::Heading("Play Sessions"));
+        this->list->addItem(new UI::ListItem::Heading("Play Sessions", [](){
+            std::vector<std::string> vv;
+            vv.push_back("Test 1");
+            ScreenManager::getInstance()->createSelection("Test", vv, -1, [](int c){
+
+            });
+        }));
         this->list->addItem(new UI::ListItem::Separator(20));
 
         // Add play sessions to list

@@ -159,13 +159,11 @@ namespace SDLHelper {
         SDL_SetRenderTarget(renderer, tex);
         SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
-        SDL_RenderClear(renderer);
 
         // Draw white circle
         filledCircleRGBA(renderer, r, r, r, 255, 255, 255, 254);
 
         // Reset renderer
-        SDL_RenderPresent(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
 
         return tex;
@@ -203,7 +201,6 @@ namespace SDLHelper {
         SDL_RenderCopy(renderer, right, nullptr, &r2);
 
         // Reset renderer
-        SDL_RenderPresent(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
 
         return tex;

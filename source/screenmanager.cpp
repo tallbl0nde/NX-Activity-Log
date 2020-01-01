@@ -141,7 +141,7 @@ void ScreenManager::draw() {
 
     if (this->selection_active) {
         SDLHelper::setColour(SDL_Color{0, 0, 0, 150});
-        SDLHelper::drawRect(0, 0, WIDTH, HEIGHT-this->selection->getY());
+        SDLHelper::drawRect(0, 0, WIDTH, HEIGHT);
         this->selection->draw();
     }
     this->changed = false;

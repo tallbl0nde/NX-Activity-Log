@@ -2,6 +2,7 @@
 
 namespace UI {
     List_Item::List_Item() : Drawable() {
+        this->auto_highlight = true;
         this->is_selectable = false;
         this->is_selected = false;
         this->offset = 0;
@@ -33,6 +34,10 @@ namespace UI {
 
     bool List_Item::isSelectable() {
         return this->is_selectable;
+    }
+
+    bool List_Item::hasOwnHighlighting() {
+        return !this->auto_highlight;
     }
 
     List_Item::~List_Item() {

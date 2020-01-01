@@ -198,7 +198,7 @@ namespace UI {
 
             // Highlight appropriate entry
             this->items[i]->setY(this->y + this->offset + (this->items[i]->getOffset() - this->scroll_pos));
-            if (i == this->highlight_item && !(*this->touch_active) && this->is_active) {
+            if (i == this->highlight_item && !(*this->touch_active) && this->is_active && !this->items[i]->hasOwnHighlighting()) {
                 SDLHelper::setColour(this->theme->getHighlight());
                 SDLHelper::drawRect(this->items[i]->getX() - 5, this->items[i]->getY() - 5, this->items[i]->getW() + 10, this->items[i]->getH() + 10);
                 SDLHelper::setColour(this->theme->getHighlightBG());
