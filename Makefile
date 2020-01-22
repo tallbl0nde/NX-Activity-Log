@@ -44,7 +44,7 @@ ICON 		:= 	img/icon.jpg
 # LIBS: Libraries to link against
 # (I dunno what the rest is)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
+LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser -lAether
 
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
@@ -60,7 +60,7 @@ LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/SimpleIniParser
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/SimpleIniParser $(CURDIR)/Aether
 
 #---------------------------------------------------------------------------------
 # This is all wizardry to me also
@@ -109,6 +109,7 @@ ifeq ($(wildcard $(CURDIR)/SimpleIniParser/LICENSE),)
 endif
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile
+	@$(MAKE) -C $(CURDIR)/Aether -f $(CURDIR)/Aether/Makefile
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile
 	@mkdir -p $(ROMFS)
 	@cp $(FDIR)/$(FFILE) $(ROMFS)
@@ -121,6 +122,7 @@ clean:
 	@echo Cleaning ALL build files...
 	@rm -rf $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf $(OUTDIR) $(ROMFS)/$(FFILE)
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile clean
+	@$(MAKE) -C $(CURDIR)/Aether -f $(CURDIR)/Aether/Makefile clean
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile clean
 	@echo Done!
 #---------------------------------------------------------------------------------
