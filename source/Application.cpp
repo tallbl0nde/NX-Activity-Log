@@ -10,11 +10,19 @@ namespace Main {
         this->users = Utils::getUserObjects();
         this->userIdx = 0;
 
+        // Populate titles vector
+        this->titles = Utils::getTitleObjects(this->users);
+        this->titleIdx = 0;
+
+        // Create PlayData object
+        this->playdata_ = new PlayData();
+
         // Create Aether instance
         this->display = new Aether::Display();
         this->display->setBackgroundColour(Aether::Theme::Dark.bg.r, Aether::Theme::Dark.bg.g, Aether::Theme::Dark.bg.b);
         this->display->setHighlightColours(Aether::Theme::Dark.highlightBG, Aether::Theme::Dark.selected);
         this->display->setHighlightAnimation(Aether::Theme::Dark.highlightFunc);
+        this->display->setShowFPS(true);
 
         // Setup screens
         this->scAllActivity = new Screen::AllActivity(this);
@@ -22,6 +30,10 @@ namespace Main {
 
         // Start with UserSelect screen
         this->setScreen(ScreenID::UserSelect);
+    }
+
+    void Application::setHoldDelay(int i) {
+        this->display->setHoldDelay(i);
     }
 
     void Application::setScreen(ScreenID s) {
@@ -36,12 +48,28 @@ namespace Main {
         }
     }
 
+    PlayData * Application::playdata() {
+        return this->playdata_;
+    }
+
     User * Application::activeUser() {
         return this->users[this->userIdx];
     }
 
     void Application::setActiveUser(unsigned short i) {
         this->userIdx = i;
+    }
+
+    std::vector<Title *> Application::titleVector() {
+        return this->titles;
+    }
+
+    Title * Application::activeTitle() {
+        return this->titles[this->titleIdx];
+    }
+
+    void Application::setActiveTitle(unsigned int i) {
+        this->titleIdx = i;
     }
 
     void Application::run() {
@@ -60,7 +88,17 @@ namespace Main {
             users.erase(users.begin());
         }
 
+        // Delete title objects
+        while (titles.size() > 0) {
+            delete titles[0];
+            titles.erase(titles.begin());
+        }
+
+        // Delete playdata
+        delete this->playdata_;
+
         // Delete screens
+        delete this->scAllActivity;
         delete this->scUserSelect;
 
         // Cleanup Aether

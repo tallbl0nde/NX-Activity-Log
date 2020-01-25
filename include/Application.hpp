@@ -2,6 +2,8 @@
 #define APPLICATION_HPP
 
 #include "Aether.hpp"
+#include "PlayData.hpp"
+#include "Title.hpp"
 #include "User.hpp"
 
 #include "AllActivity.hpp"
@@ -34,26 +36,46 @@ namespace Main {
             Screen::AllActivity * scAllActivity;
             Screen::UserSelect * scUserSelect;
 
+            // PlayData object used for all play stats
+            PlayData * playdata_;
+
             // Vector of users
             std::vector<User *> users;
             // Index of selected user
             unsigned short userIdx;
 
+            // Vector of titles
+            std::vector<Title *> titles;
+            // Index of "active" title (used for specific screens)
+            unsigned int titleIdx;
+
         public:
             // Constructor inits Aether, screens + other objects
             Application();
 
+            // Wrapper for display function
+            void setHoldDelay(int);
+
             // Pass screen enum to change to it
             void setScreen(ScreenID);
+
+            // Returns PlayData object
+            PlayData * playdata();
 
             // Returns user object of active user
             User * activeUser();
             // Sets active user given index
             void setActiveUser(unsigned short);
 
+            // Returns reference to titles vector
+            std::vector<Title *> titleVector();
+            // Returns currently selected title
+            Title * activeTitle();
+            // Set active title given index
+            void setActiveTitle(unsigned int);
+
             // Handles display loop
             void run();
-
             // Call to stop display loop
             void exit();
 

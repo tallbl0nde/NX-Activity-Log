@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "PlayData.hpp"
 #include "TimeHelper.hpp"
-#include "utils.hpp"
+#include "Utils.hpp"
 
 // Maximum number of entries to process in one iteration
 #define MAX_PROCESS_ENTRIES 1000
@@ -72,6 +72,12 @@ std::vector<PD_Session> PlayData::getPDSessions(u64 titleID, AccountUid userID, 
     }
 
     return sessions;
+}
+
+void PlayData::checkCachedStats(AccountUid userID, u64 titleID) {
+    if (!(this->cachedUser == userID && this->cachedPdmStats.application_id == titleID)) {
+        pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleID, userID, &this->cachedPdmStats);
+    }
 }
 
 PlayData::PlayData() {
@@ -320,6 +326,26 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
     }
 
     return stats;
+}
+
+u32 PlayData::getPdmFirstTimestamp(AccountUid userID, u64 titleID) {
+    checkCachedStats(userID, titleID);
+    return this->cachedPdmStats.first_timestampUser;
+}
+
+u32 PlayData::getPdmLastTimestamp(AccountUid userID, u64 titleID) {
+    checkCachedStats(userID, titleID);
+    return this->cachedPdmStats.last_timestampUser;
+}
+
+u32 PlayData::getPdmPlaytime(AccountUid userID, u64 titleID) {
+    checkCachedStats(userID, titleID);
+    return this->cachedPdmStats.playtimeMinutes;
+}
+
+u32 PlayData::getPdmLaunches(AccountUid userID, u64 titleID) {
+    checkCachedStats(userID, titleID);
+    return this->cachedPdmStats.totalLaunches;
 }
 
 PlayData::~PlayData() {

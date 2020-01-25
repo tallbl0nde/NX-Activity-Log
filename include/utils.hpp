@@ -5,6 +5,7 @@
 #include <switch.h>
 #include <vector>
 #include "User.hpp"
+#include "Title.hpp"
 
 // Dimensions of renderer/screen size in pixels
 #define WIDTH 1280
@@ -20,8 +21,11 @@ namespace Utils {
     // Add commas to provided number
     std::string formatNumberComma(u32);
 
-    // Returns vector containing vector of users
+    // Returns vector containing users
     std::vector<User *> getUserObjects();
+
+    // Returns vector containing ALL played titles
+    std::vector<Title *> getTitleObjects(std::vector<User *>);
 
     // Starts services
     void startServices();
