@@ -1,4 +1,3 @@
-#include "SDLHelper.hpp"
 #include "Title.hpp"
 #include <time.h>
 
@@ -8,11 +7,11 @@ Title::Title(u64 titleID, AccountUid userID, bool installed) {
 
     // Defaults in case fetch fails
     this->first_timestamp = 0;
-    this->icon = nullptr;
     this->last_timestamp = 0;
     this->name = "";
     this->playtime = 0;
     this->launches = 0;
+    this->ptr = nullptr;
 
     // Get play statistics
     PdmPlayStatistics stats;
@@ -37,9 +36,8 @@ Title::Title(u64 titleID, AccountUid userID, bool installed) {
         }
 
         // Get icon
-        size_t icon_size = nacp_size - sizeof(data.nacp);
-        // Create texture
-        this->icon = SDLHelper::renderImage(data.icon, icon_size);
+        this->ptr = data.icon;
+        this->size = nacp_size - sizeof(data.nacp);
     }
 }
 
@@ -71,13 +69,17 @@ u32 Title::getLaunches() {
     return this->launches;
 }
 
-SDL_Texture * Title::getIcon() {
-    return this->icon;
+u8 * Title::getPtr() {
+    return this->ptr;
+}
+
+u32 Title::getSize() {
+    return this->size;
 }
 
 Title::~Title() {
     // In case there's no icon for whatever reason
-    if (this->icon != nullptr) {
-        SDL_DestroyTexture(this->icon);
+    if (this->ptr != nullptr) {
+        free(this->ptr);
     }
 }

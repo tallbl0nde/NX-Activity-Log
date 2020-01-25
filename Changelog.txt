@@ -1,0 +1,4 @@
+Fixed 20 launches crash (setsys wasn't closed)
+UI completely redone with Aether (my UI library)
+ - Should fix some bugs, but likely introduced some!
+ - Please report any bugs (even simple things) so I can polish it as much as possible

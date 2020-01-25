@@ -24,8 +24,8 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	NX-Activity-Log
 BUILD		:=	build
-SOURCES		:=	source source/helpers source/screens source/ui source/ui/list source/ui/list/item source/ui/sidemenu source/ui/selection
-INCLUDES	:=	include include/helpers include/screens include/ui include/ui/list include/ui/list/item include/ui/sidemenu include/ui/selection
+SOURCES		:=	source source/helpers source/ui/screen source/ui/element
+INCLUDES	:=	include include/helpers include/ui/screen include/ui/element
 ROMFS		:=	romfs
 OUTDIR		:=	sdcard
 FDIR		:=	forwarder
@@ -44,7 +44,7 @@ ICON 		:= 	img/icon.jpg
 # LIBS: Libraries to link against
 # (I dunno what the rest is)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser -lAether
+LIBS	:=  -lAether -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
 
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 

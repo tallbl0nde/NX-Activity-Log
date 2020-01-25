@@ -1,37 +1,33 @@
 #include "User.hpp"
 
 User::User(AccountUid ID){
-    this->ID = ID;
+    this->ID_ = ID;
 
-    // Get username and icon
-    this->username = "";
-    this->image = nullptr;
+    // Set values in case of an error
+    this->username_ = "";
+    this->ptr = nullptr;
+    this->size = 0;
+
+    // Get name and icon
     AccountProfile profile;
     AccountProfileBase profile_base;
 
-    Result rc = accountGetProfile(&profile, this->ID);
+    Result rc = accountGetProfile(&profile, this->ID_);
     if (R_SUCCEEDED(rc)){
         // Get username
         rc = accountProfileGet(&profile, NULL, &profile_base);
         if (R_SUCCEEDED(rc)){
-            this->username = profile_base.nickname;
+            this->username_ = profile_base.nickname;
         }
 
-        // Get icon and render to texture
-        u8 * buffer;
-        u32 img_size, tmp;
+        u32 tmp;
         // Get image size and allocate memory
-        rc = accountProfileGetImageSize(&profile, &img_size);
+        rc = accountProfileGetImageSize(&profile, &this->size);
         if (R_SUCCEEDED(rc)) {
-            buffer = (u8 *) malloc(img_size);
+            this->ptr = (u8 *) malloc(this->size);
 
             // Get image
-            rc = accountProfileLoadImage(&profile, buffer, img_size, &tmp);
-            if (R_SUCCEEDED(rc)) {
-                this->image = SDLHelper::renderImage(buffer, img_size);
-            }
-
-            free(buffer);
+            rc = accountProfileLoadImage(&profile, this->ptr, this->size, &tmp);
         }
 
         // Close profile
@@ -39,20 +35,25 @@ User::User(AccountUid ID){
     }
 }
 
-AccountUid User::getID() {
-    return this->ID;
+AccountUid User::ID() {
+    return this->ID_;
 }
 
-std::string User::getUsername() {
-    return this->username;
+std::string User::username() {
+    return this->username_;
 }
 
+u8 * User::imgPtr() {
+    return this->ptr;
+}
 
-SDL_Texture * User::getImage() {
-    return this->image;
+u32 User::imgSize() {
+    return this->size;
 }
 
 User::~User() {
     // Free memory used by image texture
-    SDLHelper::destroyTexture(this->image);
+    if (this->ptr != nullptr) {
+        free(this->ptr);
+    }
 }

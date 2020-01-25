@@ -22,8 +22,9 @@ class Title {
         u32 playtime;
         // Number of launches
         u32 launches;
-        // SDL Texture containing game icon
-        SDL_Texture * icon;
+        // Pointer to and size of image
+        u8 * ptr;
+        u32 size;
 
     public:
         // The constructor derives all relevant info from given titleID
@@ -37,7 +38,8 @@ class Title {
         u32 getLastPlayed();
         u32 getPlaytime();
         u32 getLaunches();
-        SDL_Texture * getIcon();
+        u8 * getPtr();
+        u32 getSize();
 
         // Destructor frees memory used by image
         ~Title();
