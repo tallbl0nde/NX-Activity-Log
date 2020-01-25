@@ -55,9 +55,13 @@ struct PD_Session {
 
 // PlayData stores PlayEvents which are created from processing PlayEvent.dat using pdm.
 // The data can then be queried across a period of time, with the summation of these
-// statistics being returned.
+// statistics being returned. It also offers wrappers for some pdm functions.
 class PlayData {
     private:
+        // Cache PdmPlayStatistics for future calls of same titleID
+        PdmPlayStatistics cachedPdmStats;
+        AccountUid cachedUser;
+
         // Vector containing created PlayEvents
         // Should be in chronological order (ie. as read from pdm)
         std::vector<PlayEvent *> events;
@@ -66,8 +70,11 @@ class PlayData {
         // Used internally
         std::vector<PD_Session> getPDSessions(u64, AccountUid, u64, u64);
 
+        // Check if cached stats need changing and do so if need be
+        void checkCachedStats(AccountUid, u64);
+
     public:
-        // The constructor creates PlayEvents
+        // The constructor prepares + creates PlayEvents
         PlayData();
 
         // Returns all titleIDs found within the play log (some may no longer be valid?)
@@ -78,6 +85,13 @@ class PlayData {
 
         // Returns a RecentPlayStatistics for the given time range and user ID
         RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, u64, AccountUid);
+
+        // Returns fields of PdmPlayStatistics for the given user and title
+        // Caches and reads from cache if need be
+        u32 getPdmFirstTimestamp(AccountUid, u64);
+        u32 getPdmLastTimestamp(AccountUid, u64);
+        u32 getPdmPlaytime(AccountUid, u64);
+        u32 getPdmLaunches(AccountUid, u64);
 
         // The destructor deletes PlayEvents (frees memory)
         ~PlayData();
