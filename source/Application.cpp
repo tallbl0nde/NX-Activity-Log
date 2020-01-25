@@ -17,6 +17,7 @@ namespace Main {
         this->display->setHighlightAnimation(Aether::Theme::Dark.highlightFunc);
 
         // Setup screens
+        this->scAllActivity = new Screen::AllActivity(this);
         this->scUserSelect = new Screen::UserSelect(this, this->users);
 
         // Start with UserSelect screen
@@ -27,6 +28,10 @@ namespace Main {
         switch (s) {
             case UserSelect:
                 this->display->setScreen(this->scUserSelect);
+                break;
+
+            case AllActivity:
+                this->display->setScreen(this->scAllActivity);
                 break;
         }
     }

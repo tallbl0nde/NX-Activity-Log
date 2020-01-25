@@ -35,7 +35,6 @@ namespace Screen {
         this->list = new Aether::List(340, 88, 600, 558);
         this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
         this->addElement(this->list);
-        this->setFocussed(this->list);
     }
 
     void UserSelect::onLoad() {
@@ -50,6 +49,7 @@ namespace Screen {
             });
             this->list->addElement(l);
         }
+        this->setFocussed(this->list);
     }
 
     void UserSelect::onUnload() {

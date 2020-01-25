@@ -2,12 +2,15 @@
 #define APPLICATION_HPP
 
 #include "Aether.hpp"
-#include "UserSelect.hpp"
 #include "User.hpp"
+
+#include "AllActivity.hpp"
+#include "UserSelect.hpp"
 
 // I should really fix this cyclic dependency /shrug
 namespace Screen {
     class UserSelect;
+    class AllActivity;
 };
 
 namespace Main {
@@ -28,8 +31,8 @@ namespace Main {
             Aether::Display * display;
 
             // Screens of the app
+            Screen::AllActivity * scAllActivity;
             Screen::UserSelect * scUserSelect;
-            // Screen::UserSelect * scAllActivity;
 
             // Vector of users
             std::vector<User *> users;
