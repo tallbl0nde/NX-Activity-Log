@@ -39,6 +39,15 @@ struct PlaySession {
     u64 endTimestamp;       // Time of exit
 };
 
+// PdmPlayStatistics but only the necessary things
+struct PlayStatistics {
+    u64 titleID;            // TitleID of these stats
+    u32 firstPlayed;        // Timestamp of first launch
+    u32 lastPlayed;         // Timestamp of last play (exit)
+    u32 playtime;           // Total playtime in seconds
+    u32 launches;           // Total launches
+};
+
 // RecentPlayStatistics struct is similar to PdmPlayStatistics but
 // only contains recent values
 struct RecentPlayStatistics {
@@ -58,10 +67,6 @@ struct PD_Session {
 // statistics being returned. It also offers wrappers for some pdm functions.
 class PlayData {
     private:
-        // Cache PdmPlayStatistics for future calls of same titleID
-        PdmPlayStatistics cachedPdmStats;
-        AccountUid cachedUser;
-
         // Vector containing created PlayEvents
         // Should be in chronological order (ie. as read from pdm)
         std::vector<PlayEvent *> events;
@@ -69,9 +74,6 @@ class PlayData {
         // Return vector of PD_Sessions for given title/user IDs + time range
         // Used internally
         std::vector<PD_Session> getPDSessions(u64, AccountUid, u64, u64);
-
-        // Check if cached stats need changing and do so if need be
-        void checkCachedStats(AccountUid, u64);
 
     public:
         // The constructor prepares + creates PlayEvents
@@ -86,12 +88,8 @@ class PlayData {
         // Returns a RecentPlayStatistics for the given time range and user ID
         RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, u64, AccountUid);
 
-        // Returns fields of PdmPlayStatistics for the given user and title
-        // Caches and reads from cache if need be
-        u32 getPdmFirstTimestamp(AccountUid, u64);
-        u32 getPdmLastTimestamp(AccountUid, u64);
-        u32 getPdmPlaytime(AccountUid, u64);
-        u32 getPdmLaunches(AccountUid, u64);
+        // Returns a PlayStatistics for the given titleID and userID
+        PlayStatistics * getStatisticsForUser(u64, AccountUid);
 
         // The destructor deletes PlayEvents (frees memory)
         ~PlayData();

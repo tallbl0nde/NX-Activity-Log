@@ -74,12 +74,6 @@ std::vector<PD_Session> PlayData::getPDSessions(u64 titleID, AccountUid userID, 
     return sessions;
 }
 
-void PlayData::checkCachedStats(AccountUid userID, u64 titleID) {
-    if (!(this->cachedUser == userID && this->cachedPdmStats.application_id == titleID)) {
-        pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleID, userID, &this->cachedPdmStats);
-    }
-}
-
 PlayData::PlayData() {
     // Position of first event to read
     s32 offset = 0;
@@ -328,24 +322,15 @@ RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 sta
     return stats;
 }
 
-u32 PlayData::getPdmFirstTimestamp(AccountUid userID, u64 titleID) {
-    checkCachedStats(userID, titleID);
-    return this->cachedPdmStats.first_timestampUser;
-}
-
-u32 PlayData::getPdmLastTimestamp(AccountUid userID, u64 titleID) {
-    checkCachedStats(userID, titleID);
-    return this->cachedPdmStats.last_timestampUser;
-}
-
-u32 PlayData::getPdmPlaytime(AccountUid userID, u64 titleID) {
-    checkCachedStats(userID, titleID);
-    return this->cachedPdmStats.playtimeMinutes;
-}
-
-u32 PlayData::getPdmLaunches(AccountUid userID, u64 titleID) {
-    checkCachedStats(userID, titleID);
-    return this->cachedPdmStats.totalLaunches;
+PlayStatistics * PlayData::getStatisticsForUser(u64 titleID, AccountUid userID) {
+    PdmPlayStatistics tmp;
+    pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleID, userID, &tmp);
+    PlayStatistics * stats = new PlayStatistics;
+    stats->firstPlayed = tmp.first_timestampUser;
+    stats->lastPlayed = tmp.last_timestampUser;
+    stats->playtime = tmp.playtimeMinutes * 60;
+    stats->launches = tmp.totalLaunches;
+    return stats;
 }
 
 PlayData::~PlayData() {

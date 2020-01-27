@@ -1,5 +1,4 @@
 #include "AllActivity.hpp"
-#include "ListActivity.hpp"
 #include "TimeHelper.hpp"
 
 namespace Screen {
@@ -38,8 +37,8 @@ namespace Screen {
         this->addElement(menu);
 
         // Create list (but don't populate yet)
-        this->list = new Aether::List(420, 88, 810, 559);
-        this->list->setCatchup(12);
+        this->list = new CustomElm::SortedList(420, 88, 810, 559);
+        this->list->setCatchup(11);
         this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
         this->addElement(this->list);
 
@@ -82,37 +81,48 @@ namespace Screen {
         AccountUid u = this->app->activeUser()->ID();
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
-            u32 tmp = pd->getPdmPlaytime(u, t[i]->titleID()) * 60;
-            if (tmp == 0) {
+            PlayStatistics * ps = pd->getStatisticsForUser(t[i]->titleID(), u);
+            totalSecs += ps->playtime;
+            if (ps->launches == 0) {
                 // Skip unplayed titles
+                delete ps;
                 continue;
             }
 
+            // "Convert" PlayStatistics to SortInfo
+            SortInfo * si = new SortInfo;
+            si->name = t[i]->name();
+            si->titleID = t[i]->titleID();
+            si->firstPlayed = ps->firstPlayed;
+            si->lastPlayed = ps->lastPlayed;
+            si->playtime = ps->playtime;
+            si->launches = ps->launches;
+
+            // Create ListActivity and add to list
             CustomElm::ListActivity * la = new CustomElm::ListActivity();
             la->setImage(new Aether::Image(0, 0, t[i]->imgPtr(), t[i]->imgSize()));
             la->setTitle(t[i]->name());
-            totalSecs += tmp;
-            std::string str = "Played for " + TimeH::playtimeToString(tmp, " and ");
+            std::string str = "Played for " + TimeH::playtimeToString(ps->playtime, " and ");
             la->setPlaytime(str);
-            str = TimeH::lastPlayedTimestampToString(pdmPlayTimestampToPosix(pd->getPdmLastTimestamp(u, t[i]->titleID())));
+            str = TimeH::lastPlayedTimestampToString(pdmPlayTimestampToPosix(ps->lastPlayed));
             la->setLeftMuted(str);
-            tmp = pd->getPdmLaunches(u, t[i]->titleID());
-            str = "Played " + std::to_string(tmp);
-            (tmp == 1) ? str += " time" : str += " times";
+            str = "Played " + std::to_string(ps->launches);
+            (ps->launches == 1) ? str += " time" : str += " times";
             la->setRightMuted(str);
             la->setRank("#" + std::to_string(i));
             la->setCallback([this, i](){
                 this->app->setActiveTitle(i);
                 this->app->setScreen(Main::ScreenID::Details);
             });
-
             la->setTitleColour(Aether::Theme::Dark.text);
             la->setPlaytimeColour(Aether::Theme::Dark.accent);
             la->setMutedColour(Aether::Theme::Dark.mutedText);
             la->setLineColour(Aether::Theme::Dark.mutedLine);
-
-            this->list->addElement(la);
+            this->list->addElement(la, si);
         }
+
+        // Sort the list
+        this->list->setSort(SortType::HoursAsc);
 
         // Render total hours string
         std::string txt = "Total Playtime: " + TimeH::playtimeToString(totalSecs, " and ");

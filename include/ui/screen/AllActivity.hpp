@@ -2,6 +2,7 @@
 #define SCREEN_ALLACTIVITY_HPP
 
 #include "Application.hpp"
+#include "SortedList.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {
@@ -19,7 +20,7 @@ namespace Screen {
             Aether::Text * heading;
             Aether::Text * hours;
             Aether::Image * image;
-            Aether::List * list;
+            CustomElm::SortedList * list;
 
         public:
             // Passed main application object
