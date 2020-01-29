@@ -39,12 +39,21 @@ namespace Screen {
         // Create list (but don't populate yet)
         this->list = new CustomElm::SortedList(420, 88, 810, 559);
         this->list->setCatchup(11);
+        this->list->setHeadingColour(Aether::Theme::Dark.mutedText);
         this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
         this->addElement(this->list);
 
+        // Create sort overlay
+        this->sortOverlay = new Aether::PopupList("Sort Titles");
+        this->sortOverlay->setBackgroundColour(Aether::Theme::Dark.altBG);
+        this->sortOverlay->setHighlightColour(Aether::Theme::Dark.accent);
+        this->sortOverlay->setLineColour(Aether::Theme::Dark.fg);
+        this->sortOverlay->setListLineColour(Aether::Theme::Dark.mutedLine);
+        this->sortOverlay->setTextColour(Aether::Theme::Dark.text);
+
         // Add callbacks for buttons
         this->onButtonPress(Aether::Button::X, [this](){
-            // push overlay
+            this->setupOverlay();
         });
         this->onButtonPress(Aether::Button::B, [this](){
             this->app->setScreen(Main::ScreenID::UserSelect);
@@ -63,6 +72,41 @@ namespace Screen {
         });
     }
 
+    void AllActivity::setupOverlay() {
+        // Empty previous entries
+        this->sortOverlay->close(false);
+        this->sortOverlay->removeEntries();
+
+        // Add entries and highlight current sort
+        SortType t = this->list->sort();
+        this->sortOverlay->addEntry("By Name", [this](){
+            this->list->setSort(SortType::AlphaAsc);
+        }, t == SortType::AlphaAsc);
+        this->sortOverlay->addEntry("By First Playtime", [this](){
+            this->list->setSort(SortType::FirstPlayed);
+        }, t == SortType::FirstPlayed);
+        this->sortOverlay->addEntry("By Most Recently Played", [this](){
+            this->list->setSort(SortType::LastPlayed);
+        }, t == SortType::LastPlayed);
+        this->sortOverlay->addEntry("By Longest Playtime", [this](){
+            this->list->setSort(SortType::HoursAsc);
+        }, t == SortType::HoursAsc);
+        this->sortOverlay->addEntry("By Shortest Playtime", [this](){
+            this->list->setSort(SortType::HoursDec);
+        }, t == SortType::HoursDec);
+        this->sortOverlay->addEntry("By Most Launched", [this](){
+            this->list->setSort(SortType::LaunchAsc);
+        }, t == SortType::LaunchAsc);
+        this->sortOverlay->addEntry("By Least Launched", [this](){
+            this->list->setSort(SortType::LaunchDec);
+        }, t == SortType::LaunchDec);
+
+        this->app->addOverlay(this->sortOverlay);
+
+        // List is focussed when overlay is closed
+        this->setFocussed(this->list);
+    }
+
     void AllActivity::onLoad() {
         // Create heading using user's name
         this->heading = new Aether::Text(150, 45, this->app->activeUser()->username() + "'s Activity", 28);
@@ -76,12 +120,10 @@ namespace Screen {
         this->addElement(this->image);
 
         // Populate list + count total time
-        PlayData * pd = this->app->playdata();
         std::vector<Title *> t = this->app->titleVector();
-        AccountUid u = this->app->activeUser()->ID();
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
-            PlayStatistics * ps = pd->getStatisticsForUser(t[i]->titleID(), u);
+            PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
             totalSecs += ps->playtime;
             if (ps->launches == 0) {
                 // Skip unplayed titles
@@ -109,7 +151,6 @@ namespace Screen {
             str = "Played " + std::to_string(ps->launches);
             (ps->launches == 1) ? str += " time" : str += " times";
             la->setRightMuted(str);
-            la->setRank("#" + std::to_string(i));
             la->setCallback([this, i](){
                 this->app->setActiveTitle(i);
                 this->app->setScreen(Main::ScreenID::Details);
@@ -123,6 +164,7 @@ namespace Screen {
 
         // Sort the list
         this->list->setSort(SortType::HoursAsc);
+        this->setFocussed(this->list);
 
         // Render total hours string
         std::string txt = "Total Playtime: " + TimeH::playtimeToString(totalSecs, " and ");
@@ -137,5 +179,9 @@ namespace Screen {
         this->removeElement(this->hours);
         this->removeElement(this->image);
         this->list->removeAllElements();
+    }
+
+    AllActivity::~AllActivity() {
+        delete this->sortOverlay;
     }
 };

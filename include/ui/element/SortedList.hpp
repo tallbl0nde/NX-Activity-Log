@@ -43,6 +43,9 @@ namespace CustomElm {
             void setSort(SortType);
             // Returns SortType
             SortType sort();
+
+            // Set colour of heading text
+            void setHeadingColour(Aether::Colour);
     };
 };
 

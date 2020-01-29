@@ -3,9 +3,10 @@
 
 namespace CustomElm {
     SortedList::SortedList(int x, int y, int w, int h) : Aether::List(x, y, w, h) {
-        this->heading = new Aether::Text(0, 0, "Text", 20);
+        this->heading = new Aether::Text(0, 0, "y", 18);
         List::addElement(this->heading);
-        List::addElement(new Aether::ListSeparator());
+        this->heading->setY(this->heading->y() - 15);
+        List::addElement(new Aether::ListSeparator(20));
     }
 
     void SortedList::addElement(ListActivity * e, SortInfo * i) {
@@ -14,7 +15,11 @@ namespace CustomElm {
     }
 
     void SortedList::removeAllElements() {
-        List::removeAllElements();
+        // Remove everything but heading + separator
+        while (this->children.size() > 2) {
+            delete this->children[2];
+            this->children.erase(this->children.begin() + 2);
+        }
         while (this->sortinfo.size() > 0) {
             delete this->sortinfo[0];
             this->sortinfo.erase(this->sortinfo.begin());
@@ -32,19 +37,19 @@ namespace CustomElm {
         // Change heading text + reorder items
         switch (t) {
             case AlphaAsc:
-                this->heading->setString("Sorting: Alphabetically");
+                this->heading->setString("Sorting by: Name");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->name < rhs.second->name;
                 });
                 break;
             case HoursAsc:
-                this->heading->setString("Sorting by: Most Played");
+                this->heading->setString("Sorting by: Longest Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime > rhs.second->playtime;
                 });
                 break;
             case HoursDec:
-                this->heading->setString("Sorting by: Least Played");
+                this->heading->setString("Sorting by: Shortest Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime < rhs.second->playtime;
                 });
@@ -62,7 +67,7 @@ namespace CustomElm {
                 });
                 break;
             case FirstPlayed:
-                this->heading->setString("Sorting by: First Played");
+                this->heading->setString("Sorting by: First Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->firstPlayed < rhs.second->firstPlayed;
                 });
@@ -72,24 +77,38 @@ namespace CustomElm {
                 }
                 break;
             case LastPlayed:
-                this->heading->setString("Sorting by: Recently Played");
+                this->heading->setString("Sorting by: Most Recently Played");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->lastPlayed > rhs.second->lastPlayed;
                 });
                 break;
         }
+        this->heading->setX(this->x() + (this->w() - this->heading->w())/2);
 
         // Split vectors and update positions
         Utils::splitVectors(merged, items, this->sortinfo);
         for (size_t i = 0; i < items.size(); i++) {
             this->children[i+2] = items[i];
+            this->children[i+2]->setY(this->children[i+1]->y() + this->children[i+1]->h());
+            if (this->sorting != AlphaAsc) {
+                static_cast<ListActivity *>(this->children[i+2])->setRank("#" + std::to_string(i+1));
+            } else {
+                static_cast<ListActivity *>(this->children[i+2])->setRank("");
+            }
         }
 
         // Finally reset scroll pos
         this->setScrollPos(0);
+        if (this->children.size() > 2) {
+            this->setFocussed(this->children[2]);
+        }
     }
 
     SortType SortedList::sort() {
         return this->sorting;
+    }
+
+    void SortedList::setHeadingColour(Aether::Colour c) {
+        this->heading->setColour(c);
     }
 };

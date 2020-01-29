@@ -40,7 +40,7 @@ namespace Utils {
     // Vector with pairs, vectors to split into
     template <typename A, typename B>
     void splitVectors(const std::vector<std::pair<A, B> >& m, std::vector<A>& a, std::vector<B>& b) {
-        for (size_t i = 0; i < a.size(); i++) {
+        for (size_t i = 0; i < m.size(); i++) {
             a[i] = m[i].first;
             b[i] = m[i].second;
         }

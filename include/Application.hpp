@@ -56,6 +56,10 @@ namespace Main {
             // Wrapper for display function
             void setHoldDelay(int);
 
+            // Pass an overlay element in order to render
+            // Element is not deleted when closed!
+            void addOverlay(Aether::Overlay *);
+
             // Pass screen enum to change to it
             void setScreen(ScreenID);
 

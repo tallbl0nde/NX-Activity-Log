@@ -1,6 +1,9 @@
 #include "Application.hpp"
 
 int main(int argc, char * argv[]){
+    // socketInitializeDefault();
+    // nxlinkStdio();
+
     // Status variables
     // bool is_mypage = false;
     // AccountUid mypage_id;
@@ -39,6 +42,8 @@ int main(int argc, char * argv[]){
     Main::Application * app = new Main::Application();
     app->run();
     delete app;
+
+    // socketExit();
 
     return 0;
 }

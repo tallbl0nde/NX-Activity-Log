@@ -36,6 +36,10 @@ namespace Main {
         this->display->setHoldDelay(i);
     }
 
+    void Application::addOverlay(Aether::Overlay * o) {
+        this->display->addOverlay(o);
+    }
+
     void Application::setScreen(ScreenID s) {
         switch (s) {
             case UserSelect:

@@ -23,6 +23,8 @@ namespace CustomElm {
         this->addElement(this->mutedRight);
         this->rank = new Aether::Text(this->x() + this->w(), this->y() + 15, "", 18);
         this->addElement(this->rank);
+
+        this->icon = nullptr;
     }
 
     void ListActivity::setImage(Aether::Image * i) {
@@ -52,6 +54,7 @@ namespace CustomElm {
     void ListActivity::setRank(std::string s) {
         this->rank->setString(s);
         this->rank->setX(this->x() + this->w() - this->rank->w() - 15);
+        this->setTextWidth();
     }
 
     void ListActivity::setTitleColour(Aether::Colour c) {

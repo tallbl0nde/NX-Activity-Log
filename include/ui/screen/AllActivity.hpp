@@ -22,6 +22,12 @@ namespace Screen {
             Aether::Image * image;
             CustomElm::SortedList * list;
 
+            // Choose sort overlay
+            Aether::PopupList * sortOverlay;
+
+            // Set elements and highlight one in overlay
+            void setupOverlay();
+
         public:
             // Passed main application object
             AllActivity(Main::Application *);
@@ -30,6 +36,9 @@ namespace Screen {
             void onLoad();
             // Delete elements created in onLoad()
             void onUnload();
+
+            // Deletes overlay
+            ~AllActivity();
     };
 };
 
