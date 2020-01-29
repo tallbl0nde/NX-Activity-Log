@@ -26,6 +26,7 @@ namespace Main {
 
         // Setup screens
         this->scAllActivity = new Screen::AllActivity(this);
+        this->scSettings = new Screen::Settings(this);
         this->scUserSelect = new Screen::UserSelect(this, this->users);
 
         // Start with UserSelect screen
@@ -42,12 +43,16 @@ namespace Main {
 
     void Application::setScreen(ScreenID s) {
         switch (s) {
-            case UserSelect:
-                this->display->setScreen(this->scUserSelect);
-                break;
-
             case AllActivity:
                 this->display->setScreen(this->scAllActivity);
+                break;
+
+            case Settings:
+                this->display->setScreen(this->scSettings);
+                break;
+
+            case UserSelect:
+                this->display->setScreen(this->scUserSelect);
                 break;
         }
     }
@@ -103,6 +108,7 @@ namespace Main {
 
         // Delete screens
         delete this->scAllActivity;
+        delete this->scSettings;
         delete this->scUserSelect;
 
         // Cleanup Aether

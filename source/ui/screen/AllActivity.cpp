@@ -101,10 +101,10 @@ namespace Screen {
             this->list->setSort(SortType::LaunchDec);
         }, t == SortType::LaunchDec);
 
-        this->app->addOverlay(this->sortOverlay);
-
         // List is focussed when overlay is closed
         this->setFocussed(this->list);
+
+        this->app->addOverlay(this->sortOverlay);
     }
 
     void AllActivity::onLoad() {

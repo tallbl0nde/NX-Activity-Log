@@ -32,11 +32,18 @@ FDIR		:=	forwarder
 FFILE		:=	exefs.nsp
 
 #---------------------------------------------------------------------------------
+# Application version
+#---------------------------------------------------------------------------------
+VER_MAJOR	:= 1
+VER_MINOR	:= 1
+VER_MICRO	:= 0
+
+#---------------------------------------------------------------------------------
 # Options for .nacp information
 #---------------------------------------------------------------------------------
 APP_TITLE   := 	NX Activity Log
 APP_AUTHOR	:= 	tallbl0nde
-APP_VERSION	:=	1.1.0
+APP_VERSION	:=	$(VER_MAJOR).$(VER_MINOR).$(VER_MICRO)
 ICON 		:= 	img/icon.jpg
 
 #---------------------------------------------------------------------------------
@@ -48,8 +55,8 @@ LIBS	:=  -lAether -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-conf
 
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS	:=	-g -Wall -O2 -ffunction-sections $(ARCH) $(DEFINES)
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	:=	-g -Wall -O2 -ffunction-sections $(ARCH) $(DEFINES) $(INCLUDE) -D__SWITCH__ \
+			-DVER_MAJOR=$(VER_MAJOR) -DVER_MINOR=$(VER_MINOR) -DVER_MICRO=$(VER_MICRO) -DVER_STRING=\"$(VER_MAJOR).$(VER_MINOR).$(VER_MICRO)\"
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
 

@@ -7,12 +7,14 @@
 #include "User.hpp"
 
 #include "AllActivity.hpp"
+#include "Settings.hpp"
 #include "UserSelect.hpp"
 
 // I should really fix this cyclic dependency /shrug
 namespace Screen {
-    class UserSelect;
     class AllActivity;
+    class Settings;
+    class UserSelect;
 };
 
 namespace Main {
@@ -34,6 +36,7 @@ namespace Main {
 
             // Screens of the app
             Screen::AllActivity * scAllActivity;
+            Screen::Settings * scSettings;
             Screen::UserSelect * scUserSelect;
 
             // PlayData object used for all play stats
