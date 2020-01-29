@@ -2,6 +2,7 @@
 #define APPLICATION_HPP
 
 #include "Aether.hpp"
+#include "Config.hpp"
 #include "PlayData.hpp"
 #include "Title.hpp"
 #include "User.hpp"
@@ -39,6 +40,9 @@ namespace Main {
             Screen::Settings * scSettings;
             Screen::UserSelect * scUserSelect;
 
+            // Config object allows interfacing with config file
+            Config * config_;
+
             // PlayData object used for all play stats
             PlayData * playdata_;
 
@@ -66,6 +70,8 @@ namespace Main {
             // Pass screen enum to change to it
             void setScreen(ScreenID);
 
+            // Returns Config object
+            Config * config();
             // Returns PlayData object
             PlayData * playdata();
 

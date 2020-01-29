@@ -39,62 +39,109 @@ namespace Screen {
         this->list->setCatchup(11);
         this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
 
-        Aether::ListOption * lo = new Aether::ListOption("Default Sort Method", "config.sort", [this](){
+        // DEFAULT SORT METHOD
+        std::string str = "";
+        switch (this->app->config()->gSort()) {
+            case SortType::AlphaAsc:
+                str = "By Name";
+                break;
+
+            case SortType::HoursAsc:
+                str = "Longest Playtime";
+                break;
+
+            case SortType::HoursDec:
+                str = "Shortest Playtime";
+                break;
+
+            case SortType::LaunchAsc:
+                str = "Most Launched";
+                break;
+
+            case SortType::LaunchDec:
+                str = "Least Launched";
+                break;
+
+            case SortType::FirstPlayed:
+                str = "First Playtime";
+                break;
+
+            case SortType::LastPlayed:
+                str = "Most Recently Played";
+                break;
+        }
+        this->optionSort = new Aether::ListOption("Default Sort Method", str, [this](){
             this->setupSortOverlay();
         });
-        lo->setHintColour(Aether::Theme::Dark.text);
-        lo->setValueColour(Aether::Theme::Dark.accent);
-        lo->setLineColour(Aether::Theme::Dark.mutedLine);
-        this->list->addElement(lo);
-
+        this->optionSort->setHintColour(Aether::Theme::Dark.text);
+        this->optionSort->setValueColour(Aether::Theme::Dark.accent);
+        this->optionSort->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->list->addElement(this->optionSort);
         Aether::ListComment * lc = new Aether::ListComment("Sets the sort method used upon application launch.");
         lc->setTextColour(Aether::Theme::Dark.mutedText);
         this->list->addElement(lc);
 
-        lo = new Aether::ListOption("Theme", "config.theme", [this](){
+        // THEME
+        switch (this->app->config()->gTheme()) {
+            case T_Auto:
+                str = "Auto";
+                break;
+
+            case T_Custom:
+                str = "Custom";
+                break;
+
+            case T_Dark:
+                str = "Basic Black";
+                break;
+
+            case T_Light:
+                str = "Basic White";
+                break;
+        }
+        this->optionTheme = new Aether::ListOption("Theme", str, [this](){
             this->setupThemeOverlay();
         });
-        lo->setHintColour(Aether::Theme::Dark.text);
-        lo->setValueColour(Aether::Theme::Dark.accent);
-        lo->setLineColour(Aether::Theme::Dark.mutedLine);
-        this->list->addElement(lo);
-
-        lc = new Aether::ListComment("Sets the theme for the application. Auto chooses black/white based on your switch settings.");
+        this->optionTheme->setHintColour(Aether::Theme::Dark.text);
+        this->optionTheme->setValueColour(Aether::Theme::Dark.accent);
+        this->optionTheme->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->list->addElement(this->optionTheme);
+        lc = new Aether::ListComment("Sets the theme for the application. Auto chooses black/white based on your switch settings. Note: This currently requires the app to be restarted to take effect.");
         lc->setTextColour(Aether::Theme::Dark.mutedText);
         this->list->addElement(lc);
-
         this->list->addElement(new Aether::ListSeparator());
 
-        lo = new Aether::ListOption("Hide Deleted Games", "config.hidedeleted", [](){
-            // change config
-            // update value
+        // HIDE DELETED
+        str = (this->app->config()->hDeleted() ? "Yes" : "No");
+        this->optionDeleted = new Aether::ListOption("Hide Deleted Games", str, [this](){
+            this->app->config()->setHDeleted(!this->app->config()->hDeleted());
+            this->optionDeleted->setValue((this->app->config()->hDeleted() ? "Yes" : "No"));
         });
-        lo->setHintColour(Aether::Theme::Dark.text);
-        lo->setValueColour(Aether::Theme::Dark.accent);
-        lo->setLineColour(Aether::Theme::Dark.mutedLine);
-        this->list->addElement(lo);
-
+        this->optionDeleted->setHintColour(Aether::Theme::Dark.text);
+        this->optionDeleted->setValueColour(Aether::Theme::Dark.accent);
+        this->optionDeleted->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->list->addElement(this->optionDeleted);
         lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
         lc->setTextColour(Aether::Theme::Dark.mutedText);
         this->list->addElement(lc);
-
         this->list->addElement(new Aether::ListSeparator());
 
-        lo = new Aether::ListOption("Replace User Page", "function()", [](){
+        // REPLACE USER PAGE
+        this->optionPage = new Aether::ListOption("Replace User Page", "function()", [](){
             // call function
             // update value
         });
-        lo->setHintColour(Aether::Theme::Dark.text);
-        lo->setValueColour(Aether::Theme::Dark.accent);
-        lo->setLineColour(Aether::Theme::Dark.mutedLine);
-        this->list->addElement(lo);
+        this->optionPage->setHintColour(Aether::Theme::Dark.text);
+        this->optionPage->setValueColour(Aether::Theme::Dark.accent);
+        this->optionPage->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->list->addElement(this->optionPage);
 
         lc = new Aether::ListComment("Uses LayeredFS to replace the User Page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported.");
         lc->setTextColour(Aether::Theme::Dark.mutedText);
         this->list->addElement(lc);
-
         this->list->addElement(new Aether::ListSeparator());
 
+        // INFORMATION
         lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\nThanks for using my app! I hope it's been useful! :)\n\nYou can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde");
         lc->setTextColour(Aether::Theme::Dark.mutedText);
         this->list->addElement(lc);
@@ -127,27 +174,34 @@ namespace Screen {
         this->sortOverlay->removeEntries();
 
         // Add an entry for each sort method
-        SortType t = SortType::AlphaAsc;
+        SortType t = this->app->config()->gSort();
         this->sortOverlay->addEntry("Name", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::AlphaAsc);
+            this->optionSort->setValue("By Name");
         }, t == SortType::AlphaAsc);
         this->sortOverlay->addEntry("First Playtime", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::FirstPlayed);
+            this->optionSort->setValue("First Playtime");
         }, t == SortType::FirstPlayed);
         this->sortOverlay->addEntry("Most Recently Played", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::LastPlayed);
+            this->optionSort->setValue("Most Recently Played");
         }, t == SortType::LastPlayed);
         this->sortOverlay->addEntry("Longest Playtime", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::HoursAsc);
+            this->optionSort->setValue("Longest Playtime");
         }, t == SortType::HoursAsc);
         this->sortOverlay->addEntry("Shortest Playtime", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::HoursDec);
+            this->optionSort->setValue("Shortest Playtime");
         }, t == SortType::HoursDec);
         this->sortOverlay->addEntry("Most Launched", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::LaunchAsc);
+            this->optionSort->setValue("Most Launched");
         }, t == SortType::LaunchAsc);
         this->sortOverlay->addEntry("Least Launched", [this](){
-            // this->app->config()->setSortMethod()
+            this->app->config()->setGSort(SortType::LaunchDec);
+            this->optionSort->setValue("Least Launched");
         }, t == SortType::LaunchDec);
 
         this->app->addOverlay(this->sortOverlay);
@@ -159,18 +213,22 @@ namespace Screen {
         this->themeOverlay->removeEntries();
 
         // Add an entry for each sort method
-        ThemeType t = ThemeType::T_Auto;
+        ThemeType t = this->app->config()->gTheme();
         this->themeOverlay->addEntry("Auto", [this](){
-            // this->app->config()->setTheme()
+            this->app->config()->setGTheme(ThemeType::T_Auto);
+            this->optionTheme->setValue("Auto");
         }, t == ThemeType::T_Auto);
         this->themeOverlay->addEntry("Basic Black", [this](){
-            // this->app->config()->setTheme()
+            this->app->config()->setGTheme(ThemeType::T_Dark);
+            this->optionTheme->setValue("Basic Black");
         }, t == ThemeType::T_Dark);
         this->themeOverlay->addEntry("Basic White", [this](){
-            // this->app->config()->setTheme()
+            this->app->config()->setGTheme(ThemeType::T_Light);
+            this->optionTheme->setValue("Basic White");
         }, t == ThemeType::T_Light);
         // this->themeOverlay->addEntry("Custom", [this](){
-        //     this->app->config()->setTheme()
+            // this->app->config()->setGTheme(ThemeType::T_Custom);
+            // this->optionTheme->setValue("Custom");
         // }, t == ThemeType::T_Custom);
 
         this->app->addOverlay(this->themeOverlay);

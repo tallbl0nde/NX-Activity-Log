@@ -3,27 +3,20 @@
 
 #include "Types.hpp"
 
-// Singleton class storing the application's config
+// Reads/writes and stores config of application
 class Config {
     private:
-        // Single instance of this class
-        static Config * instance;
-
-        // Constructor is private!
-        Config();
-
         // Initializes config file (returns false if error)
         void initConfigFile();
 
-        // Settings
-        SortType general_sort;
-        ThemeType general_theme;
-        bool hidden_deleted;
+        // Settings (first char indicates section of ini)
+        // g: [general]
+        // h: [hidden]
+        SortType gSort_;
+        ThemeType gTheme_;
+        bool hDeleted_;
 
     public:
-        // Creates instance if doesn't exist, otherwise returns pointer
-        static Config * getConfig();
-
         // Reads in config from file (returns false if error)
         void readConfig();
 
@@ -31,13 +24,13 @@ class Config {
         void writeConfig();
 
         // Getters + setters for all settings
-        SortType getGeneralSort();
-        ThemeType getGeneralTheme();
-        bool getHiddenDeleted();
+        SortType gSort();
+        ThemeType gTheme();
+        bool hDeleted();
 
-        void setGeneralSort(SortType);
-        void setGeneralTheme(ThemeType);
-        void setHiddenDeleted(bool);
+        void setGSort(SortType);
+        void setGTheme(ThemeType);
+        void setHDeleted(bool);
 };
 
 #endif

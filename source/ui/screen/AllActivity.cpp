@@ -123,6 +123,10 @@ namespace Screen {
         std::vector<Title *> t = this->app->titleVector();
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
+            if (!(t[i]->isInstalled()) && this->app->config()->hDeleted()) {
+                continue;
+            }
+
             PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
             totalSecs += ps->playtime;
             if (ps->launches == 0) {
@@ -163,7 +167,7 @@ namespace Screen {
         }
 
         // Sort the list
-        this->list->setSort(SortType::HoursAsc);
+        this->list->setSort(this->app->config()->gSort());
         this->setFocussed(this->list);
 
         // Render total hours string

@@ -6,6 +6,10 @@ namespace Main {
         // Start all required services
         Utils::startServices();
 
+        // Create config object and read in values
+        this->config_ = new Config();
+        this->config_->readConfig();
+
         // Populate users vector
         this->users = Utils::getUserObjects();
         this->userIdx = 0;
@@ -57,6 +61,10 @@ namespace Main {
         }
     }
 
+    Config * Application::config() {
+        return this->config_;
+    }
+
     PlayData * Application::playdata() {
         return this->playdata_;
     }
@@ -103,7 +111,8 @@ namespace Main {
             titles.erase(titles.begin());
         }
 
-        // Delete playdata
+        // Delete objects
+        delete this->config_;
         delete this->playdata_;
 
         // Delete screens

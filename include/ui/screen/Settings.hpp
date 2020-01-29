@@ -20,6 +20,12 @@ namespace Screen {
             Aether::Image * image;
             Aether::List * list;
 
+            // Pointers to options so the value can be updated
+            Aether::ListOption * optionDeleted;
+            Aether::ListOption * optionPage;
+            Aether::ListOption * optionSort;
+            Aether::ListOption * optionTheme;
+
             // Choose sort overlay
             Aether::PopupList * sortOverlay;
             // Choose theme overlay

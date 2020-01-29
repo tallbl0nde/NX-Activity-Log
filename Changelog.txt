@@ -1,2 +1,0 @@
-Stopped crash after 20 consec launches (setSysExit())
-Moved all UI to my library Aether
