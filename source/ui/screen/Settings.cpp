@@ -6,30 +6,30 @@ namespace Screen {
 
         // Create "static" elements
         Aether::Rectangle * r = new Aether::Rectangle(400, 88, 850, 559);
-        r->setColour(Aether::Theme::Dark.altBG);
+        r->setColour(this->app->theme()->altBG());
         this->addElement(r);
         r = new Aether::Rectangle(30, 87, 1220, 1);
-        r->setColour(Aether::Theme::Dark.fg);
+        r->setColour(this->app->theme()->fg());
         this->addElement(r);
         r = new Aether::Rectangle(30, 647, 1220, 1);
-        r->setColour(Aether::Theme::Dark.fg);
+        r->setColour(this->app->theme()->fg());
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
         c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
-        c->setColour(Aether::Theme::Dark.text);
+        c->setColour(this->app->theme()->text());
         this->addElement(c);
 
         // Create side menu
         Aether::Menu * menu = new Aether::Menu(30, 88, 388, 559);
-        menu->addElement(new Aether::MenuOption("Recent Activity", Aether::Theme::Dark.accent, Aether::Theme::Dark.text, [this](){
+        menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(Main::ScreenID::RecentActivity);
         }));
-        menu->addElement(new Aether::MenuOption("All Activity", Aether::Theme::Dark.accent, Aether::Theme::Dark.text, [this](){
+        menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(Main::ScreenID::AllActivity);
         }));
-        menu->addElement(new Aether::MenuSeparator(Aether::Theme::Dark.mutedLine));
-        Aether::MenuOption * opt = new Aether::MenuOption("Settings", Aether::Theme::Dark.accent, Aether::Theme::Dark.text, nullptr);
+        menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
+        Aether::MenuOption * opt = new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
         opt->setActive(true);
         menu->addElement(opt);
         this->addElement(menu);
@@ -37,7 +37,7 @@ namespace Screen {
         // Create list
         this->list = new Aether::List(420, 88, 810, 559);
         this->list->setCatchup(11);
-        this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
         // DEFAULT SORT METHOD
         std::string str = "";
@@ -73,12 +73,12 @@ namespace Screen {
         this->optionSort = new Aether::ListOption("Default Sort Method", str, [this](){
             this->setupSortOverlay();
         });
-        this->optionSort->setHintColour(Aether::Theme::Dark.text);
-        this->optionSort->setValueColour(Aether::Theme::Dark.accent);
-        this->optionSort->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->optionSort->setHintColour(this->app->theme()->text());
+        this->optionSort->setValueColour(this->app->theme()->accent());
+        this->optionSort->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionSort);
         Aether::ListComment * lc = new Aether::ListComment("Sets the sort method used upon application launch.");
-        lc->setTextColour(Aether::Theme::Dark.mutedText);
+        lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // THEME
@@ -102,12 +102,12 @@ namespace Screen {
         this->optionTheme = new Aether::ListOption("Theme", str, [this](){
             this->setupThemeOverlay();
         });
-        this->optionTheme->setHintColour(Aether::Theme::Dark.text);
-        this->optionTheme->setValueColour(Aether::Theme::Dark.accent);
-        this->optionTheme->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->optionTheme->setHintColour(this->app->theme()->text());
+        this->optionTheme->setValueColour(this->app->theme()->accent());
+        this->optionTheme->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionTheme);
         lc = new Aether::ListComment("Sets the theme for the application. Auto chooses black/white based on your switch settings. Note: This currently requires the app to be restarted to take effect.");
-        lc->setTextColour(Aether::Theme::Dark.mutedText);
+        lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         this->list->addElement(new Aether::ListSeparator());
 
@@ -117,12 +117,12 @@ namespace Screen {
             this->app->config()->setHDeleted(!this->app->config()->hDeleted());
             this->optionDeleted->setValue((this->app->config()->hDeleted() ? "Yes" : "No"));
         });
-        this->optionDeleted->setHintColour(Aether::Theme::Dark.text);
-        this->optionDeleted->setValueColour(Aether::Theme::Dark.accent);
-        this->optionDeleted->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->optionDeleted->setHintColour(this->app->theme()->text());
+        this->optionDeleted->setValueColour(this->app->theme()->accent());
+        this->optionDeleted->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionDeleted);
         lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
-        lc->setTextColour(Aether::Theme::Dark.mutedText);
+        lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         this->list->addElement(new Aether::ListSeparator());
 
@@ -131,36 +131,36 @@ namespace Screen {
             // call function
             // update value
         });
-        this->optionPage->setHintColour(Aether::Theme::Dark.text);
-        this->optionPage->setValueColour(Aether::Theme::Dark.accent);
-        this->optionPage->setLineColour(Aether::Theme::Dark.mutedLine);
+        this->optionPage->setHintColour(this->app->theme()->text());
+        this->optionPage->setValueColour(this->app->theme()->accent());
+        this->optionPage->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionPage);
 
         lc = new Aether::ListComment("Uses LayeredFS to replace the User Page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported.");
-        lc->setTextColour(Aether::Theme::Dark.mutedText);
+        lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION
         lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\nThanks for using my app! I hope it's been useful! :)\n\nYou can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde");
-        lc->setTextColour(Aether::Theme::Dark.mutedText);
+        lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         this->addElement(this->list);
 
         // Create popuplist overlays
         this->sortOverlay = new Aether::PopupList("Default Sort Method");
-        this->sortOverlay->setBackgroundColour(Aether::Theme::Dark.altBG);
-        this->sortOverlay->setHighlightColour(Aether::Theme::Dark.accent);
-        this->sortOverlay->setLineColour(Aether::Theme::Dark.fg);
-        this->sortOverlay->setListLineColour(Aether::Theme::Dark.mutedLine);
-        this->sortOverlay->setTextColour(Aether::Theme::Dark.text);
+        this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
+        this->sortOverlay->setHighlightColour(this->app->theme()->accent());
+        this->sortOverlay->setLineColour(this->app->theme()->fg());
+        this->sortOverlay->setListLineColour(this->app->theme()->mutedLine());
+        this->sortOverlay->setTextColour(this->app->theme()->text());
         this->themeOverlay = new Aether::PopupList("Application Theme");
-        this->themeOverlay->setBackgroundColour(Aether::Theme::Dark.altBG);
-        this->themeOverlay->setHighlightColour(Aether::Theme::Dark.accent);
-        this->themeOverlay->setLineColour(Aether::Theme::Dark.fg);
-        this->themeOverlay->setListLineColour(Aether::Theme::Dark.mutedLine);
-        this->themeOverlay->setTextColour(Aether::Theme::Dark.text);
+        this->themeOverlay->setBackgroundColour(this->app->theme()->altBG());
+        this->themeOverlay->setHighlightColour(this->app->theme()->accent());
+        this->themeOverlay->setLineColour(this->app->theme()->fg());
+        this->themeOverlay->setListLineColour(this->app->theme()->mutedLine());
+        this->themeOverlay->setTextColour(this->app->theme()->text());
 
         // Add button callbacks
         this->onButtonPress(Aether::Button::B, [this](){
@@ -238,7 +238,7 @@ namespace Screen {
         // Create heading using user's name
         this->heading = new Aether::Text(150, 45, this->app->activeUser()->username() + "'s Activity", 28);
         this->heading->setY(this->heading->y() - this->heading->h()/2);
-        this->heading->setColour(Aether::Theme::Dark.text);
+        this->heading->setColour(this->app->theme()->text());
         this->addElement(this->heading);
 
         // Render user's image

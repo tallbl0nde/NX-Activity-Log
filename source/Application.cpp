@@ -10,6 +10,9 @@ namespace Main {
         this->config_ = new Config();
         this->config_->readConfig();
 
+        this->playdata_ = new PlayData();
+        this->theme_ = new Theme(this->config_->gTheme());
+
         // Populate users vector
         this->users = Utils::getUserObjects();
         this->userIdx = 0;
@@ -18,13 +21,10 @@ namespace Main {
         this->titles = Utils::getTitleObjects(this->users);
         this->titleIdx = 0;
 
-        // Create PlayData object
-        this->playdata_ = new PlayData();
-
         // Create Aether instance
         this->display = new Aether::Display();
-        this->display->setBackgroundColour(Aether::Theme::Dark.bg.r, Aether::Theme::Dark.bg.g, Aether::Theme::Dark.bg.b);
-        this->display->setHighlightColours(Aether::Theme::Dark.highlightBG, Aether::Theme::Dark.selected);
+        this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
+        this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
         this->display->setHighlightAnimation(Aether::Theme::Dark.highlightFunc);
         this->display->setShowFPS(true);
 
@@ -67,6 +67,10 @@ namespace Main {
 
     PlayData * Application::playdata() {
         return this->playdata_;
+    }
+
+    Theme * Application::theme() {
+        return this->theme_;
     }
 
     User * Application::activeUser() {
@@ -114,6 +118,7 @@ namespace Main {
         // Delete objects
         delete this->config_;
         delete this->playdata_;
+        delete this->theme_;
 
         // Delete screens
         delete this->scAllActivity;

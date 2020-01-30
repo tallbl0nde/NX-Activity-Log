@@ -1,9 +1,9 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "Aether.hpp"
 #include "Config.hpp"
 #include "PlayData.hpp"
+#include "Theme.hpp"
 #include "Title.hpp"
 #include "User.hpp"
 
@@ -42,9 +42,10 @@ namespace Main {
 
             // Config object allows interfacing with config file
             Config * config_;
-
             // PlayData object used for all play stats
             PlayData * playdata_;
+            // Stores current theme colours
+            Theme * theme_;
 
             // Vector of users
             std::vector<User *> users;
@@ -74,6 +75,8 @@ namespace Main {
             Config * config();
             // Returns PlayData object
             PlayData * playdata();
+            // Returns theme object
+            Theme * theme();
 
             // Returns user object of active user
             User * activeUser();

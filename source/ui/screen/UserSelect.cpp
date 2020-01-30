@@ -8,19 +8,19 @@ namespace Screen {
 
         // Create "static" elements
         Aether::Rectangle * r = new Aether::Rectangle(30, 87, 1220, 1);
-        r->setColour(Aether::Theme::Dark.fg);
+        r->setColour(this->app->theme()->fg());
         this->addElement(r);
         r = new Aether::Rectangle(30, 647, 1220, 1);
-        r->setColour(Aether::Theme::Dark.fg);
+        r->setColour(this->app->theme()->fg());
         this->addElement(r);
         Aether::Text * t = new Aether::Text(65, 44, "Select a User", 28);
         t->setY(t->y() - t->h()/2);
-        t->setColour(Aether::Theme::Dark.text);
+        t->setColour(this->app->theme()->text());
         this->addElement(t);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
         c->addItem(new Aether::ControlItem(Aether::Button::PLUS, "Exit"));
-        c->setColour(Aether::Theme::Dark.text);
+        c->setColour(this->app->theme()->text());
         this->addElement(c);
 
         // Add handling of plus/B to exit
@@ -33,7 +33,7 @@ namespace Screen {
 
         // Create list (but don't populate yet)
         this->list = new Aether::List(340, 88, 600, 558);
-        this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
         this->addElement(this->list);
     }
 
@@ -41,8 +41,8 @@ namespace Screen {
         // Create list items for each user in the vector
         for (size_t i = 0; i < this->users.size(); i++) {
             CustomElm::ListUser * l = new CustomElm::ListUser(this->users[i]->username(), this->users[i]->imgPtr(), this->users[i]->imgSize());
-            l->setLineColour(Aether::Theme::Dark.mutedLine);
-            l->setTextColour(Aether::Theme::Dark.text);
+            l->setLineColour(this->app->theme()->mutedLine());
+            l->setTextColour(this->app->theme()->text());
             l->setCallback([this, i](){
                 this->app->setActiveUser(i);
                 this->app->setScreen(Main::ScreenID::AllActivity);

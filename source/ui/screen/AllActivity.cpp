@@ -7,31 +7,31 @@ namespace Screen {
 
         // Create "static" elements
         Aether::Rectangle * r = new Aether::Rectangle(400, 88, 850, 559);
-        r->setColour(Aether::Theme::Dark.altBG);
+        r->setColour(this->app->theme()->altBG());
         this->addElement(r);
         r = new Aether::Rectangle(30, 87, 1220, 1);
-        r->setColour(Aether::Theme::Dark.fg);
+        r->setColour(this->app->theme()->fg());
         this->addElement(r);
         r = new Aether::Rectangle(30, 647, 1220, 1);
-        r->setColour(Aether::Theme::Dark.fg);
+        r->setColour(this->app->theme()->fg());
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
         c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
         c->addItem(new Aether::ControlItem(Aether::Button::X, "Sort"));
-        c->setColour(Aether::Theme::Dark.text);
+        c->setColour(this->app->theme()->text());
         this->addElement(c);
 
         // Create side menu
         Aether::Menu * menu = new Aether::Menu(30, 88, 388, 559);
-        menu->addElement(new Aether::MenuOption("Recent Activity", Aether::Theme::Dark.accent, Aether::Theme::Dark.text, [this](){
+        menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(Main::ScreenID::RecentActivity);
         }));
-        Aether::MenuOption * opt = new Aether::MenuOption("All Activity", Aether::Theme::Dark.accent, Aether::Theme::Dark.text, nullptr);
+        Aether::MenuOption * opt = new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
         opt->setActive(true);
         menu->addElement(opt);
-        menu->addElement(new Aether::MenuSeparator(Aether::Theme::Dark.mutedLine));
-        menu->addElement(new Aether::MenuOption("Settings", Aether::Theme::Dark.accent, Aether::Theme::Dark.text, [this](){
+        menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
+        menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(Main::ScreenID::Settings);
         }));
         this->addElement(menu);
@@ -39,17 +39,17 @@ namespace Screen {
         // Create list (but don't populate yet)
         this->list = new CustomElm::SortedList(420, 88, 810, 559);
         this->list->setCatchup(11);
-        this->list->setHeadingColour(Aether::Theme::Dark.mutedText);
-        this->list->setScrollBarColour(Aether::Theme::Dark.mutedLine);
+        this->list->setHeadingColour(this->app->theme()->mutedText());
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
         this->addElement(this->list);
 
         // Create sort overlay
         this->sortOverlay = new Aether::PopupList("Sort Titles");
-        this->sortOverlay->setBackgroundColour(Aether::Theme::Dark.altBG);
-        this->sortOverlay->setHighlightColour(Aether::Theme::Dark.accent);
-        this->sortOverlay->setLineColour(Aether::Theme::Dark.fg);
-        this->sortOverlay->setListLineColour(Aether::Theme::Dark.mutedLine);
-        this->sortOverlay->setTextColour(Aether::Theme::Dark.text);
+        this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
+        this->sortOverlay->setHighlightColour(this->app->theme()->accent());
+        this->sortOverlay->setLineColour(this->app->theme()->fg());
+        this->sortOverlay->setListLineColour(this->app->theme()->mutedLine());
+        this->sortOverlay->setTextColour(this->app->theme()->text());
 
         // Add callbacks for buttons
         this->onButtonPress(Aether::Button::X, [this](){
@@ -111,7 +111,7 @@ namespace Screen {
         // Create heading using user's name
         this->heading = new Aether::Text(150, 45, this->app->activeUser()->username() + "'s Activity", 28);
         this->heading->setY(this->heading->y() - this->heading->h()/2);
-        this->heading->setColour(Aether::Theme::Dark.text);
+        this->heading->setColour(this->app->theme()->text());
         this->addElement(this->heading);
 
         // Render user's image
@@ -159,10 +159,10 @@ namespace Screen {
                 this->app->setActiveTitle(i);
                 this->app->setScreen(Main::ScreenID::Details);
             });
-            la->setTitleColour(Aether::Theme::Dark.text);
-            la->setPlaytimeColour(Aether::Theme::Dark.accent);
-            la->setMutedColour(Aether::Theme::Dark.mutedText);
-            la->setLineColour(Aether::Theme::Dark.mutedLine);
+            la->setTitleColour(this->app->theme()->text());
+            la->setPlaytimeColour(this->app->theme()->accent());
+            la->setMutedColour(this->app->theme()->mutedText());
+            la->setLineColour(this->app->theme()->mutedLine());
             this->list->addElement(la, si);
         }
 
@@ -174,7 +174,7 @@ namespace Screen {
         std::string txt = "Total Playtime: " + TimeH::playtimeToString(totalSecs, " and ");
         this->hours = new Aether::Text(1215, 44, txt, 20);
         this->hours->setXY(this->hours->x() - this->hours->w(), this->hours->y() - this->hours->h()/2);
-        this->hours->setColour(Aether::Theme::Dark.mutedText);
+        this->hours->setColour(this->app->theme()->mutedText());
         this->addElement(this->hours);
     }
 

@@ -33,6 +33,25 @@ namespace Utils {
         return s;
     }
 
+    ThemeType getHorizonTheme() {
+        ColorSetId thm;
+        Result rc = setsysGetColorSetId(&thm);
+        if (R_SUCCEEDED(rc)) {
+            switch (thm) {
+                case ColorSetId_Light:
+                    return ThemeType::T_Light;
+                    break;
+
+                case ColorSetId_Dark:
+                    return ThemeType::T_Dark;
+                    break;
+            }
+        }
+
+        // If it fails return dark
+        return ThemeType::T_Dark;
+    }
+
     std::vector<User *> getUserObjects() {
         // Get IDs
         std::vector<User *> users;

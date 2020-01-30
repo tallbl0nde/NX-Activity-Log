@@ -6,6 +6,7 @@
 #include <vector>
 #include "User.hpp"
 #include "Title.hpp"
+#include "Types.hpp"
 
 // Dimensions of renderer/screen size in pixels
 #define WIDTH 1280
@@ -20,6 +21,9 @@ namespace Utils {
 
     // Add commas to provided number
     std::string formatNumberComma(u32);
+
+    // Returns ThemeType matching Horizon's
+    ThemeType getHorizonTheme();
 
     // Returns vector containing users
     std::vector<User *> getUserObjects();
