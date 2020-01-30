@@ -1,4 +1,6 @@
+#include <filesystem>
 #include "Settings.hpp"
+#include "Utils.hpp"
 
 namespace Screen {
     Settings::Settings(Main::Application * a) {
@@ -127,9 +129,12 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator());
 
         // REPLACE USER PAGE
-        this->optionPage = new Aether::ListOption("Replace User Page", "function()", [](){
-            // call function
-            // update value
+        str = "Disabled";
+        if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp") || std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp") || std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
+            str = "Enabled";
+        }
+        this->optionPage = new Aether::ListOption("Replace User Page", str, [this](){
+            this->installForwarder();
         });
         this->optionPage->setHintColour(this->app->theme()->text());
         this->optionPage->setValueColour(this->app->theme()->accent());
@@ -162,10 +167,121 @@ namespace Screen {
         this->themeOverlay->setListLineColour(this->app->theme()->mutedLine());
         this->themeOverlay->setTextColour(this->app->theme()->text());
 
+        // Create base message box
+        this->msgbox = new Aether::MessageBox();
+        this->msgbox->addTopButton("OK", [this](){
+            this->msgbox->close(true);
+        });
+        this->msgbox->setLineColour(this->app->theme()->mutedLine());
+        this->msgbox->setRectangleColour(this->app->theme()->altBG());
+        this->msgbox->setTextColour(this->app->theme()->accent());
+
         // Add button callbacks
         this->onButtonPress(Aether::Button::B, [this](){
             this->app->setScreen(Main::ScreenID::UserSelect);
         });
+    }
+
+    void Settings::installForwarder() {
+        // A message box will be shown regardless of the outcome
+        this->msgbox->close(false);
+        this->msgbox->emptyBody();
+
+        // Check if forwarder exists
+        bool atms = false;
+        bool rei = false;
+        bool sx = false;
+        bool hasAtms = false;
+        bool hasRei = false;
+        bool hasSx = false;
+        if (std::filesystem::exists("/atmosphere/contents")) {
+            hasAtms = true;
+            if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp")) {
+                atms = true;
+            }
+        }
+        if (std::filesystem::exists("/ReiNX/titles")) {
+            hasRei = true;
+            if (std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp")) {
+                rei = true;
+            }
+        }
+        if (std::filesystem::exists("/sxos/titles")) {
+            hasSx = true;
+            if (std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
+                sx = true;
+            }
+        }
+
+        // If the file is present, delete it
+        if (atms || rei || sx) {
+            if (atms) {
+                std::filesystem::remove("/atmosphere/contents/0100000000001013/exefs.nsp");
+                atms = false;
+            }
+            if (rei) {
+                std::filesystem::remove("/ReiNX/titles/0100000000001013/exefs.nsp");
+                rei = false;
+            }
+            if (sx) {
+                std::filesystem::remove("/sxos/titles/0100000000001013/exefs.nsp");
+                sx = false;
+            }
+
+        // Otherwise if it isn't, copy it
+        } else {
+            // First check if .nro is in correct location
+            if (!(std::filesystem::exists("/switch/NX-Activity-Log/NX-Activity-Log.nro"))) {
+                // Create text and add to overlay
+                Aether::Element * body = new Aether::Element(0, 0, 770, 230);
+                Aether::Text * heading = new Aether::Text(50, 40, "An error occurred:", 24);
+                heading->setColour(this->app->theme()->text());
+                body->addElement(heading);
+                Aether::TextBlock * message = new Aether::TextBlock(50, 90, "This application's .nro was not found at the expected location:\n/switch/NX-Activity-Log/NX-Activity-Log.nro\n\nThis feature requires the .nro be present at this location.\nPlease move/rename any files + folders and try again.", 20, body->w() - 100);
+                message->setColour(this->app->theme()->mutedText());
+                body->addElement(message);
+                this->msgbox->setBody(body);
+                this->msgbox->setBodySize(body->w(), body->h());
+                this->app->addOverlay(this->msgbox);
+                return;
+            }
+
+            if (hasAtms) {
+                std::filesystem::create_directory("/atmosphere/contents/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/atmosphere/contents/0100000000001013/exefs.nsp");
+                atms = true;
+            }
+
+            if (hasRei) {
+                std::filesystem::create_directory("/ReiNX/titles/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/ReiNX/titles/0100000000001013/exefs.nsp");
+                rei = true;
+            }
+
+            if (hasSx) {
+                std::filesystem::create_directory("/sxos/titles/0100000000001013");
+                Utils::copyFile("romfs:/exefs.nsp", "/sxos/titles/0100000000001013/exefs.nsp");
+                sx = true;
+            }
+        }
+
+        // Create message box based on result (success)
+        if (atms || rei || sx) {
+            Aether::Element * body = new Aether::Element(0, 0, 770, 250);
+            Aether::Text * heading = new Aether::Text(50, 40, "Installation Successful!", 24);
+            heading->setColour(this->app->theme()->text());
+            body->addElement(heading);
+            std::string str = std::string(atms ? "Atmosphere  " : "") + std::string(rei ? "ReiNX  " : "") + std::string(sx ? "SX OS" : "");
+            Aether::TextBlock * message = new Aether::TextBlock(50, 90, "The following CFWs were detected and have this feature enabled:\n" + str + "\n\nNote: This feature does not use a sysmodule, if you encounter any errors either disable this feature in the app or delete\n<cfw contents folder>/0100000000001013/exefs.nsp", 20, body->w() - 100);
+            message->setColour(this->app->theme()->mutedText());
+            body->addElement(message);
+            this->msgbox->setBody(body);
+            this->msgbox->setBodySize(body->w(), body->h());
+            this->app->addOverlay(this->msgbox);
+            this->optionPage->setValue("Enabled");
+        } else {
+            this->optionPage->setValue("Disabled");
+        }
     }
 
     void Settings::setupSortOverlay() {
@@ -254,6 +370,7 @@ namespace Screen {
 
     Settings::~Settings() {
         // Delete overlays
+        delete this->msgbox;
         delete this->sortOverlay;
         delete this->themeOverlay;
     }

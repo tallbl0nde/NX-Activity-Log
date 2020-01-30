@@ -26,10 +26,14 @@ namespace Screen {
             Aether::ListOption * optionSort;
             Aether::ListOption * optionTheme;
 
+            // MessageBox for forwarder info
+            Aether::MessageBox * msgbox;
             // Choose sort overlay
             Aether::PopupList * sortOverlay;
             // Choose theme overlay
             Aether::PopupList * themeOverlay;
+
+            void installForwarder();
 
             // Set elements and highlight one in overlay
             void setupSortOverlay();
