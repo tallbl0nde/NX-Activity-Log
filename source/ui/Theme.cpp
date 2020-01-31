@@ -1,5 +1,5 @@
+#include "NX.hpp"
 #include "Theme.hpp"
-#include "Utils.hpp"
 
 Theme::Theme(ThemeType t) {
     this->setTheme(t);
@@ -43,31 +43,31 @@ Aether::Colour Theme::text() {
 
 void Theme::setTheme(ThemeType t) {
     switch (t) {
-        case ThemeType::T_Auto:
+        case ThemeType::Auto:
             this->setThemeAuto();
             break;
 
-        case ThemeType::T_Custom:
+        case ThemeType::Custom:
             this->setThemeCustom();
             break;
 
-        case ThemeType::T_Dark:
+        case ThemeType::Dark:
             this->setThemeDark();
             break;
 
-        case ThemeType::T_Light:
+        case ThemeType::Light:
             this->setThemeLight();
             break;
     }
 }
 
 void Theme::setThemeAuto() {
-    switch (Utils::getHorizonTheme()) {
-        case ThemeType::T_Dark:
+    switch (Utils::NX::getHorizonTheme()) {
+        case ThemeType::Dark:
             this->setThemeDark();
             break;
 
-        case ThemeType::T_Light:
+        case ThemeType::Light:
             this->setThemeLight();
             break;
     }

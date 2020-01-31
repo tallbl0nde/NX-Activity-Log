@@ -1,11 +1,11 @@
-#ifndef TIMEHELPER_HPP
-#define TIMEHELPER_HPP
+#ifndef UTILS_TIME_HPP
+#define UTILS_TIME_HPP
 
 #include <ctime>
 #include <string>
 
 // Bunch of helper functions for time_t and tm structs
-namespace TimeH {
+namespace Utils::Time {
     // TIME_T FUNCTIONS
     // Return a string containing number of hours, minutes and seconds
     // Hours and minutes are split with the provided separator if there are no seconds

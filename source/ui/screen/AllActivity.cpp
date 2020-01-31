@@ -1,5 +1,5 @@
 #include "AllActivity.hpp"
-#include "TimeHelper.hpp"
+#include "Time.hpp"
 
 namespace Screen {
     AllActivity::AllActivity(Main::Application * a) {
@@ -120,14 +120,15 @@ namespace Screen {
         this->addElement(this->image);
 
         // Populate list + count total time
-        std::vector<Title *> t = this->app->titleVector();
+        std::vector<NX::Title *> t = this->app->titleVector();
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
+            // Skip over deleted titles based on config value
             if (!(t[i]->isInstalled()) && this->app->config()->hDeleted()) {
                 continue;
             }
 
-            PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
+            NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
             totalSecs += ps->playtime;
             if (ps->launches == 0) {
                 // Skip unplayed titles
@@ -148,9 +149,9 @@ namespace Screen {
             CustomElm::ListActivity * la = new CustomElm::ListActivity();
             la->setImage(new Aether::Image(0, 0, t[i]->imgPtr(), t[i]->imgSize()));
             la->setTitle(t[i]->name());
-            std::string str = "Played for " + TimeH::playtimeToString(ps->playtime, " and ");
+            std::string str = "Played for " + Utils::Time::playtimeToString(ps->playtime, " and ");
             la->setPlaytime(str);
-            str = TimeH::lastPlayedTimestampToString(pdmPlayTimestampToPosix(ps->lastPlayed));
+            str = Utils::Time::lastPlayedTimestampToString(pdmPlayTimestampToPosix(ps->lastPlayed));
             la->setLeftMuted(str);
             str = "Played " + std::to_string(ps->launches);
             (ps->launches == 1) ? str += " time" : str += " times";
@@ -171,7 +172,7 @@ namespace Screen {
         this->setFocussed(this->list);
 
         // Render total hours string
-        std::string txt = "Total Playtime: " + TimeH::playtimeToString(totalSecs, " and ");
+        std::string txt = "Total Playtime: " + Utils::Time::playtimeToString(totalSecs, " and ");
         this->hours = new Aether::Text(1215, 44, txt, 20);
         this->hours->setXY(this->hours->x() - this->hours->w(), this->hours->y() - this->hours->h()/2);
         this->hours->setColour(this->app->theme()->mutedText());

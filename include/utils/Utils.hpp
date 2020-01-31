@@ -2,34 +2,14 @@
 #define UTILS_HPP
 
 #include <string>
-#include <switch.h>
 #include <vector>
-#include "User.hpp"
-#include "Title.hpp"
-#include "Types.hpp"
-
-// Dimensions of renderer/screen size in pixels
-#define WIDTH 1280
-#define HEIGHT 720
-
-// Comparison of AccountUid
-bool operator ==(const AccountUid &a, const AccountUid &b);
 
 namespace Utils {
     // Copy file from source path to dest path
     void copyFile(std::string, std::string);
 
     // Add commas to provided number
-    std::string formatNumberComma(u32);
-
-    // Returns ThemeType matching Horizon's
-    ThemeType getHorizonTheme();
-
-    // Returns vector containing users
-    std::vector<User *> getUserObjects();
-
-    // Returns vector containing ALL played titles
-    std::vector<Title *> getTitleObjects(std::vector<User *>);
+    std::string formatNumberComma(unsigned int);
 
     // Merges two vectors into one (for sorting)
     // Vector to merge into, two vectors to merge
@@ -49,11 +29,6 @@ namespace Utils {
             b[i] = m[i].second;
         }
     }
-
-    // Starts services
-    void startServices();
-    // Stop services
-    void stopServices();
 };
 
 #endif

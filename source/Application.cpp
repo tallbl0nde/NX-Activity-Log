@@ -1,24 +1,23 @@
 #include "Application.hpp"
-#include "Utils.hpp"
 
 namespace Main {
     Application::Application() {
         // Start all required services
-        Utils::startServices();
+        Utils::NX::startServices();
 
         // Create config object and read in values
         this->config_ = new Config();
         this->config_->readConfig();
 
-        this->playdata_ = new PlayData();
+        this->playdata_ = new NX::PlayData();
         this->theme_ = new Theme(this->config_->gTheme());
 
         // Populate users vector
-        this->users = Utils::getUserObjects();
+        this->users = Utils::NX::getUserObjects();
         this->userIdx = 0;
 
         // Populate titles vector
-        this->titles = Utils::getTitleObjects(this->users);
+        this->titles = Utils::NX::getTitleObjects(this->users);
         this->titleIdx = 0;
 
         // Create Aether instance
@@ -65,7 +64,7 @@ namespace Main {
         return this->config_;
     }
 
-    PlayData * Application::playdata() {
+    NX::PlayData * Application::playdata() {
         return this->playdata_;
     }
 
@@ -73,7 +72,7 @@ namespace Main {
         return this->theme_;
     }
 
-    User * Application::activeUser() {
+    NX::User * Application::activeUser() {
         return this->users[this->userIdx];
     }
 
@@ -81,11 +80,11 @@ namespace Main {
         this->userIdx = i;
     }
 
-    std::vector<Title *> Application::titleVector() {
+    std::vector<NX::Title *> Application::titleVector() {
         return this->titles;
     }
 
-    Title * Application::activeTitle() {
+    NX::Title * Application::activeTitle() {
         return this->titles[this->titleIdx];
     }
 
@@ -129,6 +128,6 @@ namespace Main {
         delete this->display;
 
         // Stop all services
-        Utils::stopServices();
+        Utils::NX::stopServices();
     }
 };

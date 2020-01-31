@@ -1,5 +1,4 @@
-#include <fstream>
-#include "Utils.hpp"
+#include "NX.hpp"
 
 // Maximum number of titles to read using pdm
 #define MAX_TITLES 2000
@@ -12,49 +11,29 @@ bool operator == (const AccountUid &a, const AccountUid &b) {
     return false;
 }
 
-namespace Utils {
-    void copyFile(std::string src, std::string dest) {
-        std::ifstream srcF(src, std::ios::binary);
-        std::ofstream destF(dest, std::ios::binary);
-
-        destF << srcF.rdbuf();
-
-        srcF.close();
-        destF.flush();
-        destF.close();
-    }
-
-    // Add commas to a number (only does one but shhh)
-    std::string formatNumberComma(u32 number) {
-        std::string s = std::to_string(number);
-        if (s.length() > 3) {
-            return s.substr(0, s.length() - 3) + "," + s.substr(s.length() - 3, 3);
-        }
-        return s;
-    }
-
+namespace Utils::NX {
     ThemeType getHorizonTheme() {
         ColorSetId thm;
         Result rc = setsysGetColorSetId(&thm);
         if (R_SUCCEEDED(rc)) {
             switch (thm) {
                 case ColorSetId_Light:
-                    return ThemeType::T_Light;
+                    return ThemeType::Light;
                     break;
 
                 case ColorSetId_Dark:
-                    return ThemeType::T_Dark;
+                    return ThemeType::Dark;
                     break;
             }
         }
 
         // If it fails return dark
-        return ThemeType::T_Dark;
+        return ThemeType::Dark;
     }
 
-    std::vector<User *> getUserObjects() {
+    std::vector<::NX::User *> getUserObjects() {
         // Get IDs
-        std::vector<User *> users;
+        std::vector<::NX::User *> users;
         AccountUid userIDs[ACC_USER_LIST_SIZE];
         s32 num = 0;
         Result rc = accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
@@ -62,7 +41,7 @@ namespace Utils {
         if (R_SUCCEEDED(rc)) {
             // Create objects and insert into vector
             for (s32 i = 0; i < num; i++) {
-                users.push_back(new User(userIDs[i]));
+                users.push_back(new ::NX::User(userIDs[i]));
             }
         }
 
@@ -70,7 +49,7 @@ namespace Utils {
         return users;
     }
 
-    std::vector<Title *> getTitleObjects(std::vector<User *> u) {
+    std::vector<::NX::Title *> getTitleObjects(std::vector<::NX::User *> u) {
         Result rc;
 
         // Get ALL played titles for ALL users
@@ -115,7 +94,7 @@ namespace Utils {
         delete[] records;
 
         // Create Title objects from IDs
-        std::vector<Title *> titles;
+        std::vector<::NX::Title *> titles;
         for (size_t i = 0; i < playedIDs.size(); i++) {
             // Loop over installed titles to determine if installed or not
             bool installed = false;
@@ -126,7 +105,7 @@ namespace Utils {
                 }
             }
 
-            titles.push_back(new Title(playedIDs[i], installed));
+            titles.push_back(new ::NX::Title(playedIDs[i], installed));
         }
 
         return titles;

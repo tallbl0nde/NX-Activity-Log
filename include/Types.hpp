@@ -13,10 +13,10 @@ enum SortType {
 };
 
 enum ThemeType {
-    T_Auto, // Note this isn't actually set in the object
-    T_Light,
-    T_Dark,
-    T_Custom
+    Auto, // Note this isn't actually set in the object
+    Light,
+    Dark,
+    Custom
 };
 
 #endif

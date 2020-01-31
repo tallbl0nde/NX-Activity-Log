@@ -2,7 +2,7 @@
 #include "UserSelect.hpp"
 
 namespace Screen {
-    UserSelect::UserSelect(Main::Application * a, std::vector<User *> u) : Screen() {
+    UserSelect::UserSelect(Main::Application * a, std::vector<NX::User *> u) : Screen() {
         this->app = a;
         this->users = u;
 

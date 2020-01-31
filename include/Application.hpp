@@ -2,10 +2,9 @@
 #define APPLICATION_HPP
 
 #include "Config.hpp"
+#include "NX.hpp"
 #include "PlayData.hpp"
 #include "Theme.hpp"
-#include "Title.hpp"
-#include "User.hpp"
 
 #include "AllActivity.hpp"
 #include "Settings.hpp"
@@ -43,17 +42,17 @@ namespace Main {
             // Config object allows interfacing with config file
             Config * config_;
             // PlayData object used for all play stats
-            PlayData * playdata_;
+            NX::PlayData * playdata_;
             // Stores current theme colours
             Theme * theme_;
 
             // Vector of users
-            std::vector<User *> users;
+            std::vector<NX::User *> users;
             // Index of selected user
             unsigned short userIdx;
 
             // Vector of titles
-            std::vector<Title *> titles;
+            std::vector<NX::Title *> titles;
             // Index of "active" title (used for specific screens)
             unsigned int titleIdx;
 
@@ -74,19 +73,19 @@ namespace Main {
             // Returns Config object
             Config * config();
             // Returns PlayData object
-            PlayData * playdata();
+            NX::PlayData * playdata();
             // Returns theme object
             Theme * theme();
 
             // Returns user object of active user
-            User * activeUser();
+            NX::User * activeUser();
             // Sets active user given index
             void setActiveUser(unsigned short);
 
             // Returns reference to titles vector
-            std::vector<Title *> titleVector();
+            std::vector<NX::Title *> titleVector();
             // Returns currently selected title
-            Title * activeTitle();
+            NX::Title * activeTitle();
             // Set active title given index
             void setActiveTitle(unsigned int);
 

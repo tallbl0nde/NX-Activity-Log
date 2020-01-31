@@ -85,19 +85,19 @@ namespace Screen {
 
         // THEME
         switch (this->app->config()->gTheme()) {
-            case T_Auto:
+            case Auto:
                 str = "Auto";
                 break;
 
-            case T_Custom:
+            case Custom:
                 str = "Custom";
                 break;
 
-            case T_Dark:
+            case Dark:
                 str = "Basic Black";
                 break;
 
-            case T_Light:
+            case Light:
                 str = "Basic White";
                 break;
         }
@@ -331,21 +331,21 @@ namespace Screen {
         // Add an entry for each sort method
         ThemeType t = this->app->config()->gTheme();
         this->themeOverlay->addEntry("Auto", [this](){
-            this->app->config()->setGTheme(ThemeType::T_Auto);
+            this->app->config()->setGTheme(ThemeType::Auto);
             this->optionTheme->setValue("Auto");
-        }, t == ThemeType::T_Auto);
+        }, t == ThemeType::Auto);
         this->themeOverlay->addEntry("Basic Black", [this](){
-            this->app->config()->setGTheme(ThemeType::T_Dark);
+            this->app->config()->setGTheme(ThemeType::Dark);
             this->optionTheme->setValue("Basic Black");
-        }, t == ThemeType::T_Dark);
+        }, t == ThemeType::Dark);
         this->themeOverlay->addEntry("Basic White", [this](){
-            this->app->config()->setGTheme(ThemeType::T_Light);
+            this->app->config()->setGTheme(ThemeType::Light);
             this->optionTheme->setValue("Basic White");
-        }, t == ThemeType::T_Light);
+        }, t == ThemeType::Light);
         // this->themeOverlay->addEntry("Custom", [this](){
-            // this->app->config()->setGTheme(ThemeType::T_Custom);
+            // this->app->config()->setGTheme(ThemeType::Custom);
             // this->optionTheme->setValue("Custom");
-        // }, t == ThemeType::T_Custom);
+        // }, t == ThemeType::Custom);
 
         this->app->addOverlay(this->themeOverlay);
     }

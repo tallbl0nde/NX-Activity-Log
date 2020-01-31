@@ -1,6 +1,6 @@
-#include "TimeHelper.hpp"
+#include "Time.hpp"
 
-namespace TimeH {
+namespace Utils::Time {
     std::string playtimeToString(time_t secs, std::string sep) {
         if (secs == 0) {
             return "less than a minute";
