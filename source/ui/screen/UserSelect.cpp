@@ -45,7 +45,7 @@ namespace Screen {
             l->setTextColour(this->app->theme()->text());
             l->setCallback([this, i](){
                 this->app->setActiveUser(i);
-                this->app->setScreen(Main::ScreenID::AllActivity);
+                this->app->setScreen(Main::ScreenID::RecentActivity);
             });
             this->list->addElement(l);
         }

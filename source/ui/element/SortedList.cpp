@@ -3,7 +3,7 @@
 
 namespace CustomElm {
     SortedList::SortedList(int x, int y, int w, int h) : Aether::List(x, y, w, h) {
-        this->heading = new Aether::Text(0, 0, "y", 18);
+        this->heading = new Aether::Text(0, 0, "I", 18);
         List::addElement(this->heading);
         this->heading->setY(this->heading->y() - 15);
         List::addElement(new Aether::ListSeparator(20));

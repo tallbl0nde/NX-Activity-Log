@@ -7,6 +7,9 @@
 // Bunch of helper functions for time_t and tm structs
 namespace Utils::Time {
     // TIME_T FUNCTIONS
+    // Get time_t equivalent of given tm
+    time_t getTimeT(struct tm);
+
     // Return a string containing number of hours, minutes and seconds
     // Hours and minutes are split with the provided separator if there are no seconds
     std::string playtimeToString(time_t, std::string);

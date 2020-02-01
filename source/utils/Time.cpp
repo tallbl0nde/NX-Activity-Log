@@ -1,6 +1,10 @@
 #include "Time.hpp"
 
 namespace Utils::Time {
+    time_t getTimeT(struct tm t) {
+        return std::mktime(&t);
+    }
+
     std::string playtimeToString(time_t secs, std::string sep) {
         if (secs == 0) {
             return "less than a minute";
