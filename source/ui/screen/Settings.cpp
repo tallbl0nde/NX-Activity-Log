@@ -49,27 +49,27 @@ namespace Screen {
                 break;
 
             case SortType::HoursAsc:
-                str = "Longest Playtime";
+                str = "By Most Playtime";
                 break;
 
             case SortType::HoursDec:
-                str = "Shortest Playtime";
+                str = "By Least Playtime";
                 break;
 
             case SortType::LaunchAsc:
-                str = "Most Launched";
+                str = "By Most Launched";
                 break;
 
             case SortType::LaunchDec:
-                str = "Least Launched";
+                str = "By Least Launched";
                 break;
 
             case SortType::FirstPlayed:
-                str = "First Playtime";
+                str = "By First Playtime";
                 break;
 
             case SortType::LastPlayed:
-                str = "Most Recently Played";
+                str = "By Most Recently Played";
                 break;
         }
         this->optionSort = new Aether::ListOption("Default Sort Method", str, [this](){
@@ -291,33 +291,33 @@ namespace Screen {
 
         // Add an entry for each sort method
         SortType t = this->app->config()->gSort();
-        this->sortOverlay->addEntry("Name", [this](){
+        this->sortOverlay->addEntry("By Name", [this](){
             this->app->config()->setGSort(SortType::AlphaAsc);
             this->optionSort->setValue("By Name");
         }, t == SortType::AlphaAsc);
-        this->sortOverlay->addEntry("First Playtime", [this](){
+        this->sortOverlay->addEntry("By First Playtime", [this](){
             this->app->config()->setGSort(SortType::FirstPlayed);
-            this->optionSort->setValue("First Playtime");
+            this->optionSort->setValue("By First Playtime");
         }, t == SortType::FirstPlayed);
-        this->sortOverlay->addEntry("Most Recently Played", [this](){
+        this->sortOverlay->addEntry("By Most Recently Played", [this](){
             this->app->config()->setGSort(SortType::LastPlayed);
-            this->optionSort->setValue("Most Recently Played");
+            this->optionSort->setValue("By Most Recently Played");
         }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("Longest Playtime", [this](){
+        this->sortOverlay->addEntry("By Most Playtime", [this](){
             this->app->config()->setGSort(SortType::HoursAsc);
-            this->optionSort->setValue("Longest Playtime");
+            this->optionSort->setValue("By Most Playtime");
         }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("Shortest Playtime", [this](){
+        this->sortOverlay->addEntry("By Least Playtime", [this](){
             this->app->config()->setGSort(SortType::HoursDec);
-            this->optionSort->setValue("Shortest Playtime");
+            this->optionSort->setValue("By Least Playtime");
         }, t == SortType::HoursDec);
-        this->sortOverlay->addEntry("Most Launched", [this](){
+        this->sortOverlay->addEntry("By Most Launched", [this](){
             this->app->config()->setGSort(SortType::LaunchAsc);
-            this->optionSort->setValue("Most Launched");
+            this->optionSort->setValue("By Most Launched");
         }, t == SortType::LaunchAsc);
-        this->sortOverlay->addEntry("Least Launched", [this](){
+        this->sortOverlay->addEntry("By Least Launched", [this](){
             this->app->config()->setGSort(SortType::LaunchDec);
-            this->optionSort->setValue("Least Launched");
+            this->optionSort->setValue("By Least Launched");
         }, t == SortType::LaunchDec);
 
         this->app->addOverlay(this->sortOverlay);

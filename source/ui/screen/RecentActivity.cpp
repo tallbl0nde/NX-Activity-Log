@@ -37,13 +37,7 @@ namespace Screen {
         }));
         this->addElement(menu);
 
-        // Create list (but don't populate yet)
-        this->list = new Aether::List(420, 88, 810, 559);
-        this->list->setCatchup(11);
-        this->list->setScrollBarColour(this->app->theme()->mutedLine());
-        this->addElement(this->list);
-
-        this->noStats = new Aether::Text(this->list->x() + this->list->w()/2, 300, "No play activity was recorded for this period of time.", 20);
+        this->noStats = new Aether::Text(825, 300, "No play activity was recorded for this period of time.", 20);
         this->noStats->setXY(this->noStats->x() - this->noStats->w()/2, this->noStats->y() - this->noStats->h()/2);
         this->noStats->setColour(this->app->theme()->mutedText());
         this->addElement(this->noStats);
@@ -152,7 +146,11 @@ namespace Screen {
         this->image->setWH(60, 60);
         this->addElement(this->image);
 
-        // Populate list
+        // Create list
+        this->list = new Aether::List(420, 88, 810, 559);
+        this->list->setCatchup(11);
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
+        this->addElement(this->list);
         this->updateList();
     }
 
@@ -160,7 +158,7 @@ namespace Screen {
         this->removeElement(this->heading);
         this->removeElement(this->hours);
         this->removeElement(this->image);
-        this->list->removeAllElements();
+        this->removeElement(this->list);
     }
 
     void RecentActivity::updateList() {
@@ -226,7 +224,7 @@ namespace Screen {
             if (stat->playtime > 0) {
                 totalSecs += stat->playtime;
                 CustomElm::ListActivity * la = new CustomElm::ListActivity();
-                la->setImage(new Aether::Image(0, 0, this->app->titleVector()[i]->imgPtr(), this->app->titleVector()[i]->imgSize()));
+                la->setImage(new Aether::Image(0, 0, this->app->titleVector()[i]->imgPtr(), this->app->titleVector()[i]->imgSize(), 2, 2));
                 la->setTitle(this->app->titleVector()[i]->name());
                 std::string str = "Played for " + Utils::Time::playtimeToString(stat->playtime, " and ");
                 la->setPlaytime(str);

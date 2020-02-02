@@ -43,13 +43,13 @@ namespace CustomElm {
                 });
                 break;
             case HoursAsc:
-                this->heading->setString("Sorting by: Longest Playtime");
+                this->heading->setString("Sorting by: Most Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime > rhs.second->playtime;
                 });
                 break;
             case HoursDec:
-                this->heading->setString("Sorting by: Shortest Playtime");
+                this->heading->setString("Sorting by: Least Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime < rhs.second->playtime;
                 });

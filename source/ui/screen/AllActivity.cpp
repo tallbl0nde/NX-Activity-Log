@@ -36,13 +36,6 @@ namespace Screen {
         }));
         this->addElement(menu);
 
-        // Create list (but don't populate yet)
-        this->list = new CustomElm::SortedList(420, 88, 810, 559);
-        this->list->setCatchup(11);
-        this->list->setHeadingColour(this->app->theme()->mutedText());
-        this->list->setScrollBarColour(this->app->theme()->mutedLine());
-        this->addElement(this->list);
-
         // Create sort overlay
         this->sortOverlay = new Aether::PopupList("Sort Titles");
         this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
@@ -88,10 +81,10 @@ namespace Screen {
         this->sortOverlay->addEntry("By Most Recently Played", [this](){
             this->list->setSort(SortType::LastPlayed);
         }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("By Longest Playtime", [this](){
+        this->sortOverlay->addEntry("By Most Playtime", [this](){
             this->list->setSort(SortType::HoursAsc);
         }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("By Shortest Playtime", [this](){
+        this->sortOverlay->addEntry("By Least Playtime", [this](){
             this->list->setSort(SortType::HoursDec);
         }, t == SortType::HoursDec);
         this->sortOverlay->addEntry("By Most Launched", [this](){
@@ -118,6 +111,13 @@ namespace Screen {
         this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize());
         this->image->setWH(60, 60);
         this->addElement(this->image);
+
+        // Create list
+        this->list = new CustomElm::SortedList(420, 88, 810, 559);
+        this->list->setCatchup(11);
+        this->list->setHeadingColour(this->app->theme()->mutedText());
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
+        this->addElement(this->list);
 
         // Populate list + count total time
         std::vector<NX::Title *> t = this->app->titleVector();
@@ -147,7 +147,7 @@ namespace Screen {
 
             // Create ListActivity and add to list
             CustomElm::ListActivity * la = new CustomElm::ListActivity();
-            la->setImage(new Aether::Image(0, 0, t[i]->imgPtr(), t[i]->imgSize()));
+            la->setImage(new Aether::Image(0, 0, t[i]->imgPtr(), t[i]->imgSize(), 2, 2));
             la->setTitle(t[i]->name());
             std::string str = "Played for " + Utils::Time::playtimeToString(ps->playtime, " and ");
             la->setPlaytime(str);
@@ -183,7 +183,7 @@ namespace Screen {
         this->removeElement(this->heading);
         this->removeElement(this->hours);
         this->removeElement(this->image);
-        this->list->removeAllElements();
+        this->removeElement(this->list);
     }
 
     AllActivity::~AllActivity() {

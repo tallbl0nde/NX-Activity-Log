@@ -30,14 +30,14 @@ namespace Screen {
         this->onButtonPress(Aether::Button::B, [this](){
             this->app->exit();
         });
-
-        // Create list (but don't populate yet)
-        this->list = new Aether::List(340, 88, 600, 558);
-        this->list->setScrollBarColour(this->app->theme()->mutedLine());
-        this->addElement(this->list);
     }
 
     void UserSelect::onLoad() {
+        // Create list
+        this->list = new Aether::List(340, 88, 600, 558);
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
+        this->addElement(this->list);
+
         // Create list items for each user in the vector
         for (size_t i = 0; i < this->users.size(); i++) {
             CustomElm::ListUser * l = new CustomElm::ListUser(this->users[i]->username(), this->users[i]->imgPtr(), this->users[i]->imgSize());
@@ -54,6 +54,6 @@ namespace Screen {
 
     void UserSelect::onUnload() {
         // Remove + delete elements within list
-        this->list->removeAllElements();
+        this->removeElement(this->list);
     }
 };
