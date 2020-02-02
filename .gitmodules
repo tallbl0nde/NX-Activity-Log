@@ -1,3 +1,6 @@
 [submodule "SimpleIniParser"]
 	path = SimpleIniParser
 	url = https://github.com/AtlasNX/SimpleIniParser
+[submodule "Aether"]
+	path = Aether
+	url = https://github.com/tallbl0nde/Aether

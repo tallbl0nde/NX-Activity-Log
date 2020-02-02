@@ -1,44 +1,38 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "sortedlist.hpp"
-#include "theme.hpp"
+#include "Types.hpp"
 
-// Singleton class storing the application's config
-class Config {
-    private:
-        // Single instance of this class
-        static Config * instance;
+namespace Main {
+    // Reads/writes and stores config of application
+    class Config {
+        private:
+            // Initializes config file (returns false if error)
+            void initConfigFile();
 
-        // Constructor is private!
-        Config();
+            // Settings (first char indicates section of ini)
+            // g: [general]
+            // h: [hidden]
+            SortType gSort_;
+            ThemeType gTheme_;
+            bool hDeleted_;
 
-        // Initializes config file (returns false if error)
-        void initConfigFile();
+        public:
+            // Reads in config from file (returns false if error)
+            void readConfig();
 
-        // Settings
-        SortType general_sort;
-        ThemeType general_theme;
-        bool hidden_deleted;
+            // Writes config to file (returns false if error)
+            void writeConfig();
 
-    public:
-        // Creates instance if doesn't exist, otherwise returns pointer
-        static Config * getConfig();
+            // Getters + setters for all settings
+            SortType gSort();
+            ThemeType gTheme();
+            bool hDeleted();
 
-        // Reads in config from file (returns false if error)
-        void readConfig();
-
-        // Writes config to file (returns false if error)
-        void writeConfig();
-
-        // Getters + setters for all settings
-        SortType getGeneralSort();
-        ThemeType getGeneralTheme();
-        bool getHiddenDeleted();
-
-        void setGeneralSort(SortType);
-        void setGeneralTheme(ThemeType);
-        void setHiddenDeleted(bool);
+            void setGSort(SortType);
+            void setGTheme(ThemeType);
+            void setHDeleted(bool);
+    };
 };
 
 #endif

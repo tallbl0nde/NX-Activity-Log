@@ -24,19 +24,26 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	NX-Activity-Log
 BUILD		:=	build
-SOURCES		:=	source source/helpers source/screens source/ui source/ui/list source/ui/list/item source/ui/sidemenu source/ui/selection
-INCLUDES	:=	include include/helpers include/screens include/ui include/ui/list include/ui/list/item include/ui/sidemenu include/ui/selection
+SOURCES		:=	source source/nx source/ui source/ui/screen source/ui/element source/utils
+INCLUDES	:=	include include/nx include/ui include/ui/screen include/ui/element include/utils
 ROMFS		:=	romfs
 OUTDIR		:=	sdcard
 FDIR		:=	forwarder
 FFILE		:=	exefs.nsp
 
 #---------------------------------------------------------------------------------
+# Application version
+#---------------------------------------------------------------------------------
+VER_MAJOR	:= 1
+VER_MINOR	:= 1
+VER_MICRO	:= 0
+
+#---------------------------------------------------------------------------------
 # Options for .nacp information
 #---------------------------------------------------------------------------------
 APP_TITLE   := 	NX Activity Log
 APP_AUTHOR	:= 	tallbl0nde
-APP_VERSION	:=	1.1.0
+APP_VERSION	:=	$(VER_MAJOR).$(VER_MINOR).$(VER_MICRO)
 ICON 		:= 	img/icon.jpg
 
 #---------------------------------------------------------------------------------
@@ -44,12 +51,12 @@ ICON 		:= 	img/icon.jpg
 # LIBS: Libraries to link against
 # (I dunno what the rest is)
 #---------------------------------------------------------------------------------
-LIBS	:=  -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
+LIBS	:=  -lAether -lstdc++fs -lnx `sdl2-config --libs` -lSDL2_ttf `freetype-config --libs` -lSDL2_gfx -lSDL2_image -lpng -ljpeg -lwebp -lSimpleIniParser
 
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS	:=	-g -Wall -O2 -ffunction-sections $(ARCH) $(DEFINES)
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	:=	-g -Wall -O2 -ffunction-sections $(ARCH) $(DEFINES) $(INCLUDE) -D__SWITCH__ \
+			-DVER_MAJOR=$(VER_MAJOR) -DVER_MINOR=$(VER_MINOR) -DVER_MICRO=$(VER_MICRO) -DVER_STRING=\"$(VER_MAJOR).$(VER_MINOR).$(VER_MICRO)\"
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
 
@@ -60,7 +67,7 @@ LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/SimpleIniParser
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/SimpleIniParser $(CURDIR)/Aether
 
 #---------------------------------------------------------------------------------
 # This is all wizardry to me also
@@ -109,6 +116,7 @@ ifeq ($(wildcard $(CURDIR)/SimpleIniParser/LICENSE),)
 endif
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile
+	@$(MAKE) -C $(CURDIR)/Aether -f $(CURDIR)/Aether/Makefile
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile
 	@mkdir -p $(ROMFS)
 	@cp $(FDIR)/$(FFILE) $(ROMFS)
@@ -121,6 +129,7 @@ clean:
 	@echo Cleaning ALL build files...
 	@rm -rf $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf $(OUTDIR) $(ROMFS)/$(FFILE)
 	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile clean
+	@$(MAKE) -C $(CURDIR)/Aether -f $(CURDIR)/Aether/Makefile clean
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile clean
 	@echo Done!
 #---------------------------------------------------------------------------------

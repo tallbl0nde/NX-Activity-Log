@@ -1,4 +1,6 @@
+.vscode
 .VSCodeCounter
+/changelog.txt
 /build
 /forwarder/build
 /helpful
