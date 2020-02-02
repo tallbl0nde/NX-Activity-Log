@@ -108,7 +108,7 @@ namespace Screen {
         this->addElement(this->heading);
 
         // Render user's image
-        this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize());
+        this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), 4, 4);
         this->image->setWH(60, 60);
         this->addElement(this->image);
 

@@ -29,6 +29,7 @@ namespace Main {
 
         // Setup screens
         this->scAllActivity = new Screen::AllActivity(this);
+        this->scDetails = new Screen::Details(this);
         this->scRecentActivity = new Screen::RecentActivity(this);
         this->scSettings = new Screen::Settings(this);
         this->scUserSelect = new Screen::UserSelect(this, this->users);
@@ -49,6 +50,10 @@ namespace Main {
         switch (s) {
             case AllActivity:
                 this->display->setScreen(this->scAllActivity);
+                break;
+
+            case Details:
+                this->display->setScreen(this->scDetails);
                 break;
 
             case RecentActivity:
@@ -126,6 +131,7 @@ namespace Main {
 
         // Delete screens
         delete this->scAllActivity;
+        delete this->scDetails;
         delete this->scRecentActivity;
         delete this->scSettings;
         delete this->scUserSelect;
