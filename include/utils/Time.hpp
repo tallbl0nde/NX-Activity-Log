@@ -21,6 +21,9 @@ namespace Utils::Time {
     std::string lastPlayedTimestampToString(time_t);
 
     // TM STRUCT FUNCTIONS
+    // Return true if two structs have different dates
+    bool areDifferentDates(struct tm, struct tm);
+
     // Get time struct for current time
     struct tm getTmForCurrentTime();
 

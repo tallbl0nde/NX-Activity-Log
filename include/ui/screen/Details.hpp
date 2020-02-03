@@ -29,11 +29,15 @@ namespace Screen {
             Aether::ListOption * loFirstTime;
             Aether::ListOption * loLastTime;
 
-            // Help popup
-            Aether::MessageBox * msgboxHelp;
+            // MessageBox overlay (used for multiple things)
+            Aether::MessageBox * msgbox;
 
             // Prepare msgbox for session help
             void setupSessionHelp();
+
+            // Prepare msgbox for session breakdown
+            // Takes PlaySession
+            void setupSessionBreakdown(NX::PlaySession);
 
         public:
             // Sets up elements

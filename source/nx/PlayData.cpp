@@ -192,6 +192,24 @@ namespace NX {
         return ids;
     }
 
+    std::vector<PlayEvent> PlayData::getPlayEvents(u64 start, u64 end, u64 titleID, AccountUid userID) {
+        std::vector<PlayEvent> events;
+
+        // Get a vector of PD_Sessions -> should only be one if the provided timestamps are correct
+        std::vector<PD_Session> sessions = this->getPDSessions(titleID, userID, start, end);
+        for (size_t i = 0; i < sessions.size(); i++) {
+            for (size_t j = sessions[i].index; j < sessions[i].index + sessions[i].num; j++) {
+                // Ignore repeated OutFocus events
+                if (this->events[j]->eventType == Applet_OutFocus && this->events[j-1]->eventType == Applet_OutFocus) {
+                    continue;
+                }
+                events.push_back(*this->events[j]);
+            }
+        }
+
+        return events;
+    }
+
     std::vector<PlaySession> PlayData::getPlaySessionsForUser(u64 titleID, AccountUid userID) {
         // Get list of pd_sessions
         struct tm end = Utils::Time::getTmForCurrentTime();
@@ -230,6 +248,7 @@ namespace NX {
 
                     case Applet_OutFocus:
                         p.playtime += (this->events[j]->steadyTimestamp - last_ts);
+                        p.endTimestamp = this->events[j]->clockTimestamp;   // In case of a firmware crash there is no Applet_Exit event logged
 
                         // Move to last out focus (I don't know why the log has multiple)
                         while (j+1 < this->events.size()) {

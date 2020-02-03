@@ -45,11 +45,11 @@ namespace Screen {
     }
 
     void Details::setupSessionHelp() {
-        this->msgboxHelp->emptyBody();
-        this->msgboxHelp->close(false);
+        this->msgbox->emptyBody();
+        this->msgbox->close(false);
 
         int bw, bh;
-        this->msgboxHelp->getBodySize(&bw, &bh);
+        this->msgbox->getBodySize(&bw, &bh);
         Aether::Element * body = new Aether::Element(0, 0, bw, bh);
         Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "A Play Session represents the time between when a game was launched to when it was quit in succession.", 22, bw - 100);
         tb->setColour(this->app->theme()->text());
@@ -58,10 +58,107 @@ namespace Screen {
         tb->setColour(this->app->theme()->mutedText());
         body->addElement(tb);
         body->setWH(bw, tb->y() + tb->h() + 40);
-        this->msgboxHelp->setBodySize(body->w(), body->h());
-        this->msgboxHelp->setBody(body);
+        this->msgbox->setBodySize(body->w(), body->h());
+        this->msgbox->setBody(body);
 
-        this->app->addOverlay(this->msgboxHelp);
+        this->app->addOverlay(this->msgbox);
+    }
+
+    void Details::setupSessionBreakdown(NX::PlaySession s) {
+        this->msgbox->emptyBody();
+        this->msgbox->close(false);
+
+        // Create headings
+        int bw, bh;
+        this->msgbox->getBodySize(&bw, &bh);
+        Aether::Element * body = new Aether::Element(0, 0, bw, bh);
+        Aether::Text * t = new Aether::Text(50, 40, "Play Session Details", 26);
+        t->setColour(this->app->theme()->text());
+        body->addElement(t);
+        t = new Aether::Text(50, t->y() + t->h() + 10, "Time spent in-game: " + Utils::Time::playtimeToString(s.playtime, " and "), 22);
+        t->setColour(this->app->theme()->accent());
+        body->addElement(t);
+        t = new Aether::Text(50, t->y() + t->h() + 10, "Session length: " + Utils::Time::playtimeToString(s.endTimestamp - s.startTimestamp, " and "), 20);
+        t->setColour(this->app->theme()->mutedText());
+        body->addElement(t);
+
+        std::vector<NX::PlayEvent> events = this->app->playdata()->getPlayEvents(s.startTimestamp, s.endTimestamp, this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
+        struct tm lastTime = Utils::Time::getTm(0);
+        int Y = t->y() + t->h() + 25;
+        time_t lastTs = 0;
+        for (size_t i = 0; i < events.size(); i++) {
+            // Print time of event in 12 hour format
+            struct tm time = Utils::Time::getTm(events[i].clockTimestamp);
+            bool isAM = ((time.tm_hour < 12) ? true : false);
+            if (time.tm_hour == 0) {
+                time.tm_hour = 12;
+            }
+            std::string str = std::to_string(((time.tm_hour > 12) ? time.tm_hour - 12 : time.tm_hour)) + ":" + ((time.tm_min < 10) ? "0" : "") + std::to_string(time.tm_min) + ((isAM) ? "am" : "pm") + " - ";
+
+            // Add date string if new day
+            if (Utils::Time::areDifferentDates(lastTime, time)) {
+                struct tm now = Utils::Time::getTmForCurrentTime();
+                t = new Aether::Text(50, Y, Utils::Time::tmToString(time, true, true, (time.tm_year != now.tm_year)), 18);
+                t->setColour(this->app->theme()->text());
+                body->addElement(t);
+                Y += t->h() + 10;
+            }
+            lastTime = time;
+
+            // Concatenate event type onto time string
+            bool addPlaytime = false;
+            switch (events[i].eventType) {
+                case NX::EventType::Applet_Launch:
+                    str += "Application Launched";
+                    lastTs = events[i].steadyTimestamp;
+                    break;
+
+                case NX::EventType::Applet_InFocus:
+                    if (events[i-1].eventType == NX::EventType::Account_Active || events[i-1].eventType == NX::EventType::Applet_Launch) {
+                        continue;
+                    }
+                    str += "Application Resumed";
+                    lastTs = events[i].steadyTimestamp;
+                    break;
+
+                case NX::EventType::Applet_OutFocus:
+                    if (events[i+1].eventType == NX::EventType::Account_Inactive || events[i+1].eventType == NX::EventType::Applet_Exit) {
+                        continue;
+                    }
+                    str += "Application Suspended";
+                    addPlaytime = true;
+                    break;
+
+                case NX::EventType::Applet_Exit:
+                    str += "Application Closed";
+                    addPlaytime = true;
+                    break;
+
+                default:
+                    continue;
+                    break;
+            }
+
+            // Create + add string element
+            t = new Aether::Text(50, Y, str, 18);
+            t->setColour(this->app->theme()->mutedText());
+            body->addElement(t);
+            Y += t->h() + 10;
+
+            // Add playtime from last "burst"
+            if (addPlaytime) {
+                t = new Aether::Text(t->x() + t->w() + 10, t->y() + t->h()/2, "(" + Utils::Time::playtimeToString(events[i].steadyTimestamp - lastTs, " and ") + ")", 16);
+                t->setY(t->y() - t->h()/2);
+                t->setColour(this->app->theme()->accent());
+                body->addElement(t);
+            }
+        }
+
+        // Set body element and show message box
+        body->setWH(bw, t->y() + t->h() + 40);
+        this->msgbox->setBodySize(body->w(), body->h());
+        this->msgbox->setBody(body);
+        this->app->addOverlay(this->msgbox);
     }
 
     void Details::onLoad() {
@@ -180,7 +277,10 @@ namespace Screen {
                 str += "%";
             }
             ls->setPercentageString(str);
-            ls->setCallback(nullptr);
+            NX::PlaySession ses = stats[i];
+            ls->setCallback([this, ses](){
+                this->setupSessionBreakdown(ses);
+            });
             this->list->addElement(ls);
         }
 
@@ -189,13 +289,13 @@ namespace Screen {
         this->setFocussed(this->list);
 
         // Create blank messagebox
-        this->msgboxHelp = new Aether::MessageBox();
-        this->msgboxHelp->addTopButton("Close", [this](){
-            this->msgboxHelp->close(true);
+        this->msgbox = new Aether::MessageBox();
+        this->msgbox->addTopButton("Close", [this](){
+            this->msgbox->close(true);
         });
-        this->msgboxHelp->setLineColour(this->app->theme()->mutedLine());
-        this->msgboxHelp->setRectangleColour(this->app->theme()->altBG());
-        this->msgboxHelp->setTextColour(this->app->theme()->accent());
+        this->msgbox->setLineColour(this->app->theme()->mutedLine());
+        this->msgbox->setRectangleColour(this->app->theme()->altBG());
+        this->msgbox->setTextColour(this->app->theme()->accent());
     }
 
     void Details::onUnload() {
@@ -204,6 +304,6 @@ namespace Screen {
         this->removeElement(this->title);
         this->removeElement(this->userimage);
         this->removeElement(this->username);
-        delete this->msgboxHelp;
+        delete this->msgbox;
     }
 };

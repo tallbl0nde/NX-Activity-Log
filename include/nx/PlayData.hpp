@@ -83,6 +83,10 @@ namespace NX {
             // Returns all titleIDs found within the play log (some may no longer be valid?)
             std::vector<u64> getLoggedTitleIDs();
 
+            // Returns vector containing PlayEvents between the given times
+            // Start time, end time, titleID, userID
+            std::vector<PlayEvent> getPlayEvents(u64, u64, u64, AccountUid);
+
             // Returns all play sessions for the given title ID and user ID
             std::vector<PlaySession> getPlaySessionsForUser(u64, AccountUid);
 

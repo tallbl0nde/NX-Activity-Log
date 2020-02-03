@@ -126,6 +126,19 @@ namespace Utils::Time {
         return str;
     }
 
+    bool areDifferentDates(struct tm a, struct tm b) {
+        a.tm_hour = 0;
+        a.tm_min = 0;
+        a.tm_sec = 0;
+        b.tm_hour = 0;
+        b.tm_min = 0;
+        b.tm_sec = 0;
+        if (std::difftime(getTimeT(a), getTimeT(b)) != 0) {
+            return true;
+        }
+        return false;
+    }
+
     struct tm getTmForCurrentTime() {
         time_t t = std::time(nullptr);
         struct tm * tmp = std::localtime(&t);
