@@ -14,6 +14,9 @@ namespace Utils::NX {
     // Returns ThemeType matching Horizon's
     ThemeType getHorizonTheme();
 
+    // Returns NX::User* if launched via User Page, nullptr otherwise
+    ::NX::User * getUserPageUser();
+
     // Returns vector containing users on the console
     std::vector<::NX::User *> getUserObjects();
 

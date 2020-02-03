@@ -12,8 +12,18 @@ namespace Main {
         this->playdata_ = new NX::PlayData();
         this->theme_ = new Theme(this->config_->gTheme());
 
+        // Check if launched via user page and if so only use the chosen user
+        NX::User * u = Utils::NX::getUserPageUser();
+        this->isUserPage_ = false;
+        if (u != nullptr) {
+            this->isUserPage_ = true;
+            this->users.push_back(u);
+        }
+
         // Populate users vector
-        this->users = Utils::NX::getUserObjects();
+        if (!this->isUserPage_) {
+            this->users = Utils::NX::getUserObjects();
+        }
         this->userIdx = 0;
 
         // Populate titles vector
@@ -32,10 +42,16 @@ namespace Main {
         this->scDetails = new Screen::Details(this);
         this->scRecentActivity = new Screen::RecentActivity(this);
         this->scSettings = new Screen::Settings(this);
-        this->scUserSelect = new Screen::UserSelect(this, this->users);
 
-        // Start with UserSelect screen
-        this->setScreen(ScreenID::UserSelect);
+        if (this->isUserPage_) {
+            // Skip UserSelect screen if launched via user page
+            this->setScreen(ScreenID::RecentActivity);
+        } else {
+            // No need for user select if user page
+            this->scUserSelect = new Screen::UserSelect(this, this->users);
+            // Start with UserSelect screen
+            this->setScreen(ScreenID::UserSelect);
+        }
     }
 
     void Application::setHoldDelay(int i) {
@@ -84,6 +100,10 @@ namespace Main {
 
     NX::User * Application::activeUser() {
         return this->users[this->userIdx];
+    }
+
+    bool Application::isUserPage() {
+        return this->isUserPage_;
     }
 
     void Application::setActiveUser(unsigned short i) {

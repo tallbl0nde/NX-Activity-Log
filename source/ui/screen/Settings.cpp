@@ -18,7 +18,9 @@ namespace Screen {
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
-        c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+        if (!(this->app->isUserPage())) {
+            c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+        }
         c->setColour(this->app->theme()->text());
         this->addElement(c);
 
@@ -177,9 +179,11 @@ namespace Screen {
         this->msgbox->setTextColour(this->app->theme()->accent());
 
         // Add button callbacks
-        this->onButtonPress(Aether::Button::B, [this](){
-            this->app->setScreen(Main::ScreenID::UserSelect);
-        });
+        if (!(this->app->isUserPage())) {
+            this->onButtonPress(Aether::Button::B, [this](){
+                this->app->setScreen(Main::ScreenID::UserSelect);
+            });
+        }
     }
 
     void Settings::installForwarder() {

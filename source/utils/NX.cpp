@@ -31,6 +31,39 @@ namespace Utils::NX {
         return ThemeType::Dark;
     }
 
+    ::NX::User * getUserPageUser() {
+        ::NX::User * u = nullptr;
+
+        AppletType t = appletGetAppletType();
+        if (t == AppletType_LibraryApplet) {
+            // Attempt to get user id from IStorage
+            AppletStorage * s = (AppletStorage *)malloc(sizeof(AppletStorage));
+            // Pop common args IStorage
+            if (R_SUCCEEDED(appletPopInData(s))) {
+                // Pop MyPage-specific args IStorage
+                if (R_SUCCEEDED(appletPopInData(s))) {
+                    // Get user id
+                    AccountUid uid;
+                    appletStorageRead(s, 0x8, &uid, 0x10);
+
+                    // Check if valid
+                    AccountUid userIDs[ACC_USER_LIST_SIZE];
+                    s32 num = 0;
+                    accountListAllUsers(userIDs, ACC_USER_LIST_SIZE, &num);
+                    for (s32 i = 0; i < num; i++) {
+                        if (uid == userIDs[i]) {
+                            u = new ::NX::User(uid);
+                            break;
+                        }
+                    }
+                }
+            }
+            free(s);
+        }
+
+        return u;
+    }
+
     std::vector<::NX::User *> getUserObjects() {
         // Get IDs
         std::vector<::NX::User *> users;

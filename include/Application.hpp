@@ -52,6 +52,8 @@ namespace Main {
             // Stores current theme colours
             Theme * theme_;
 
+            // Set true if launched via user page
+            bool isUserPage_;
             // Vector of users
             std::vector<NX::User *> users;
             // Index of selected user
@@ -82,6 +84,9 @@ namespace Main {
             NX::PlayData * playdata();
             // Returns theme object
             Theme * theme();
+
+            // Returns isUserPage_
+            bool isUserPage();
 
             // Returns user object of active user
             NX::User * activeUser();

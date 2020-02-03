@@ -70,6 +70,10 @@ void Theme::setThemeAuto() {
         case ThemeType::Light:
             this->setThemeLight();
             break;
+
+        // Never called but I don't like compiler warnings
+        default:
+            break;
     }
 }
 

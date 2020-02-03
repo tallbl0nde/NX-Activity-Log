@@ -16,7 +16,9 @@ namespace Screen {
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
-        c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+        if (!(this->app->isUserPage())) {
+            c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+        }
         c->addItem(new Aether::ControlItem(Aether::Button::R, "Next"));
         c->addItem(new Aether::ControlItem(Aether::Button::L, "Previous"));
         c->addItem(new Aether::ControlItem(Aether::Button::X, "Change View"));
@@ -50,9 +52,11 @@ namespace Screen {
         this->viewOverlay->setListLineColour(this->app->theme()->mutedLine());
         this->viewOverlay->setTextColour(this->app->theme()->text());
 
-        this->onButtonPress(Aether::Button::B, [this](){
-            this->app->setScreen(Main::ScreenID::UserSelect);
-        });
+        if (!(this->app->isUserPage())) {
+            this->onButtonPress(Aether::Button::B, [this](){
+                this->app->setScreen(Main::ScreenID::UserSelect);
+            });
+        }
         this->onButtonPress(Aether::Button::X, [this](){
             this->setupOverlay();
         });
