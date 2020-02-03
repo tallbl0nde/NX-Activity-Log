@@ -9,6 +9,7 @@ namespace Main {
 };
 
 namespace Screen {
+    // Detailed activity screen
     class Details : public Aether::Screen {
         private:
             // Pointer to app for theme
@@ -27,6 +28,12 @@ namespace Screen {
             Aether::ListOption * loLaunched;
             Aether::ListOption * loFirstTime;
             Aether::ListOption * loLastTime;
+
+            // Help popup
+            Aether::MessageBox * msgboxHelp;
+
+            // Prepare msgbox for session help
+            void setupSessionHelp();
 
         public:
             // Sets up elements
