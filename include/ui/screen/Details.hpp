@@ -2,10 +2,23 @@
 #define SCREEN_DETAILS_HPP
 
 #include "Application.hpp"
+#include "Graph.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {
     class Application;
+};
+
+// Graph display type
+enum class GraphDataType {
+    Playtime,
+    Launches
+};
+
+// Graph display period
+enum class GraphViewType {
+    Day,
+    Month
 };
 
 namespace Screen {
@@ -15,22 +28,38 @@ namespace Screen {
             // Pointer to app for theme
             Main::Application * app;
 
+            // Graph things
+            GraphDataType graphData;
+            GraphViewType graphView;
+
+            // Creates relevant graph
+            void createGraph();
+
             // Pointers to elements
+            CustomElm::Graph * graph;
+            Aether::Text * graphHeading;
+            Aether::Text * graphSubheading;
+            Aether::Text * graphTotal;
+            Aether::Text * graphTotalSub;
+            Aether::Text * graphPercentage;
+            Aether::Text * graphPercentageSub;
+
             Aether::Image * icon;
             Aether::List * list;
             Aether::Text * title;
             Aether::Image * userimage;
             Aether::Text * username;
 
-            // Summary items (to edit value directly)
-            Aether::ListOption * loPlayTime;
-            Aether::ListOption * loAverageTime;
-            Aether::ListOption * loLaunched;
-            Aether::ListOption * loFirstTime;
-            Aether::ListOption * loLastTime;
-
             // MessageBox overlay (used for multiple things)
             Aether::MessageBox * msgbox;
+            // Popuplist overlay (used for graph options)
+            Aether::PopupList * popup;
+
+            // Prepare popup for graph period
+            void setupGraphPeriod();
+
+            // Prepare popup for graph type
+            void setupGraphType();
 
             // Prepare msgbox for session help
             void setupSessionHelp();

@@ -1,5 +1,6 @@
 #include "Details.hpp"
 #include "ListSession.hpp"
+#include "Time.hpp"
 #include "Utils.hpp"
 
 // Values for summary appearance
@@ -23,12 +24,39 @@ namespace Screen {
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
         c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+        c->addItem(new Aether::ControlItem(Aether::Button::X, "Graph Time"));
+        c->addItem(new Aether::ControlItem(Aether::Button::Y, "Graph Type"));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
+        this->graphHeading = new Aether::Text(0, 120, "", 22);
+        this->graphHeading->setColour(this->app->theme()->text());
+        this->addElement(this->graphHeading);
+        this->graphSubheading = new Aether::Text(940, 150, "(in hours)", 16);
+        this->graphSubheading->setColour(this->app->theme()->mutedText());
+        this->graphSubheading->setX(this->graphSubheading->x() - this->graphSubheading->w()/2);
+        this->addElement(this->graphSubheading);
+        this->graphTotal = new Aether::Text(0, 545, "", 20);
+        this->graphTotal->setColour(this->app->theme()->text());
+        this->addElement(this->graphTotal);
+        this->graphTotalSub = new Aether::Text(0, 570, "", 18);
+        this->graphTotalSub->setColour(this->app->theme()->accent());
+        this->addElement(this->graphTotalSub);
+        this->graphPercentage = new Aether::Text(0, 545, "", 20);
+        this->graphPercentage->setColour(this->app->theme()->text());
+        this->addElement(this->graphPercentage);
+        this->graphPercentageSub = new Aether::Text(0, 570, "", 18);
+        this->graphPercentageSub->setColour(this->app->theme()->accent());
+        this->addElement(this->graphPercentageSub);
 
         // Add key callbacks
         this->onButtonPress(Aether::Button::B, [this](){
             this->app->setScreen(Main::ScreenID::AllActivity);
+        });
+        this->onButtonPress(Aether::Button::X, [this](){
+            this->setupGraphPeriod();
+        });
+        this->onButtonPress(Aether::Button::Y, [this](){
+            this->setupGraphType();
         });
         this->onButtonPress(Aether::Button::ZR, [this](){
             this->app->setHoldDelay(30);
@@ -42,6 +70,134 @@ namespace Screen {
         this->onButtonRelease(Aether::Button::ZL, [this](){
             this->app->setHoldDelay(100);
         });
+
+        // Set default graph variables
+        this->graphData = GraphDataType::Playtime;
+        this->graphView = GraphViewType::Month;
+    }
+
+    void Details::createGraph() {
+        // Create graph
+        if (this->graph != nullptr) {
+            this->removeElement(this->graph);
+        }
+        this->graph = new CustomElm::Graph(660, 190, 560, 300, 2);
+        this->graph->setBarColour(this->app->theme()->accent());
+        this->graph->setLabelColour(this->app->theme()->text());
+        this->graph->setLineColour(this->app->theme()->mutedLine());
+        this->graph->setMaximumValue(20);
+        this->graph->setYSteps(4);
+        this->addElement(this->graph);
+
+        // Get current time (will be set to start of range)
+        struct tm t = Utils::Time::getTmForCurrentTime();
+
+        // // Handle view period
+        std::string view;
+        switch (this->graphView) {
+            case GraphViewType::Day:
+                view = "Day";
+                this->graph->setNumberOfEntries(10);
+                break;
+
+            case GraphViewType::Month:
+                view = "Month";
+                this->graph->setNumberOfEntries(12);
+                // Set labels
+                for (int i = 0; i < 12; i++) {
+                    this->graph->setLabel(i, Utils::Time::getShortMonthString(i));
+                }
+
+                break;
+        }
+
+        // Handle type of data
+        std::string data;
+        NX::RecentPlayStatistics * s;
+        switch (this->graphData) {
+            case GraphDataType::Launches:
+                data = "Launches";
+                this->graphSubheading->setHidden(true);
+                break;
+
+            case GraphDataType::Playtime:
+                data = "Play Time";
+                this->graphSubheading->setHidden(false);
+                t.tm_year = 119;
+                t.tm_mday = 1;
+                t.tm_hour = 0;
+                t.tm_min = 0;
+                t.tm_sec = 0;
+                struct tm e = t;
+                e.tm_hour = 23;
+                e.tm_min = 59;
+                e.tm_sec = 59;
+                for (size_t i = 0; i < 12; i++) {
+                    // Find end timestamp and get stats
+                    t.tm_mon = i;
+                    e.tm_mon = t.tm_mon;
+                    e.tm_mday = Utils::Time::tmGetDaysInMonth(e);
+                    s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    float val = s->playtime/60/60.0;
+                    this->graph->setValue(i, std::round(val));
+                    delete s;
+                }
+                break;
+        }
+
+        // Set headings etc...
+        this->graphHeading->setString(data + " per " + view);
+        this->graphHeading->setX(940 - this->graphHeading->w()/2);
+        this->graphTotal->setString("Total " + data + " for ...");
+        this->graphTotal->setX(800 - this->graphTotal->w()/2);
+        this->graphTotalSub->setString("A number");
+        this->graphTotalSub->setX(800 - this->graphTotalSub->w()/2);
+        this->graphPercentage->setString("Percentage of Total ...");
+        this->graphPercentage->setX(1080 - this->graphPercentage->w()/2);
+        this->graphPercentageSub->setString("A percentage");
+        this->graphPercentageSub->setX(1080 - this->graphPercentageSub->w()/2);
+    }
+
+    void Details::setupGraphPeriod() {
+        if (this->popup != nullptr) {
+            delete this->popup;
+        }
+        this->popup = new Aether::PopupList("Graph View Period");
+        this->popup->setBackgroundColour(this->app->theme()->altBG());
+        this->popup->setTextColour(this->app->theme()->text());
+        this->popup->setLineColour(this->app->theme()->fg());
+        this->popup->setHighlightColour(this->app->theme()->accent());
+        this->popup->setListLineColour(this->app->theme()->mutedLine());
+        this->popup->addEntry("By Day", [this](){
+            this->graphView = GraphViewType::Day;
+            this->createGraph();
+        }, this->graphView == GraphViewType::Day);
+        this->popup->addEntry("By Month", [this](){
+            this->graphView = GraphViewType::Month;
+            this->createGraph();
+        }, this->graphView == GraphViewType::Month);
+        this->app->addOverlay(this->popup);
+    }
+
+    void Details::setupGraphType() {
+        if (this->popup != nullptr) {
+            delete this->popup;
+        }
+        this->popup = new Aether::PopupList("Graph View Activity");
+        this->popup->setBackgroundColour(this->app->theme()->altBG());
+        this->popup->setTextColour(this->app->theme()->text());
+        this->popup->setLineColour(this->app->theme()->fg());
+        this->popup->setHighlightColour(this->app->theme()->accent());
+        this->popup->setListLineColour(this->app->theme()->mutedLine());
+        this->popup->addEntry("Launches", [this](){
+            this->graphData = GraphDataType::Launches;
+            this->createGraph();
+        }, this->graphData == GraphDataType::Launches);
+        this->popup->addEntry("Playtime", [this](){
+            this->graphData = GraphDataType::Playtime;
+            this->createGraph();
+        }, this->graphData == GraphDataType::Playtime);
+        this->app->addOverlay(this->popup);
     }
 
     void Details::setupSessionHelp() {
@@ -197,41 +353,41 @@ namespace Screen {
         h->setTextColour(this->app->theme()->text());
         this->list->addElement(h);
         this->list->addElement(new Aether::ListSeparator(20));
-        this->loPlayTime = new Aether::ListOption("Play Time", Utils::Time::playtimeToString(ps->playtime, ", "), nullptr);
-        this->loPlayTime->setH(SUMMARY_BOX_HEIGHT);
-        this->loPlayTime->setFontSize(SUMMARY_FONT_SIZE);
-        this->loPlayTime->setSelectable(false);
-        this->loPlayTime->setTouchable(false);
-        this->loPlayTime->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
-        this->list->addElement(this->loPlayTime);
-        this->loAverageTime = new Aether::ListOption("Avg. Play Time", Utils::Time::playtimeToString(ps->playtime / ps->launches, ", "), nullptr);
-        this->loAverageTime->setH(SUMMARY_BOX_HEIGHT);
-        this->loAverageTime->setFontSize(SUMMARY_FONT_SIZE);
-        this->loAverageTime->setSelectable(false);
-        this->loAverageTime->setTouchable(false);
-        this->loAverageTime->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
-        this->list->addElement(this->loAverageTime);
-        this->loLaunched = new Aether::ListOption("Times Played", Utils::formatNumberComma(ps->launches) + " times", nullptr);
-        this->loLaunched->setH(SUMMARY_BOX_HEIGHT);
-        this->loLaunched->setFontSize(SUMMARY_FONT_SIZE);
-        this->loLaunched->setSelectable(false);
-        this->loLaunched->setTouchable(false);
-        this->loLaunched->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
-        this->list->addElement(this->loLaunched);
-        this->loFirstTime = new Aether::ListOption("First Played", Utils::Time::timestampToString(pdmPlayTimestampToPosix(ps->firstPlayed)), nullptr);
-        this->loFirstTime->setH(SUMMARY_BOX_HEIGHT);
-        this->loFirstTime->setFontSize(SUMMARY_FONT_SIZE);
-        this->loFirstTime->setSelectable(false);
-        this->loFirstTime->setTouchable(false);
-        this->loFirstTime->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
-        this->list->addElement(this->loFirstTime);
-        this->loLastTime = new Aether::ListOption("Last Played", Utils::Time::timestampToString(pdmPlayTimestampToPosix(ps->lastPlayed)), nullptr);
-        this->loLastTime->setH(SUMMARY_BOX_HEIGHT);
-        this->loLastTime->setFontSize(SUMMARY_FONT_SIZE);
-        this->loLastTime->setSelectable(false);
-        this->loLastTime->setTouchable(false);
-        this->loLastTime->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
-        this->list->addElement(this->loLastTime);
+        Aether::ListOption * lo = new Aether::ListOption("Play Time", Utils::Time::playtimeToString(ps->playtime, ", "), nullptr);
+        lo->setH(SUMMARY_BOX_HEIGHT);
+        lo->setFontSize(SUMMARY_FONT_SIZE);
+        lo->setSelectable(false);
+        lo->setTouchable(false);
+        lo->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
+        this->list->addElement(lo);
+        lo = new Aether::ListOption("Avg. Play Time", Utils::Time::playtimeToString(ps->playtime / ps->launches, ", "), nullptr);
+        lo->setH(SUMMARY_BOX_HEIGHT);
+        lo->setFontSize(SUMMARY_FONT_SIZE);
+        lo->setSelectable(false);
+        lo->setTouchable(false);
+        lo->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
+        this->list->addElement(lo);
+        lo = new Aether::ListOption("Times Played", Utils::formatNumberComma(ps->launches) + " times", nullptr);
+        lo->setH(SUMMARY_BOX_HEIGHT);
+        lo->setFontSize(SUMMARY_FONT_SIZE);
+        lo->setSelectable(false);
+        lo->setTouchable(false);
+        lo->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
+        this->list->addElement(lo);
+        lo = new Aether::ListOption("First Played", Utils::Time::timestampToString(pdmPlayTimestampToPosix(ps->firstPlayed)), nullptr);
+        lo->setH(SUMMARY_BOX_HEIGHT);
+        lo->setFontSize(SUMMARY_FONT_SIZE);
+        lo->setSelectable(false);
+        lo->setTouchable(false);
+        lo->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
+        this->list->addElement(lo);
+        lo = new Aether::ListOption("Last Played", Utils::Time::timestampToString(pdmPlayTimestampToPosix(ps->lastPlayed)), nullptr);
+        lo->setH(SUMMARY_BOX_HEIGHT);
+        lo->setFontSize(SUMMARY_FONT_SIZE);
+        lo->setSelectable(false);
+        lo->setTouchable(false);
+        lo->setColours(this->app->theme()->mutedLine(), this->app->theme()->text(), this->app->theme()->accent());
+        this->list->addElement(lo);
         this->list->addElement(new Aether::ListSeparator());
 
         Aether::ListHeadingHelp * lhh = new Aether::ListHeadingHelp("Play Sessions", [this](){
@@ -296,14 +452,23 @@ namespace Screen {
         this->msgbox->setLineColour(this->app->theme()->mutedLine());
         this->msgbox->setRectangleColour(this->app->theme()->altBG());
         this->msgbox->setTextColour(this->app->theme()->accent());
+
+        // Create graph
+        this->graph = nullptr;
+        this->createGraph();
+        this->popup = nullptr;
     }
 
     void Details::onUnload() {
+        this->removeElement(this->graph);
         this->removeElement(this->icon);
         this->removeElement(this->list);
         this->removeElement(this->title);
         this->removeElement(this->userimage);
         this->removeElement(this->username);
         delete this->msgbox;
+        if (this->popup != nullptr) {
+            delete this->popup;
+        }
     }
 };

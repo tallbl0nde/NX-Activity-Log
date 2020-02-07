@@ -39,6 +39,7 @@ namespace Utils::Time {
     // MISCELLANEOUS FUNCTIONS
     // Returns a string containing the month for the given number (starting from 0)
     std::string getMonthString(int);
+    std::string getShortMonthString(int);
 
     // Returns suffix for given date (within 1 - 31)
     std::string getDateSuffix(int);
