@@ -1,4 +1,5 @@
 #include "Graph.hpp"
+#include "Utils.hpp"
 
 // Padding between xAxis and labels
 #define LABEL_PADDING 10
@@ -28,6 +29,10 @@ namespace CustomElm {
         this->addElement(this->xAxis);
         this->yAxis = new Aether::Rectangle(x, y, 2, h);
         this->addElement(this->yAxis);
+
+        // Set precision to 0
+        this->labelPrecision = 0;
+        this->valuePrecision = 0;
 
         // Init all other vars
         this->barC = Aether::Colour{255, 255, 255, 255};
@@ -85,12 +90,31 @@ namespace CustomElm {
         this->column[i].label->setX(mid - this->column[i].label->w()/2);
     }
 
-    void Graph::setValue(unsigned int i, unsigned int v) {
+    void Graph::setValue(unsigned int i, double v) {
         if (i > this->column.size()) {
             return;
         }
 
-        this->column[i].value->setString(std::to_string(v));
+        // Convert to string
+        v = Utils::roundToDecimalPlace(v, this->valuePrecision);
+        std::string str = Utils::truncateToDecimalPlace(std::to_string(v), this->valuePrecision);
+
+        // Check for trailing zeroes and if so don't show decimal places
+        size_t p = str.find(".");
+        bool allZero = true;
+        if (p != std::string::npos) {
+            for (size_t i = p + 1; i < str.length(); i++) {
+                if (str[i] != '0') {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (allZero) {
+                str = Utils::truncateToDecimalPlace(str, 0);
+            }
+        }
+
+        this->column[i].value->setString(str);
         this->needsUpdate = true;
     }
 
@@ -133,7 +157,21 @@ namespace CustomElm {
         this->needsUpdate = true;
     }
 
-    void Graph::setMaximumValue(unsigned int v) {
+    void Graph::setLabelPrecision(unsigned int p) {
+        if (p != this->labelPrecision) {
+            this->labelPrecision = p;
+            this->needsUpdate = true;
+        }
+    }
+
+    void Graph::setValuePrecision(unsigned int p) {
+        if (p != this->valuePrecision) {
+            this->valuePrecision = p;
+            this->needsUpdate = true;
+        }
+    }
+
+    void Graph::setMaximumValue(double v) {
         this->yMax = v;
         this->needsUpdate = true;
     }
@@ -165,8 +203,6 @@ namespace CustomElm {
         }
 
         this->needsUpdate = true;
-
-        // Ensure
     }
 
     void Graph::setW(int w) {
@@ -193,8 +229,9 @@ namespace CustomElm {
     void Graph::updateElements() {
         // 0: Update yLabels
         for (size_t i = 0; i < this->yLabel.size(); i++) {
-            float val = ((i+1)/(float)this->yLabel.size()) * this->yMax;
-            this->yLabel[i]->setString(std::to_string((int)val));
+            double val = ((i+1)/(double)this->yLabel.size()) * this->yMax;
+            val = Utils::roundToDecimalPlace(val, this->labelPrecision);
+            this->yLabel[i]->setString(Utils::truncateToDecimalPlace(std::to_string(val), this->labelPrecision));
         }
 
         // 1: Position yAxis line
@@ -232,7 +269,7 @@ namespace CustomElm {
 
             // Recreate bars + values to ensure they're on top of horizontal lines
             if (this->removeElement(this->column[i].bar)) {
-                this->column[i].bar = new Aether::Rectangle(0, 0, gap*this->barWidth, (this->xAxis->y() - this->steps[this->steps.size() - 1]->y()) * (std::stoi(this->column[i].value->string()) / (float)this->yMax));
+                this->column[i].bar = new Aether::Rectangle(0, 0, gap*this->barWidth, (this->xAxis->y() - this->steps[this->steps.size() - 1]->y()) * (std::stod(this->column[i].value->string()) / (float)this->yMax));
                 this->column[i].bar->setColour(this->barC);
                 this->addElement(this->column[i].bar);
             }

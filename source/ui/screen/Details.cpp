@@ -87,6 +87,7 @@ namespace Screen {
         this->graph->setLineColour(this->app->theme()->mutedLine());
         this->graph->setMaximumValue(20);
         this->graph->setYSteps(4);
+        this->graph->setValuePrecision(1);
         this->addElement(this->graph);
 
         // Get current time (will be set to start of range)
@@ -138,8 +139,8 @@ namespace Screen {
                     e.tm_mon = t.tm_mon;
                     e.tm_mday = Utils::Time::tmGetDaysInMonth(e);
                     s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
-                    float val = s->playtime/60/60.0;
-                    this->graph->setValue(i, std::round(val));
+                    double val = s->playtime/60/60.0;
+                    this->graph->setValue(i, val);
                     delete s;
                 }
                 break;
@@ -426,11 +427,7 @@ namespace Screen {
             if (percent < 0.01) {
                 str = "< 0.01%";
             } else {
-                str = std::to_string(percent);
-                while (str[str.length() - 3] != '.') {
-                    str = str.substr(0, str.length() - 1);
-                }
-                str += "%";
+                str = Utils::truncateToDecimalPlace(std::to_string(percent), 2) + "%";
             }
             ls->setPercentageString(str);
             NX::PlaySession ses = stats[i];

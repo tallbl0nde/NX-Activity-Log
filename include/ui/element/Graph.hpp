@@ -38,8 +38,12 @@ namespace CustomElm {
             // Label font size
             unsigned int labelFont;
 
+            // Precisions
+            unsigned int labelPrecision;
+            unsigned int valuePrecision;
+
             // Y-axis properties
-            unsigned int yMax;
+            double yMax;
 
             // Set to true to call below function (avoid a lot of redraws)
             bool needsUpdate;
@@ -58,7 +62,7 @@ namespace CustomElm {
             // Set the characteristics of each entry (pass index starting from 0 as first parameter)
             // Does nothing if outside range
             void setLabel(unsigned int, std::string);
-            void setValue(unsigned int, unsigned int);
+            void setValue(unsigned int, double);
 
             // Set the colour of all bars (+ values)
             void setBarColour(Aether::Colour);
@@ -72,8 +76,13 @@ namespace CustomElm {
             // Set font size of all labels
             void setFontSize(unsigned int);
 
+            // Set number of decimal points for label
+            void setLabelPrecision(unsigned int);
+            // Set number of decimal points for value
+            // Doesn't update current values!!
+            void setValuePrecision(unsigned int);
             // Set maximum y-axis value
-            void setMaximumValue(unsigned int);
+            void setMaximumValue(double);
             // Set number of steps on y-axis
             void setYSteps(unsigned int);
 

@@ -29,6 +29,13 @@ namespace Utils {
             b[i] = m[i].second;
         }
     }
+
+    // Round the given double to the specified number of decimal places
+    double roundToDecimalPlace(double, unsigned int);
+
+    // Truncate string to given decimal places (don't use on strings without a decimal!)
+    // Does nothing if outside of range or no decimal place
+    std::string truncateToDecimalPlace(std::string, unsigned int);
 };
 
 #endif
