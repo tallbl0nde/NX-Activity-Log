@@ -9,16 +9,11 @@ namespace Main {
     class Application;
 };
 
-// Graph display type
-enum class GraphDataType {
-    Playtime,
-    Launches
-};
-
 // Graph display period
 enum class GraphViewType {
-    Day,
-    Month
+    MinPerHour,      // Show minutes per hour in day
+    HourPerDay,      // Show hours per day in month
+    HourPerMonth     // Show hours per month in year
 };
 
 namespace Screen {
@@ -27,10 +22,6 @@ namespace Screen {
         private:
             // Pointer to app for theme
             Main::Application * app;
-
-            // Graph things
-            GraphDataType graphData;
-            GraphViewType graphView;
 
             // Creates relevant graph
             void createGraph();
@@ -55,11 +46,13 @@ namespace Screen {
             // Popuplist overlay (used for graph options)
             Aether::PopupList * popup;
 
+            // Graph period type
+            GraphViewType graphView;
+            // Start timestamp of graph range
+            struct tm startTime;
+
             // Prepare popup for graph period
             void setupGraphPeriod();
-
-            // Prepare popup for graph type
-            void setupGraphType();
 
             // Prepare msgbox for session help
             void setupSessionHelp();

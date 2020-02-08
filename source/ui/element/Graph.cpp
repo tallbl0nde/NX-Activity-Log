@@ -42,6 +42,10 @@ namespace CustomElm {
         this->setYSteps(5);
     }
 
+    unsigned int Graph::entries() {
+        return this->column.size();
+    }
+
     void Graph::setNumberOfEntries(unsigned int n) {
         if (n < this->column.size()) {
             // Delete excess entries

@@ -54,6 +54,8 @@ namespace CustomElm {
             // x, y, w, h + number of elements to initialise (can be changed later)
             Graph(int, int, int, int, unsigned int);
 
+            // Returns number of entries/columns
+            unsigned int entries();
             // Change number of entries
             // Increasing will set new entries "empty"
             // Decreasing will delete excess entries!
