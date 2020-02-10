@@ -1,5 +1,4 @@
 #include "AllActivity.hpp"
-#include "Time.hpp"
 
 namespace Screen {
     AllActivity::AllActivity(Main::Application * a) {

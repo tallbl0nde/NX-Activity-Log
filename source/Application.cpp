@@ -20,6 +20,15 @@ namespace Main {
             this->users.push_back(u);
         }
 
+        // Set view to today and by day
+        this->tm = Utils::Time::getTmForCurrentTime();
+        this->tmCopy = this->tm;
+        this->tm.tm_hour = 0;
+        this->tm.tm_min = 0;
+        this->tm.tm_sec = 0;
+        this->viewType = ViewPeriod::Day;
+        this->timeChanged_ = false;
+
         // Populate users vector
         if (!this->isUserPage_) {
             this->users = Utils::NX::getUserObjects();
@@ -36,6 +45,15 @@ namespace Main {
         this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
         this->display->setHighlightAnimation(Aether::Theme::Dark.highlightFunc);
         this->display->setShowFPS(true);
+
+        // Create overlays
+        this->dtpicker = nullptr;
+        this->periodpicker = new Aether::PopupList("View Activity");
+        this->periodpicker->setBackgroundColour(this->theme_->altBG());
+        this->periodpicker->setTextColour(this->theme_->text());
+        this->periodpicker->setLineColour(this->theme_->fg());
+        this->periodpicker->setHighlightColour(this->theme_->accent());
+        this->periodpicker->setListLineColour(this->theme_->mutedLine());
 
         // Setup screens
         this->scAllActivity = new Screen::AllActivity(this);
@@ -86,6 +104,54 @@ namespace Main {
         }
     }
 
+    void Application::createDatePicker() {
+        if (this->dtpicker != nullptr) {
+            delete this->dtpicker;
+        }
+        switch (this->viewType) {
+            case ViewPeriod::Day:
+                this->dtpicker = new Aether::DateTime("View Date", this->tm, Aether::DTFlag::Date);
+                break;
+
+            case ViewPeriod::Month:
+                this->dtpicker = new Aether::DateTime("View Month", this->tm, Aether::DTFlag::Month | Aether::DTFlag::Year);
+                break;
+
+            case ViewPeriod::Year:
+                this->dtpicker = new Aether::DateTime("View Year", this->tm, Aether::DTFlag::Year);
+                break;
+        }
+        this->dtpicker->setAllColours(this->theme_->altBG(), this->theme_->accent(), this->theme_->mutedText(), this->theme_->mutedText(), this->theme_->text());
+        this->addOverlay(this->dtpicker);
+    }
+
+    void Application::createPeriodPicker() {
+        this->periodpicker->close(false);
+        this->periodpicker->removeEntries();
+        this->periodpicker->addEntry("By Day", [this](){
+            if (this->viewType != ViewPeriod::Day) {
+                this->viewType = ViewPeriod::Day;
+                this->timeChanged_ = true;
+            }
+        }, this->viewType == ViewPeriod::Day);
+        this->periodpicker->addEntry("By Month", [this](){
+            if (this->viewType != ViewPeriod::Month) {
+                this->tm.tm_mday = 1;
+                this->viewType = ViewPeriod::Month;
+                this->timeChanged_ = true;
+            }
+        }, this->viewType == ViewPeriod::Month);
+        this->periodpicker->addEntry("By Year", [this](){
+            if (this->viewType != ViewPeriod::Year) {
+                this->tm.tm_mon = 0;
+                this->tm.tm_mday = 1;
+                this->viewType = ViewPeriod::Year;
+                this->timeChanged_ = true;
+            }
+        }, this->viewType == ViewPeriod::Year);
+        this->addOverlay(this->periodpicker);
+    }
+
     Config * Application::config() {
         return this->config_;
     }
@@ -96,6 +162,22 @@ namespace Main {
 
     Theme * Application::theme() {
         return this->theme_;
+    }
+
+    struct tm Application::time() {
+        return this->tm;
+    }
+
+    ViewPeriod Application::viewPeriod() {
+        return this->viewType;
+    }
+
+    bool Application::timeChanged() {
+        if (this->timeChanged_) {
+            this->timeChanged_ = false;
+            return true;
+        }
+        return false;
     }
 
     NX::User * Application::activeUser() {
@@ -123,7 +205,13 @@ namespace Main {
     }
 
     void Application::run() {
+        // Do main loop
         while (this->display->loop()) {
+            // Check for variable changes
+            if (Utils::Time::areDifferentDates(this->tm, this->tmCopy)) {
+                this->timeChanged_ = true;
+                this->tmCopy = this->tm;
+            }
         }
     }
 
@@ -148,6 +236,12 @@ namespace Main {
         delete this->config_;
         delete this->playdata_;
         delete this->theme_;
+
+        // Delete overlays
+        if (this->dtpicker != nullptr) {
+            delete this->dtpicker;
+        }
+        delete this->periodpicker;
 
         // Delete screens
         delete this->scAllActivity;

@@ -5,6 +5,7 @@
 #include "NX.hpp"
 #include "PlayData.hpp"
 #include "Theme.hpp"
+#include "Time.hpp"
 
 #include "AllActivity.hpp"
 #include "Details.hpp"
@@ -19,6 +20,13 @@ namespace Screen {
     class RecentActivity;
     class Settings;
     class UserSelect;
+};
+
+// Period to view recent stats for
+enum class ViewPeriod {
+    Day,
+    Month,
+    Year
 };
 
 namespace Main {
@@ -52,6 +60,15 @@ namespace Main {
             // Stores current theme colours
             Theme * theme_;
 
+            // Time to view recent activity, etc...
+            struct tm tm;
+            // Copy of above struct used to determine if changed
+            struct tm tmCopy;
+            // Period of time to view
+            ViewPeriod viewType;
+            // Set true when either have been changed
+            bool timeChanged_;
+
             // Set true if launched via user page
             bool isUserPage_;
             // Vector of users
@@ -63,6 +80,11 @@ namespace Main {
             std::vector<NX::Title *> titles;
             // Index of "active" title (used for specific screens)
             unsigned int titleIdx;
+
+            // Date picker overlay
+            Aether::DateTime * dtpicker;
+            // ViewPeriod picker
+            Aether::PopupList * periodpicker;
 
         public:
             // Constructor inits Aether, screens + other objects
@@ -78,12 +100,24 @@ namespace Main {
             // Pass screen enum to change to it
             void setScreen(ScreenID);
 
+            // Create date picker overlay
+            void createDatePicker();
+            // Create view period picker overlay
+            void createPeriodPicker();
+
             // Returns Config object
             Config * config();
             // Returns PlayData object
             NX::PlayData * playdata();
             // Returns theme object
             Theme * theme();
+
+            // Returns copy of tm struct (can only be set by this class)
+            struct tm time();
+            // Return current viewperiod (also only set by this class)
+            ViewPeriod viewPeriod();
+            // Has the time struct or period been changed?
+            bool timeChanged();
 
             // Returns isUserPage_
             bool isUserPage();

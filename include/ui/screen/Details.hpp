@@ -43,16 +43,6 @@ namespace Screen {
 
             // MessageBox overlay (used for multiple things)
             Aether::MessageBox * msgbox;
-            // Popuplist overlay (used for graph options)
-            Aether::PopupList * popup;
-
-            // Graph period type
-            GraphViewType graphView;
-            // Start timestamp of graph range
-            struct tm startTime;
-
-            // Prepare popup for graph period
-            void setupGraphPeriod();
 
             // Prepare msgbox for session help
             void setupSessionHelp();
@@ -64,6 +54,9 @@ namespace Screen {
         public:
             // Sets up elements
             Details(Main::Application *);
+
+            // Update checks for change in application's time and regenerates graph
+            void update(uint32_t);
 
             // Create user + title reliant elements
             void onLoad();

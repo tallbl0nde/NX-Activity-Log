@@ -3,6 +3,8 @@
 
 // Padding between xAxis and labels
 #define LABEL_PADDING 10
+// Y-axis labels font size
+#define Y_LABEL_FONT_SIZE 16
 
 namespace CustomElm {
     Graph::Graph(int x, int y, int w, int h, unsigned int n) : Element(x, y, w, h) {
@@ -199,7 +201,7 @@ namespace CustomElm {
                 this->steps.push_back(r);
 
                 // Create label element
-                Aether::Text * t = new Aether::Text(this->x(), this->y(), "", this->labelFont);
+                Aether::Text * t = new Aether::Text(this->x(), this->y(), "", Y_LABEL_FONT_SIZE);
                 t->setColour(this->labelC);
                 this->addElement(t);
                 this->yLabel.push_back(t);
@@ -235,6 +237,7 @@ namespace CustomElm {
         for (size_t i = 0; i < this->yLabel.size(); i++) {
             double val = ((i+1)/(double)this->yLabel.size()) * this->yMax;
             val = Utils::roundToDecimalPlace(val, this->labelPrecision);
+            this->yLabel[i]->setColour(this->labelC);
             this->yLabel[i]->setString(Utils::truncateToDecimalPlace(std::to_string(val), this->labelPrecision));
         }
 
@@ -269,6 +272,7 @@ namespace CustomElm {
         gap = this->xAxis->w() / this->column.size();
         for (size_t i = 0; i < this->column.size(); i++) {
             int x = this->xAxis->x() + (gap*i);
+            this->column[i].label->setFontSize(this->labelFont);
             this->column[i].label->setXY(x + 1 + (gap - this->column[i].label->w())/2, this->xAxis->y() + LABEL_PADDING);
 
             // Recreate bars + values to ensure they're on top of horizontal lines
@@ -285,6 +289,11 @@ namespace CustomElm {
                 this->addElement(this->column[i].value);
             }
             this->column[i].value->setXY(x + 1 + (gap - this->column[i].value->w())/2, this->column[i].bar->y() - this->column[i].value->h() - LABEL_PADDING/2);
+            if (tmp == "0") {
+                this->column[i].value->setHidden(true);
+            } else {
+                this->column[i].value->setHidden(false);
+            }
         }
 
         // 5: Position x axis separators

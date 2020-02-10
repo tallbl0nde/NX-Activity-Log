@@ -1,6 +1,5 @@
 #include "Details.hpp"
 #include "ListSession.hpp"
-#include "Time.hpp"
 #include "Utils.hpp"
 
 // Values for summary appearance
@@ -24,7 +23,8 @@ namespace Screen {
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
         c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
-        c->addItem(new Aether::ControlItem(Aether::Button::X, "Graph Type"));
+        c->addItem(new Aether::ControlItem(Aether::Button::X, "View Date"));
+        c->addItem(new Aether::ControlItem(Aether::Button::Y, "View By"));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
         this->graphHeading = new Aether::Text(0, 120, "", 22);
@@ -52,7 +52,10 @@ namespace Screen {
             this->app->setScreen(Main::ScreenID::AllActivity);
         });
         this->onButtonPress(Aether::Button::X, [this](){
-            this->setupGraphPeriod();
+            this->app->createDatePicker();
+        });
+        this->onButtonPress(Aether::Button::Y, [this](){
+            this->app->createPeriodPicker();
         });
         this->onButtonPress(Aether::Button::ZR, [this](){
             this->app->setHoldDelay(30);
@@ -66,17 +69,18 @@ namespace Screen {
         this->onButtonRelease(Aether::Button::ZL, [this](){
             this->app->setHoldDelay(100);
         });
+    }
 
-        // Set default graph view
-        this->graphView = GraphViewType::HourPerDay;
-        this->startTime = Utils::Time::getTmForCurrentTime();
+    void Details::update(uint32_t dt) {
+        if (this->app->timeChanged()) {
+            this->createGraph();
+        }
+        Screen::update(dt);
     }
 
     void Details::createGraph() {
         // Create graph
-        if (this->graph != nullptr) {
-            this->removeElement(this->graph);
-        }
+        this->removeElement(this->graph);
         this->graph = new CustomElm::Graph(660, 190, 560, 320, 2);
         this->graph->setBarColour(this->app->theme()->accent());
         this->graph->setLabelColour(this->app->theme()->text());
@@ -86,35 +90,39 @@ namespace Screen {
 
         // Setup graph columns + labels
         std::string heading = "Activity for ";
-        switch (this->graphView) {
-            case GraphViewType::MinPerHour:
-                heading += Utils::Time::tmToString(this->startTime, true, true, !(this->startTime.tm_year == Utils::Time::getTmForCurrentTime().tm_year));
+        struct tm tm = this->app->time();
+        switch (this->app->viewPeriod()) {
+            case ViewPeriod::Day:
+                heading += Utils::Time::tmToString(tm, true, true, !(tm.tm_year == Utils::Time::getTmForCurrentTime().tm_year));
+                this->graph->setFontSize(12);
                 this->graph->setMaximumValue(60);
                 this->graph->setYSteps(6);
                 this->graph->setValuePrecision(0);
                 this->graph->setNumberOfEntries(24);
                 this->graph->setLabel(0, "12am");
-                for (int i = 1; i < 12; i++) {
-                    this->graph->setLabel(i, std::to_string(i) + "am");
-                }
+                this->graph->setLabel(3, "3am");
+                this->graph->setLabel(6, "6am");
+                this->graph->setLabel(9, "9am");
                 this->graph->setLabel(12, "12pm");
-                for (int i = 13; i < 24; i++) {
-                    this->graph->setLabel(i, std::to_string(i - 12) + "pm");
-                }
+                this->graph->setLabel(15, "3pm");
+                this->graph->setLabel(18, "6pm");
+                this->graph->setLabel(21, "9pm");
                 break;
 
-            case GraphViewType::HourPerDay: {
-                heading += Utils::Time::tmToString(this->startTime, false, true, true);
-                unsigned int c = Utils::Time::tmGetDaysInMonth(this->startTime);
+            case ViewPeriod::Month: {
+                heading += Utils::Time::tmToString(tm, false, true, true);
+                unsigned int c = Utils::Time::tmGetDaysInMonth(tm);
+                this->graph->setFontSize(12);
                 this->graph->setNumberOfEntries(c);
-                for (unsigned int i = 0; i < c; i++) {
-                    this->graph->setLabel(i, std::to_string(i + 1));
+                for (unsigned int i = 0; i < c; i+=3) {
+                    this->graph->setLabel(i, std::to_string(i + 1) + Utils::Time::getDateSuffix(i + 1));
                 }
                 break;
             }
 
-            case GraphViewType::HourPerMonth:
-                heading += Utils::Time::tmToString(this->startTime, false, false, true);
+            case ViewPeriod::Year:
+                heading += Utils::Time::tmToString(tm, false, false, true);
+                this->graph->setFontSize(14);
                 this->graph->setNumberOfEntries(12);
                 for (int i = 0; i < 12; i++) {
                     this->graph->setLabel(i, Utils::Time::getShortMonthString(i));
@@ -123,10 +131,10 @@ namespace Screen {
         }
 
         // Read play time and set graph values
-        struct tm t = this->startTime;
+        struct tm t = tm;
         unsigned int totalSecs = 0;
-        switch (this->graphView) {
-            case GraphViewType::MinPerHour: {
+        switch (this->app->viewPeriod()) {
+            case ViewPeriod::Day: {
                 t.tm_min = 0;
                 t.tm_sec = 0;
                 struct tm e = t;
@@ -144,7 +152,7 @@ namespace Screen {
                 break;
             }
 
-            case GraphViewType::HourPerDay: {
+            case ViewPeriod::Month: {
                 t.tm_hour = 0;
                 t.tm_min = 0;
                 t.tm_sec = 0;
@@ -177,7 +185,7 @@ namespace Screen {
                 break;
             }
 
-            case GraphViewType::HourPerMonth: {
+            case ViewPeriod::Year: {
                 t.tm_mday = 1;
                 t.tm_hour = 0;
                 t.tm_min = 0;
@@ -216,13 +224,13 @@ namespace Screen {
         // Set headings etc...
         this->graphHeading->setString(heading);
         this->graphHeading->setX(940 - this->graphHeading->w()/2);
-        switch (this->graphView) {
-            case GraphViewType::MinPerHour:
+        switch (this->app->viewPeriod()) {
+            case ViewPeriod::Day:
                 this->graphSubheading->setString("Play Time (in minutes)");
                 break;
 
-            case GraphViewType::HourPerDay:
-            case GraphViewType::HourPerMonth:
+            case ViewPeriod::Month:
+            case ViewPeriod::Year:
                 this->graphSubheading->setString("Play Time (in hours)");
                 break;
         }
@@ -231,38 +239,13 @@ namespace Screen {
         this->graphTotal->setX(800 - this->graphTotal->w()/2);
         this->graphTotalSub->setString(Utils::Time::playtimeToString(totalSecs, ", "));
         this->graphTotalSub->setX(800 - this->graphTotalSub->w()/2);
-        this->graphPercentage->setString("Percentage of Overall");
+        this->graphPercentage->setString("Percentage of Total");
         this->graphPercentage->setX(1080 - this->graphPercentage->w()/2);
         NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
         double percent = 100 * (totalSecs / (double)ps->playtime);
         delete ps;
         this->graphPercentageSub->setString(Utils::truncateToDecimalPlace(std::to_string(Utils::roundToDecimalPlace(percent, 2)), 2) + "%");
         this->graphPercentageSub->setX(1080 - this->graphPercentageSub->w()/2);
-    }
-
-    void Details::setupGraphPeriod() {
-        if (this->popup != nullptr) {
-            delete this->popup;
-        }
-        this->popup = new Aether::PopupList("Graph Activity");
-        this->popup->setBackgroundColour(this->app->theme()->altBG());
-        this->popup->setTextColour(this->app->theme()->text());
-        this->popup->setLineColour(this->app->theme()->fg());
-        this->popup->setHighlightColour(this->app->theme()->accent());
-        this->popup->setListLineColour(this->app->theme()->mutedLine());
-        this->popup->addEntry("By Day", [this](){
-            this->graphView = GraphViewType::MinPerHour;
-            this->createGraph();
-        }, this->graphView == GraphViewType::MinPerHour);
-        this->popup->addEntry("By Month", [this](){
-            this->graphView = GraphViewType::HourPerDay;
-            this->createGraph();
-        }, this->graphView == GraphViewType::HourPerDay);
-        this->popup->addEntry("By Year", [this](){
-            this->graphView = GraphViewType::HourPerMonth;
-            this->createGraph();
-        }, this->graphView == GraphViewType::HourPerMonth);
-        this->app->addOverlay(this->popup);
     }
 
     void Details::setupSessionHelp() {
@@ -517,7 +500,6 @@ namespace Screen {
         // Create graph
         this->graph = nullptr;
         this->createGraph();
-        this->popup = nullptr;
     }
 
     void Details::onUnload() {
@@ -528,8 +510,5 @@ namespace Screen {
         this->removeElement(this->userimage);
         this->removeElement(this->username);
         delete this->msgbox;
-        if (this->popup != nullptr) {
-            delete this->popup;
-        }
     }
 };
