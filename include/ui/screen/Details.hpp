@@ -17,8 +17,15 @@ namespace Screen {
             // Pointer to app for theme
             Main::Application * app;
 
-            // Creates relevant graph
-            void createGraph();
+            // Updates graph if data matching current time range
+            void updateGraph();
+            // Updates the list of play sessions matching current time range
+            void updateSessions();
+            // Element which marks top of sessions
+            Aether::Element * topElm;
+
+            // Container holding heading and L/R
+            Aether::Container * header;
 
             // Pointers to elements
             CustomElm::Graph * graph;
@@ -26,8 +33,12 @@ namespace Screen {
             Aether::Text * graphSubheading;
             Aether::Text * graphTotal;
             Aether::Text * graphTotalSub;
-            Aether::Text * graphPercentage;
-            Aether::Text * graphPercentageSub;
+
+            Aether::Text * playtime;
+            Aether::Text * avgplaytime;
+            Aether::Text * timeplayed;
+            Aether::Text * firstplayed;
+            Aether::Text * lastplayed;
 
             Aether::Image * icon;
             Aether::List * list;
