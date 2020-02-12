@@ -1,0 +1,90 @@
+#include "PlaySession.hpp"
+
+#define WIDTH 800
+
+namespace CustomOvl {
+    PlaySession::PlaySession() : Overlay() {
+        // Create elements
+        this->rect = new Aether::Rectangle(this->x() + (this->w() - WIDTH)/2, this->y(), WIDTH, this->h());
+        this->addElement(this->rect);
+        this->title = new Aether::Text(this->rect->x() + 50, this->rect->y() + 45, "Play Session Details", 28);
+        this->title->setY(this->title->y() - this->title->h()/2);
+        this->addElement(this->title);
+        this->top = new Aether::Rectangle(this->rect->x() + 30, this->rect->y() + 87, this->rect->w() - 60, 1);
+        this->addElement(this->top);
+        this->bottom = new Aether::Rectangle(this->rect->x() + 30, this->rect->y() + 647, this->rect->w() - 60, 1);
+        this->addElement(this->bottom);
+        this->sep = new Aether::Rectangle(this->rect->x() + 30, this->bottom->y() - 110, this->bottom->w(), 1);
+        this->addElement(this->sep);
+        this->ctrl = new Aether::Controls(this->rect->x() + 45, 647, this->rect->w() - 90);
+        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, "Close"));
+        this->addElement(this->ctrl);
+
+        this->list = nullptr;
+        this->col = Aether::Colour{255, 255, 255, 255};
+
+        this->length = new Aether::Text(this->rect->x() + 3*this->rect->w()/4, this->bottom->y() - 80, "Session Length", 20);
+        this->length->setX(this->length->x() - this->length->w()/2);
+        this->addElement(this->length);
+        this->lengthSub = new Aether::Text(this->rect->x() + 3*this->rect->w()/4, this->bottom->y() - 50, "", 18);
+        this->addElement(this->lengthSub);
+        this->playtime = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 80, "Total Play Time", 20);
+        this->playtime->setX(this->playtime->x() - this->playtime->w()/2);
+        this->addElement(this->playtime);
+        this->playtimeSub = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 50, "", 18);
+        this->addElement(this->playtimeSub);
+
+        // Close on B
+        this->onButtonPress(Aether::Button::B, [this](){
+            this->close(true);
+            this->removeElement(this->list);
+            this->list = nullptr;
+        });
+    }
+
+    void PlaySession::addListItem(Aether::Element * e) {
+        if (this->list == nullptr) {
+            this->list = new Aether::List(this->rect->x(), this->top->y() + 1, this->rect->w() - 50, this->sep->y() - this->top->y() - 1);
+            this->list->setScrollBarColour(this->col);
+            this->addElement(this->list);
+            this->setFocussed(this->list);
+        }
+        this->list->addElement(e);
+    }
+
+    void PlaySession::setLength(std::string s) {
+        this->lengthSub->setString(s);
+        this->lengthSub->setX(this->rect->x() + 3*this->rect->w()/4 - this->lengthSub->w()/2);
+    }
+
+    void PlaySession::setPlaytime(std::string s) {
+        this->playtimeSub->setString(s);
+        this->playtimeSub->setX(this->rect->x() + this->rect->w()/4 - this->playtimeSub->w()/2);
+    }
+
+    void PlaySession::setAccentColour(Aether::Colour c) {
+        this->lengthSub->setColour(c);
+        this->playtimeSub->setColour(c);
+    }
+
+    void PlaySession::setBackgroundColour(Aether::Colour c) {
+        this->rect->setColour(c);
+    }
+
+    void PlaySession::setLineColour(Aether::Colour c) {
+        this->top->setColour(c);
+        this->bottom->setColour(c);
+        this->sep->setColour(c);
+    }
+
+    void PlaySession::setMutedLineColour(Aether::Colour c) {
+        this->col = c;
+    }
+
+    void PlaySession::setTextColour(Aether::Colour c) {
+        this->length->setColour(c);
+        this->playtime->setColour(c);
+        this->title->setColour(c);
+        this->ctrl->setColour(c);
+    }
+};

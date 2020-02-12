@@ -24,8 +24,8 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	NX-Activity-Log
 BUILD		:=	build
-SOURCES		:=	source source/nx source/ui source/ui/screen source/ui/element source/utils
-INCLUDES	:=	include include/nx include/ui include/ui/screen include/ui/element include/utils
+SOURCES		:=	source source/nx source/ui source/ui/screen source/ui/element source/ui/overlay source/utils
+INCLUDES	:=	include include/nx include/ui include/ui/screen include/ui/element include/ui/overlay include/utils
 ROMFS		:=	romfs
 OUTDIR		:=	sdcard
 FDIR		:=	forwarder

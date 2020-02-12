@@ -303,26 +303,13 @@ namespace Screen {
     }
 
     void Details::setupSessionBreakdown(NX::PlaySession s) {
-        this->msgbox->emptyBody();
-        this->msgbox->close(false);
+        this->panel->close(false);
+        this->panel->setPlaytime(Utils::Time::playtimeToString(s.playtime, " and "));
+        this->panel->setLength(Utils::Time::playtimeToString(s.endTimestamp - s.startTimestamp, " and "));
 
-        // Create headings
-        int bw, bh;
-        this->msgbox->getBodySize(&bw, &bh);
-        Aether::Element * body = new Aether::Element(0, 0, bw, bh);
-        Aether::Text * t = new Aether::Text(50, 40, "Play Session Details", 26);
-        t->setColour(this->app->theme()->text());
-        body->addElement(t);
-        t = new Aether::Text(50, t->y() + t->h() + 10, "Time spent in-game: " + Utils::Time::playtimeToString(s.playtime, " and "), 22);
-        t->setColour(this->app->theme()->accent());
-        body->addElement(t);
-        t = new Aether::Text(50, t->y() + t->h() + 10, "Session length: " + Utils::Time::playtimeToString(s.endTimestamp - s.startTimestamp, " and "), 20);
-        t->setColour(this->app->theme()->mutedText());
-        body->addElement(t);
-
+        // Container element to prevent stretching of text in list
         std::vector<NX::PlayEvent> events = this->app->playdata()->getPlayEvents(s.startTimestamp, s.endTimestamp, this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
         struct tm lastTime = Utils::Time::getTm(0);
-        int Y = t->y() + t->h() + 25;
         time_t lastTs = 0;
         for (size_t i = 0; i < events.size(); i++) {
             // Print time of event in 12 hour format
@@ -336,10 +323,11 @@ namespace Screen {
             // Add date string if new day
             if (Utils::Time::areDifferentDates(lastTime, time)) {
                 struct tm now = Utils::Time::getTmForCurrentTime();
-                t = new Aether::Text(50, Y, Utils::Time::tmToString(time, true, true, (time.tm_year != now.tm_year)), 18);
+                Aether::Text * t = new Aether::Text(0, 10, Utils::Time::tmToString(time, true, true, (time.tm_year != now.tm_year)), 18);
                 t->setColour(this->app->theme()->text());
-                body->addElement(t);
-                Y += t->h() + 10;
+                Aether::Element * c = new Aether::Element(0, 0, 100, t->h() + 20);
+                c->addElement(t);
+                this->panel->addListItem(c);
             }
             lastTime = time;
 
@@ -378,25 +366,22 @@ namespace Screen {
             }
 
             // Create + add string element
-            t = new Aether::Text(50, Y, str, 18);
+            Aether::Text * t = new Aether::Text(0, 0, str, 18);
             t->setColour(this->app->theme()->mutedText());
-            body->addElement(t);
-            Y += t->h() + 10;
+            Aether::Element * c = new Aether::Element(0, 0, 100, t->h() + 5);
+            c->addElement(t);
 
             // Add playtime from last "burst"
             if (addPlaytime) {
                 t = new Aether::Text(t->x() + t->w() + 10, t->y() + t->h()/2, "(" + Utils::Time::playtimeToString(events[i].steadyTimestamp - lastTs, " and ") + ")", 16);
                 t->setY(t->y() - t->h()/2);
                 t->setColour(this->app->theme()->accent());
-                body->addElement(t);
+                c->addElement(t);
             }
+            this->panel->addListItem(c);
         }
 
-        // Set body element and show message box
-        body->setWH(bw, t->y() + t->h() + 40);
-        this->msgbox->setBodySize(body->w(), body->h());
-        this->msgbox->setBody(body);
-        this->app->addOverlay(this->msgbox);
+        this->app->addOverlay(this->panel);
     }
 
     void Details::onLoad() {
@@ -531,6 +516,14 @@ namespace Screen {
         this->msgbox->setRectangleColour(this->app->theme()->altBG());
         this->msgbox->setTextColour(this->app->theme()->accent());
 
+        // Create blank panel
+        this->panel = new CustomOvl::PlaySession();
+        this->panel->setAccentColour(this->app->theme()->accent());
+        this->panel->setBackgroundColour(this->app->theme()->altBG());
+        this->panel->setLineColour(this->app->theme()->fg());
+        this->panel->setMutedLineColour(this->app->theme()->mutedLine());
+        this->panel->setTextColour(this->app->theme()->text());
+
         // Create graph
         this->graph = new CustomElm::Graph(660, 190, 560, 320, 2);
         this->graph->setBarColour(this->app->theme()->accent());
@@ -548,5 +541,6 @@ namespace Screen {
         this->removeElement(this->userimage);
         this->removeElement(this->username);
         delete this->msgbox;
+        delete this->panel;
     }
 };

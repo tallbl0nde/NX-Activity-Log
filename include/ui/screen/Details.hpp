@@ -3,17 +3,11 @@
 
 #include "Application.hpp"
 #include "Graph.hpp"
+#include "PlaySession.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {
     class Application;
-};
-
-// Graph display period
-enum class GraphViewType {
-    MinPerHour,      // Show minutes per hour in day
-    HourPerDay,      // Show hours per day in month
-    HourPerMonth     // Show hours per month in year
 };
 
 namespace Screen {
@@ -43,11 +37,13 @@ namespace Screen {
 
             // MessageBox overlay (used for multiple things)
             Aether::MessageBox * msgbox;
+            // Popup for session breakdown
+            CustomOvl::PlaySession * panel;
 
             // Prepare msgbox for session help
             void setupSessionHelp();
 
-            // Prepare msgbox for session breakdown
+            // Prepare panel for session breakdown
             // Takes PlaySession
             void setupSessionBreakdown(NX::PlaySession);
 
