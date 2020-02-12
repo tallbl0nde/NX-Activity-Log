@@ -27,6 +27,7 @@ namespace Screen {
         c->addItem(new Aether::ControlItem(Aether::Button::Y, "View By"));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
+        this->graph = nullptr;
         this->graphHeading = new Aether::Text(0, 120, "", 22);
         this->graphHeading->setColour(this->app->theme()->text());
         this->addElement(this->graphHeading);
@@ -34,18 +35,47 @@ namespace Screen {
         this->graphSubheading->setColour(this->app->theme()->mutedText());
         this->graphSubheading->setX(this->graphSubheading->x() - this->graphSubheading->w()/2);
         this->addElement(this->graphSubheading);
-        this->graphTotal = new Aether::Text(0, 550, "", 20);
+        this->graphTotal = new Aether::Text(0, 550, "Total Play Time", 20);
         this->graphTotal->setColour(this->app->theme()->text());
         this->addElement(this->graphTotal);
         this->graphTotalSub = new Aether::Text(0, 580, "", 18);
         this->graphTotalSub->setColour(this->app->theme()->accent());
         this->addElement(this->graphTotalSub);
-        this->graphPercentage = new Aether::Text(0, 550, "", 20);
+        this->graphPercentage = new Aether::Text(0, 550, "Percentage of Total", 20);
         this->graphPercentage->setColour(this->app->theme()->text());
         this->addElement(this->graphPercentage);
         this->graphPercentageSub = new Aether::Text(0, 580, "", 18);
         this->graphPercentageSub->setColour(this->app->theme()->accent());
         this->addElement(this->graphPercentageSub);
+
+        // Add L/R button elements
+        Aether::Element * e = new Aether::Element(650, 120, 80, 50);
+        Aether::Text * t = new Aether::Text(e->x() + 10, e->y(), "\uE0E4", 20, Aether::FontType::Extended); // L
+        t->setY(e->y() + (e->h() - t->h())/2);
+        t->setColour(this->app->theme()->mutedText());
+        e->addElement(t);
+        t = new Aether::Text(e->x(), e->y(), "\uE149", 26, Aether::FontType::Extended); // <
+        t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
+        t->setColour(this->app->theme()->text());
+        e->addElement(t);
+        e->setCallback([this](){
+            this->app->decreaseDate();
+        });
+        this->addElement(e);
+
+        e = new Aether::Element(1150, 120, 80, 50);
+        t = new Aether::Text(e->x() + 10, e->y(), "\uE14A", 26, Aether::FontType::Extended); // >
+        t->setY(e->y() + (e->h() - t->h())/2);
+        t->setColour(this->app->theme()->text());
+        e->addElement(t);
+        t = new Aether::Text(e->x(), e->y(), "\uE0E5", 20, Aether::FontType::Extended); // R
+        t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
+        t->setColour(this->app->theme()->mutedText());
+        e->addElement(t);
+        e->setCallback([this](){
+            this->app->increaseDate();
+        });
+        this->addElement(e);
 
         // Add key callbacks
         this->onButtonPress(Aether::Button::B, [this](){
@@ -56,6 +86,12 @@ namespace Screen {
         });
         this->onButtonPress(Aether::Button::Y, [this](){
             this->app->createPeriodPicker();
+        });
+        this->onButtonPress(Aether::Button::R, [this](){
+            this->app->increaseDate();
+        });
+        this->onButtonPress(Aether::Button::L, [this](){
+            this->app->decreaseDate();
         });
         this->onButtonPress(Aether::Button::ZR, [this](){
             this->app->setHoldDelay(30);
@@ -79,15 +115,6 @@ namespace Screen {
     }
 
     void Details::createGraph() {
-        // Create graph
-        this->removeElement(this->graph);
-        this->graph = new CustomElm::Graph(660, 190, 560, 320, 2);
-        this->graph->setBarColour(this->app->theme()->accent());
-        this->graph->setLabelColour(this->app->theme()->text());
-        this->graph->setLineColour(this->app->theme()->mutedLine());
-        this->graph->setValuePrecision(1);
-        this->addElement(this->graph);
-
         // Setup graph columns + labels
         std::string heading = "Activity for ";
         struct tm tm = this->app->time();
@@ -113,6 +140,7 @@ namespace Screen {
                 heading += Utils::Time::tmToString(tm, false, true, true);
                 unsigned int c = Utils::Time::tmGetDaysInMonth(tm);
                 this->graph->setFontSize(12);
+                this->graph->setValuePrecision(1);
                 this->graph->setNumberOfEntries(c);
                 for (unsigned int i = 0; i < c; i+=3) {
                     this->graph->setLabel(i, std::to_string(i + 1) + Utils::Time::getDateSuffix(i + 1));
@@ -123,6 +151,7 @@ namespace Screen {
             case ViewPeriod::Year:
                 heading += Utils::Time::tmToString(tm, false, false, true);
                 this->graph->setFontSize(14);
+                this->graph->setValuePrecision(1);
                 this->graph->setNumberOfEntries(12);
                 for (int i = 0; i < 12; i++) {
                     this->graph->setLabel(i, Utils::Time::getShortMonthString(i));
@@ -235,14 +264,19 @@ namespace Screen {
                 break;
         }
         this->graphSubheading->setX(940- this->graphSubheading->w()/2);
-        this->graphTotal->setString("Total Play Time");
         this->graphTotal->setX(800 - this->graphTotal->w()/2);
-        this->graphTotalSub->setString(Utils::Time::playtimeToString(totalSecs, ", "));
+        if (totalSecs == 0) {
+            this->graphTotalSub->setString("0 seconds");
+        } else {
+            this->graphTotalSub->setString(Utils::Time::playtimeToString(totalSecs, ", "));
+        }
         this->graphTotalSub->setX(800 - this->graphTotalSub->w()/2);
-        this->graphPercentage->setString("Percentage of Total");
         this->graphPercentage->setX(1080 - this->graphPercentage->w()/2);
         NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
-        double percent = 100 * (totalSecs / (double)ps->playtime);
+        double percent = 0.0;
+        if (ps->playtime != 0) {
+            percent = 100 * (totalSecs / (double)ps->playtime);
+        }
         delete ps;
         this->graphPercentageSub->setString(Utils::truncateToDecimalPlace(std::to_string(Utils::roundToDecimalPlace(percent, 2)), 2) + "%");
         this->graphPercentageSub->setX(1080 - this->graphPercentageSub->w()/2);
@@ -498,7 +532,11 @@ namespace Screen {
         this->msgbox->setTextColour(this->app->theme()->accent());
 
         // Create graph
-        this->graph = nullptr;
+        this->graph = new CustomElm::Graph(660, 190, 560, 320, 2);
+        this->graph->setBarColour(this->app->theme()->accent());
+        this->graph->setLabelColour(this->app->theme()->text());
+        this->graph->setLineColour(this->app->theme()->mutedLine());
+        this->addElement(this->graph);
         this->createGraph();
     }
 

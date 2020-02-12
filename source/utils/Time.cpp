@@ -139,6 +139,72 @@ namespace Utils::Time {
         return false;
     }
 
+    struct tm decreaseTm(struct tm t, char c) {
+        switch (c) {
+            case 'D':
+                t.tm_mday--;
+                if (t.tm_mday < 1) {
+                    t.tm_mon--;
+                    if (t.tm_mon < 0) {
+                        t.tm_year--;
+                        t.tm_mon = 11;
+                    }
+                    t.tm_mday += tmGetDaysInMonth(t);
+                }
+                break;
+
+            case 'M':
+                t.tm_mon--;
+                if (t.tm_mon < 0) {
+                    t.tm_year--;
+                    t.tm_mon = 11;
+                }
+                break;
+
+            case 'Y':
+                t.tm_year--;
+                break;
+
+            default:
+                break;
+        }
+
+        return t;
+    }
+
+    struct tm increaseTm(struct tm t, char c) {
+        switch (c) {
+            case 'D':
+                t.tm_mday++;
+                if (t.tm_mday > tmGetDaysInMonth(t)) {
+                    t.tm_mon++;
+                    if (t.tm_mon > 11) {
+                        t.tm_year++;
+                        t.tm_mon = 0;
+                    }
+                    t.tm_mday = 1;
+                }
+                break;
+
+            case 'M':
+                t.tm_mon++;
+                if (t.tm_mon > 11) {
+                    t.tm_year++;
+                    t.tm_mon = 0;
+                }
+                break;
+
+            case 'Y':
+                t.tm_year++;
+                break;
+
+            default:
+                break;
+        }
+
+        return t;
+    }
+
     struct tm getTmForCurrentTime() {
         time_t t = std::time(nullptr);
         struct tm * tmp = std::localtime(&t);

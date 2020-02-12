@@ -24,6 +24,10 @@ namespace Utils::Time {
     // Return true if two structs have different dates
     bool areDifferentDates(struct tm, struct tm);
 
+    // Dec/Inc tm by one D/M/Y
+    struct tm decreaseTm(struct tm, char);
+    struct tm increaseTm(struct tm, char);
+
     // Get time struct for current time
     struct tm getTmForCurrentTime();
 

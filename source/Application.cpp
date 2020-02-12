@@ -104,6 +104,58 @@ namespace Main {
         }
     }
 
+    void Application::decreaseDate() {
+        // All prevent going before 2000
+        switch (this->viewType) {
+            case ViewPeriod::Day:
+                if (this->tm.tm_year == 100 && this->tm.tm_mon == 0 && this->tm.tm_mday == 1) {
+                    return;
+                }
+                this->tm = Utils::Time::decreaseTm(this->tm, 'D');
+                break;
+
+            case ViewPeriod::Month:
+                if (this->tm.tm_year == 100 && this->tm.tm_mon == 0) {
+                    return;
+                }
+                this->tm = Utils::Time::decreaseTm(this->tm, 'M');
+                break;
+
+            case ViewPeriod::Year:
+                if (this->tm.tm_year == 100) {
+                    return;
+                }
+                this->tm = Utils::Time::decreaseTm(this->tm, 'Y');
+                break;
+        }
+    }
+
+    void Application::increaseDate() {
+        // All prevent going past 2060 (same as switch)
+        switch (this->viewType) {
+            case ViewPeriod::Day:
+                if (this->tm.tm_year == 160 && this->tm.tm_mon == 11 && this->tm.tm_mday == 31) {
+                    return;
+                }
+                this->tm = Utils::Time::increaseTm(this->tm, 'D');
+                break;
+
+            case ViewPeriod::Month:
+                if (this->tm.tm_year == 160 && this->tm.tm_mon == 11) {
+                    return;
+                }
+                this->tm = Utils::Time::increaseTm(this->tm, 'M');
+                break;
+
+            case ViewPeriod::Year:
+                if (this->tm.tm_year == 160) {
+                    return;
+                }
+                this->tm = Utils::Time::increaseTm(this->tm, 'Y');
+                break;
+        }
+    }
+
     void Application::createDatePicker() {
         if (this->dtpicker != nullptr) {
             delete this->dtpicker;

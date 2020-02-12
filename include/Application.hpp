@@ -100,6 +100,9 @@ namespace Main {
             // Pass screen enum to change to it
             void setScreen(ScreenID);
 
+            // Decrease/increase date tm by one d/m/y
+            void decreaseDate();
+            void increaseDate();
             // Create date picker overlay
             void createDatePicker();
             // Create view period picker overlay
