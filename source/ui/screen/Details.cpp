@@ -554,6 +554,7 @@ namespace Screen {
         this->graph->setBarColour(this->app->theme()->accent());
         this->graph->setLabelColour(this->app->theme()->text());
         this->graph->setLineColour(this->app->theme()->mutedLine());
+        this->graph->setValueVisibility(this->app->config()->gGraph());
         this->list->addElement(this->graph);
         this->list->addElement(new Aether::ListSeparator(30));
 

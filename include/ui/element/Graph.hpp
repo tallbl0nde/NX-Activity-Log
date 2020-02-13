@@ -37,6 +37,8 @@ namespace CustomElm {
             float barWidth;
             // Label font size
             unsigned int labelFont;
+            // Whether to show values
+            bool showValues;
 
             // Precisions
             unsigned int labelPrecision;
@@ -77,6 +79,8 @@ namespace CustomElm {
             void setBarWidth(float);
             // Set font size of all labels
             void setFontSize(unsigned int);
+            // Whether to show values above bars
+            void setValueVisibility(bool);
 
             // Set number of decimal points for label
             void setLabelPrecision(unsigned int);

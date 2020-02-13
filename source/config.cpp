@@ -15,6 +15,7 @@ namespace Main {
         simpleIniParser::Ini * ini = new simpleIniParser::Ini();
 
         simpleIniParser::IniSection * section_general = new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, "general");
+        section_general->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, "graphvalue", "true"));
         section_general->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, "sort", "LastPlayed"));
         section_general->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, "theme", "Auto"));
         ini->sections.push_back(section_general);
@@ -35,37 +36,48 @@ namespace Main {
 
         // Read file
         simpleIniParser::Ini * ini = simpleIniParser::Ini::parseFile(CONFIG_FILE);
-        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("sort", false);
-        if (option->value == "AlphaAsc") {
-            this->gSort_ = AlphaAsc;
-        } else if (option->value == "HoursAsc") {
-            this->gSort_ = HoursAsc;
-        } else if (option->value == "HoursDec") {
-            this->gSort_ = HoursDec;
-        } else if (option->value == "LaunchAsc") {
-            this->gSort_ = LaunchAsc;
-        } else if (option->value == "LaunchDec") {
-            this->gSort_ = LaunchDec;
-        } else if (option->value == "FirstPlayed") {
-            this->gSort_ = FirstPlayed;
-        } else {
-            this->gSort_ = LastPlayed;
+        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("graphvalue", false);
+        this->gGraph_ = true;
+        if (option != nullptr) {
+            if (option->value == "false") {
+                this->gGraph_ = false;
+            }
+        }
+
+        option = ini->findSection("general")->findFirstOption("sort", false);
+        this->gSort_ = LastPlayed;
+        if (option != nullptr) {
+            if (option->value == "AlphaAsc") {
+                this->gSort_ = AlphaAsc;
+            } else if (option->value == "HoursAsc") {
+                this->gSort_ = HoursAsc;
+            } else if (option->value == "HoursDec") {
+                this->gSort_ = HoursDec;
+            } else if (option->value == "LaunchAsc") {
+                this->gSort_ = LaunchAsc;
+            } else if (option->value == "LaunchDec") {
+                this->gSort_ = LaunchDec;
+            } else if (option->value == "FirstPlayed") {
+                this->gSort_ = FirstPlayed;
+            }
         }
 
         option = ini->findSection("general")->findFirstOption("theme", false);
-        if (option->value == "Light") {
-            this->gTheme_ = Light;
-        } else if (option->value == "Dark") {
-            this->gTheme_ = Dark;
-        } else {
-            this->gTheme_ = Auto;
+        this->gTheme_ = Auto;
+        if (option != nullptr) {
+            if (option->value == "Light") {
+                this->gTheme_ = Light;
+            } else if (option->value == "Dark") {
+                this->gTheme_ = Dark;
+            }
         }
 
         option = ini->findSection("hidden")->findFirstOption("deleted", false);
-        if (option->value == "true") {
-            this->hDeleted_ = true;
-        } else {
-            this->hDeleted_ = false;
+        this->hDeleted_ = false;
+        if (option != nullptr) {
+            if (option->value == "true") {
+                this->hDeleted_ = true;
+            }
         }
 
         delete ini;
@@ -75,7 +87,14 @@ namespace Main {
         // Write file
         simpleIniParser::Ini * ini = simpleIniParser::Ini::parseFile(CONFIG_FILE);
 
-        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("sort", false);
+        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("graphvalue", false);
+        if (this->gGraph_ == true) {
+            option->value = "true";
+        } else {
+            option->value = "false";
+        }
+
+        option = ini->findSection("general")->findFirstOption("sort", false);
         if (this->gSort_ == AlphaAsc) {
             option->value = "AlphaAsc";
         } else if (this->gSort_ == HoursAsc) {
@@ -112,6 +131,10 @@ namespace Main {
         delete ini;
     }
 
+    bool Config::gGraph() {
+        return this->gGraph_;
+    }
+
     SortType Config::gSort() {
         return this->gSort_;
     }
@@ -122,6 +145,11 @@ namespace Main {
 
     bool Config::hDeleted() {
         return this->hDeleted_;
+    }
+
+    void Config::setGGraph(bool b) {
+        this->gGraph_ = b;
+        this->writeConfig();
     }
 
     void Config::setGSort(SortType v) {

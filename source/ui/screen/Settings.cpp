@@ -85,6 +85,19 @@ namespace Screen {
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
+        // GRAPH
+        this->optionGraph = new Aether::ListOption("Graph Values", (this->app->config()->gGraph() ? "Show" : "Hide"), [this](){
+            this->app->config()->setGGraph(!this->app->config()->gGraph());
+            this->optionGraph->setValue((this->app->config()->gGraph() ? "Show" : "Hide"));
+        });
+        this->optionGraph->setHintColour(this->app->theme()->text());
+        this->optionGraph->setValueColour(this->app->theme()->accent());
+        this->optionGraph->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionGraph);
+        lc = new Aether::ListComment("Whether to show the values above the bars in graphs.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
         // THEME
         switch (this->app->config()->gTheme()) {
             case Auto:

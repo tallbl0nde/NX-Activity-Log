@@ -10,6 +10,7 @@ namespace CustomElm {
     Graph::Graph(int x, int y, int w, int h, unsigned int n) : Element(x, y, w, h) {
         this->barWidth = 0.5;
         this->labelFont = 16;
+        this->showValues = true;
 
         for (size_t i = 0; i < n; i++) {
             struct Entry e;
@@ -182,6 +183,11 @@ namespace CustomElm {
         this->needsUpdate = true;
     }
 
+    void Graph::setValueVisibility(bool b) {
+        this->showValues = b;
+        this->needsUpdate = true;
+    }
+
     void Graph::setYSteps(unsigned int s) {
         if (s < this->steps.size()) {
             // Delete excess entries
@@ -289,7 +295,7 @@ namespace CustomElm {
                 this->addElement(this->column[i].value);
             }
             this->column[i].value->setXY(x + 1 + (gap - this->column[i].value->w())/2, this->column[i].bar->y() - this->column[i].value->h() - LABEL_PADDING/2);
-            if (tmp == "0") {
+            if (tmp == "0" || !(this->showValues)) {
                 this->column[i].value->setHidden(true);
             } else {
                 this->column[i].value->setHidden(false);

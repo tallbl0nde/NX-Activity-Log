@@ -13,6 +13,7 @@ namespace Main {
             // Settings (first char indicates section of ini)
             // g: [general]
             // h: [hidden]
+            bool gGraph_;
             SortType gSort_;
             ThemeType gTheme_;
             bool hDeleted_;
@@ -25,10 +26,12 @@ namespace Main {
             void writeConfig();
 
             // Getters + setters for all settings
+            bool gGraph();
             SortType gSort();
             ThemeType gTheme();
             bool hDeleted();
 
+            void setGGraph(bool);
             void setGSort(SortType);
             void setGTheme(ThemeType);
             void setHDeleted(bool);

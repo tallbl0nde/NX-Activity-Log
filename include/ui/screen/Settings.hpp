@@ -22,6 +22,7 @@ namespace Screen {
 
             // Pointers to options so the value can be updated
             Aether::ListOption * optionDeleted;
+            Aether::ListOption * optionGraph;
             Aether::ListOption * optionPage;
             Aether::ListOption * optionSort;
             Aether::ListOption * optionTheme;
