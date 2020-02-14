@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define DEFAULT_NRO "sdmc:/switch/NX-Activity-Log.nro"
+#define DEFAULT_NRO "sdmc:/switch/NX-Activity-Log/NX-Activity-Log.nro"
 
 const char g_noticeText[] =
     "nx-hbloader but it loads NX-Activity-Log... thanks to switchbrew for the original :)";
