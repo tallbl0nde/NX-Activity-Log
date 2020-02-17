@@ -31,7 +31,8 @@ namespace Screen {
             CustomElm::Graph * graph;
             Aether::Text * graphHeading;
             Aether::Text * graphSubheading;
-            Aether::Text * graphTotal;
+            Aether::Element * graphTotal;
+            Aether::Text * graphTotalHead;
             Aether::Text * graphTotalSub;
 
             Aether::Text * playtime;
@@ -42,6 +43,8 @@ namespace Screen {
 
             Aether::Image * icon;
             Aether::List * list;
+            Aether::ListHeadingHelp * playHeading;
+            Aether::Text * noStats;
             Aether::Text * title;
             Aether::Image * userimage;
             Aether::Text * username;
@@ -57,6 +60,9 @@ namespace Screen {
             // Prepare panel for session breakdown
             // Takes PlaySession
             void setupSessionBreakdown(NX::PlaySession);
+
+            // Updates the "recent activity" part of the screen
+            void updateActivity();
 
         public:
             // Sets up elements

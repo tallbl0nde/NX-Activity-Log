@@ -23,10 +23,14 @@ namespace Screen {
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
         c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
-        c->addItem(new Aether::ControlItem(Aether::Button::X, "View Date"));
-        c->addItem(new Aether::ControlItem(Aether::Button::Y, "View By"));
+        c->addItem(new Aether::ControlItem(Aether::Button::X, "Select Date"));
+        c->addItem(new Aether::ControlItem(Aether::Button::Y, "Change View"));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
+        this->noStats = new Aether::Text(460, 350, "No play activity has been recorded for this period of time.", 20);
+        this->noStats->setXY(this->noStats->x() - this->noStats->w()/2, this->noStats->y() - this->noStats->h()/2);
+        this->noStats->setColour(this->app->theme()->mutedText());
+        this->addElement(this->noStats);
 
         Aether::Text * t = new Aether::Text(1070, 120, "All Time Activity", 24);
         t->setColour(this->app->theme()->text());
@@ -83,11 +87,67 @@ namespace Screen {
         });
     }
 
-    void Details::update(uint32_t dt) {
-        if (this->app->timeChanged()) {
-            this->list->setFocussed(this->header);
+    void Details::updateActivity() {
+        // Check if there is any activity + update heading
+        std::string heading = "Activity for ";
+        struct tm t = this->app->time();
+        t.tm_min = 0;
+        t.tm_sec = 0;
+        struct tm e = t;
+        e.tm_min = 59;
+        e.tm_sec = 59;
+        switch (this->app->viewPeriod()) {
+            case ViewPeriod::Day:
+                heading += Utils::Time::tmToString(t, true, true, !(t.tm_year == Utils::Time::getTmForCurrentTime().tm_year));
+                e.tm_hour = 23;
+                break;
+
+            case ViewPeriod::Month:
+                heading += Utils::Time::tmToString(t, false, true, true);
+                e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
+                break;
+
+            case ViewPeriod::Year:
+                heading += Utils::Time::tmToString(t, false, false, true);
+                e.tm_mon = 11;
+                e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
+                break;
+        }
+        this->graphHeading->setString(heading);
+        this->graphHeading->setX(this->header->x() + (this->header->w() - this->graphHeading->w())/2);
+        NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+
+        // Remove current sessions regardless
+        this->list->removeFollowingElements(this->topElm);
+        this->list->setFocussed(this->header);
+
+        // Only update list if there is activity
+        if (ps->playtime != 0) {
+            this->graph->setHidden(false);
+            this->graphSubheading->setHidden(false);
+            this->graphTotal->setHidden(false);
+            this->list->setShowScrollBar(true);
+            this->list->setCanScroll(true);
+            this->playHeading->setHidden(false);
+            this->noStats->setHidden(true);
             this->updateGraph();
             this->updateSessions();
+        } else {
+            this->graph->setHidden(true);
+            this->graphSubheading->setHidden(true);
+            this->graphTotal->setHidden(true);
+            this->list->setShowScrollBar(false);
+            this->list->setCanScroll(false);
+            this->playHeading->setHidden(true);
+            this->noStats->setHidden(false);
+        }
+
+        delete ps;
+    }
+
+    void Details::update(uint32_t dt) {
+        if (this->app->timeChanged()) {
+            this->updateActivity();
         }
         Screen::update(dt);
     }
@@ -97,11 +157,9 @@ namespace Screen {
         for (unsigned int i = 0; i < this->graph->entries(); i++) {
             this->graph->setLabel(i, "");
         }
-        std::string heading = "Activity for ";
         struct tm tm = this->app->time();
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
-                heading += Utils::Time::tmToString(tm, true, true, !(tm.tm_year == Utils::Time::getTmForCurrentTime().tm_year));
                 this->graph->setFontSize(12);
                 this->graph->setMaximumValue(60);
                 this->graph->setYSteps(6);
@@ -118,7 +176,6 @@ namespace Screen {
                 break;
 
             case ViewPeriod::Month: {
-                heading += Utils::Time::tmToString(tm, false, true, true);
                 unsigned int c = Utils::Time::tmGetDaysInMonth(tm);
                 this->graph->setFontSize(12);
                 this->graph->setValuePrecision(1);
@@ -130,7 +187,6 @@ namespace Screen {
             }
 
             case ViewPeriod::Year:
-                heading += Utils::Time::tmToString(tm, false, false, true);
                 this->graph->setFontSize(14);
                 this->graph->setValuePrecision(1);
                 this->graph->setNumberOfEntries(12);
@@ -232,8 +288,6 @@ namespace Screen {
         }
 
         // Set headings etc...
-        this->graphHeading->setString(heading);
-        this->graphHeading->setX(this->header->x() + (this->header->w() - this->graphHeading->w())/2);
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
                 this->graphSubheading->setString("Play Time (in minutes)");
@@ -252,17 +306,14 @@ namespace Screen {
             this->graphTotalSub->setString(Utils::Time::playtimeToString(totalSecs, ", "));
         }
 
-        int w = this->graphTotal->w() + this->graphTotalSub->w();
-        this->graphTotal->setX(this->header->x());
-        this->graphTotalSub->setX(this->graphTotal->x() + this->graphTotal->w());
-        this->graphTotal->setX(this->graphTotal->x() + (this->header->w() - w)/2);
-        this->graphTotalSub->setX(this->graphTotalSub->x() + (this->header->w() - w)/2);
+        int w = this->graphTotalHead->w() + this->graphTotalSub->w();
+        this->graphTotalHead->setX(this->graphTotal->x());
+        this->graphTotalSub->setX(this->graphTotalHead->x() + this->graphTotalHead->w());
+        this->graphTotalHead->setX(this->graphTotalHead->x() + (this->graphTotal->w() - w)/2);
+        this->graphTotalSub->setX(this->graphTotalSub->x() + (this->graphTotal->w() - w)/2);
     }
 
     void Details::updateSessions() {
-        // Remove current sessions
-        this->list->removeFollowingElements(this->topElm);
-
         // Get relevant play stats
         NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
         std::vector<NX::PlaySession> stats = this->app->playdata()->getPlaySessionsForUser(this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
@@ -558,32 +609,31 @@ namespace Screen {
         this->list->addElement(this->graph);
         this->list->addElement(new Aether::ListSeparator(30));
 
-        e = new Aether::Element(0, 0, 100, 30);
-        this->graphTotal = new Aether::Text(e->x(), e->y(), "Total Play Time: ", 20);
-        this->graphTotal->setColour(this->app->theme()->text());
-        e->addElement(this->graphTotal);
-        this->graphTotalSub = new Aether::Text(this->graphTotal->x() + this->graphTotal->w(), e->y(), "", 20);
+        this->graphTotal = new Aether::Element(0, 0, 100, 30);
+        this->graphTotalHead = new Aether::Text(this->graphTotal->x(), this->graphTotal->y(), "Total Play Time: ", 20);
+        this->graphTotalHead->setColour(this->app->theme()->text());
+        this->graphTotal->addElement(this->graphTotalHead);
+        this->graphTotalSub = new Aether::Text(this->graphTotalHead->x() + this->graphTotalHead->w(), this->graphTotal->y(), "", 20);
         this->graphTotalSub->setColour(this->app->theme()->accent());
-        e->addElement(this->graphTotalSub);
-        this->list->addElement(e);
+        this->graphTotal->addElement(this->graphTotalSub);
+        this->list->addElement(this->graphTotal);
         this->list->addElement(new Aether::ListSeparator(20));
 
         // Add play sessions heading
-        Aether::ListHeadingHelp * lhh = new Aether::ListHeadingHelp("Play Sessions", [this](){
+        this->playHeading = new Aether::ListHeadingHelp("Play Sessions", [this](){
             this->setupSessionHelp();
         });
-        lhh->setHelpColour(this->app->theme()->mutedText());
-        lhh->setRectColour(this->app->theme()->mutedLine());
-        lhh->setTextColour(this->app->theme()->text());
-        this->list->addElement(lhh);
+        this->playHeading->setHelpColour(this->app->theme()->mutedText());
+        this->playHeading->setRectColour(this->app->theme()->mutedLine());
+        this->playHeading->setTextColour(this->app->theme()->text());
+        this->list->addElement(this->playHeading);
 
         // Keep pointer to this element to allow removal
         this->topElm = new Aether::ListSeparator(20);
         this->list->addElement(this->topElm);
 
         // Get play sessions
-        this->updateGraph();
-        this->updateSessions();
+        this->updateActivity();
         this->setFocussed(this->list);
 
         // Add side stats
