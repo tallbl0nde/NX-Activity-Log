@@ -66,7 +66,7 @@ namespace Utils::Time {
 
     std::string timestampToString(time_t ts) {
         struct tm tmp = getTm(ts);
-        return getMonthString(tmp.tm_mon) + " " + std::to_string(tmp.tm_mday) + getDateSuffix(tmp.tm_mday) + ", " + std::to_string(tmp.tm_year + 1900);
+        return tmToString(tmp, "%B ", 10) + std::to_string(tmp.tm_mday) + getDateSuffix(tmp.tm_mday) + tmToString(tmp, ", %Y", 6);
     }
 
     std::string lastPlayedTimestampToString(time_t ts) {
@@ -114,12 +114,12 @@ namespace Utils::Time {
         } else {
             // Add month + date
             struct tm tmp = getTm(ts);
-            str += "on " + getMonthString(tmp.tm_mon) + " " + std::to_string(tmp.tm_mday) + getDateSuffix(tmp.tm_mday);
+            str += tmToString(tmp, "on %B ", 13) + std::to_string(tmp.tm_mday) + getDateSuffix(tmp.tm_mday);
 
             // If not in this year show year as well
             struct tm now = getTmForCurrentTime();
             if (now.tm_year != tmp.tm_year) {
-                str += ", " + std::to_string(tmp.tm_year + 1900);
+                str += tmToString(tmp, ", %Y", 6);
             }
         }
 
@@ -241,63 +241,46 @@ namespace Utils::Time {
         }
     }
 
-    std::string tmToString(struct tm t, bool show_day, bool show_month, bool show_year) {
-        std::string str = "";
-        if (show_month) {
-            str += getMonthString(t.tm_mon) + " ";
-        }
+    // Resulting string has max size
+    std::string tmToString(struct tm t, std::string f, unsigned short l) {
+        char buf[l+1];
+        std::strftime(buf, l+1, f.c_str(), &t);
+        return std::string(buf);
+    }
 
-        if (show_day) {
-            str += std::to_string(t.tm_mday) + getDateSuffix(t.tm_mday);
-            if (show_year) {
-                str += ", ";
-            }
+    std::string tmToDate(struct tm t, bool b) {
+        std::string str = tmToString(t, "%B ", 10);
+        str += std::to_string(t.tm_mday) + getDateSuffix(t.tm_mday);
+        if (b) {
+            str += tmToString(t, ", %Y", 6);
         }
-
-        if (show_year) {
-            str += std::to_string(t.tm_year + 1900);
-        }
-
         return str;
     }
 
-    std::string getMonthString(int m) {
-        switch (m) {
-            case 0:
-                return "January";
-                break;
+    std::string getAMPM(int h, bool b) {
+        if (h < 12) {
+            return (b ? "AM" : "am");
+        }
+        return (b ? "PM" : "pm");
+    }
+
+    std::string getDateSuffix(int d) {
+        switch (d) {
             case 1:
-                return "February";
+            case 21:
+            case 31:
+                return "st";
                 break;
             case 2:
-                return "March";
+            case 22:
+                return "nd";
                 break;
             case 3:
-                return "April";
-                break;
-            case 4:
-                return "May";
-                break;
-            case 5:
-                return "June";
-                break;
-            case 6:
-                return "July";
-                break;
-            case 7:
-                return "August";
-                break;
-            case 8:
-                return "September";
-                break;
-            case 9:
-                return "October";
-                break;
-            case 10:
-                return "November";
+            case 23:
+                return "rd";
                 break;
             default:
-                return "December";
+                return "th";
                 break;
         }
     }
@@ -339,27 +322,6 @@ namespace Utils::Time {
                 break;
             default:
                 return "Dec";
-                break;
-        }
-    }
-
-    std::string getDateSuffix(int d) {
-        switch (d) {
-            case 1:
-            case 21:
-            case 31:
-                return "st";
-                break;
-            case 2:
-            case 22:
-                return "nd";
-                break;
-            case 3:
-            case 23:
-                return "rd";
-                break;
-            default:
-                return "th";
                 break;
         }
     }

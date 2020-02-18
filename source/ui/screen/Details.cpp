@@ -98,17 +98,17 @@ namespace Screen {
         e.tm_sec = 59;
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
-                heading += Utils::Time::tmToString(t, true, true, !(t.tm_year == Utils::Time::getTmForCurrentTime().tm_year));
+                heading += Utils::Time::tmToDate(t, t.tm_year != Utils::Time::getTmForCurrentTime().tm_year);
                 e.tm_hour = 23;
                 break;
 
             case ViewPeriod::Month:
-                heading += Utils::Time::tmToString(t, false, true, true);
+                heading += Utils::Time::tmToString(t, "%B %Y", 14);
                 e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
                 break;
 
             case ViewPeriod::Year:
-                heading += Utils::Time::tmToString(t, false, false, true);
+                heading += Utils::Time::tmToString(t, "%Y", 4);
                 e.tm_mon = 11;
                 e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
                 break;
@@ -160,7 +160,7 @@ namespace Screen {
         struct tm tm = this->app->time();
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
-                this->graph->setFontSize(12);
+                this->graph->setFontSize(14);
                 this->graph->setMaximumValue(60);
                 this->graph->setYSteps(6);
                 this->graph->setValuePrecision(0);
@@ -177,7 +177,7 @@ namespace Screen {
 
             case ViewPeriod::Month: {
                 unsigned int c = Utils::Time::tmGetDaysInMonth(tm);
-                this->graph->setFontSize(12);
+                this->graph->setFontSize(13);
                 this->graph->setValuePrecision(1);
                 this->graph->setNumberOfEntries(c);
                 for (unsigned int i = 0; i < c; i+=3) {
@@ -187,7 +187,7 @@ namespace Screen {
             }
 
             case ViewPeriod::Year:
-                this->graph->setFontSize(14);
+                this->graph->setFontSize(16);
                 this->graph->setValuePrecision(1);
                 this->graph->setNumberOfEntries(12);
                 for (int i = 0; i < 12; i++) {
@@ -334,12 +334,13 @@ namespace Screen {
                 break;
         }
         unsigned int s = Utils::Time::getTimeT(this->app->time());
-        unsigned int e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c));
+        // Minus one second so end time is 11:59pm and not 12:00am next day
+        unsigned int e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
 
         // Add sessions to list
         for (size_t i = 0; i < stats.size(); i++) {
             // Only add session if start or end is within the current time period
-            if (stats[i].startTimestamp >= e || stats[i].endTimestamp < s) {
+            if (stats[i].startTimestamp > e || stats[i].endTimestamp < s) {
                 continue;
             }
 
@@ -354,61 +355,63 @@ namespace Screen {
                 this->setupSessionBreakdown(ses);
             });
 
-            // Set timestamp string
-            std::string str = "";
+            // Defaults for a session within the range
             unsigned int playtime = stats[i].playtime;
             struct tm sTm = Utils::Time::getTm(stats[i].startTimestamp);
             struct tm eTm = Utils::Time::getTm(stats[i].endTimestamp);
-            struct tm nTm = Utils::Time::getTmForCurrentTime();
-            bool d = this->app->viewPeriod() != ViewPeriod::Day;
-            bool m = this->app->viewPeriod() == ViewPeriod::Year;
-            bool y = this->app->time().tm_year != nTm.tm_year;
+
             // If started before range set start as start of range
+            bool outRange = false;
             if (stats[i].startTimestamp < s) {
-                int hr = eTm.tm_hour;
-                std::string str = Utils::Time::tmToString(this->app->time(), d, m, y) + ((str.length() == 0) ? "" : " ") + "12:00am - ";
-                str += Utils::Time::tmToString(eTm, d, m, y) + std::to_string((hr > 12) ? hr - 12 : hr) + ":" + ((eTm.tm_min < 10) ? "0" : "") + std::to_string(eTm.tm_min) + ((eTm.tm_hour < 12) ? "am" : "pm") + "*";
-                ls->setTimeString(str);
-
-                NX::RecentPlayStatistics * rps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), s, stats[i].endTimestamp, this->app->activeUser()->ID());
-                ls->setPlaytimeString(Utils::Time::playtimeToString(rps->playtime, " and "));
-                playtime = rps->playtime;
-                delete rps;
-
-            // If finished after range set end as end of range
-            } else if (stats[i].endTimestamp >= e) {
-                int hr = sTm.tm_hour;
-                std::string str = Utils::Time::tmToString(sTm, d, m, y) + std::to_string((hr > 12) ? hr - 12 : hr) + ":" + ((sTm.tm_min < 10) ? "0" : "") + std::to_string(sTm.tm_min) + ((sTm.tm_hour < 12) ? "am" : "pm") + " - ";
-                str += Utils::Time::tmToString(Utils::Time::increaseTm(this->app->time(), c), d, m, y) + " 11:59pm*";
-                ls->setTimeString(str);
-
-                NX::RecentPlayStatistics * rps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), stats[i].startTimestamp, e, this->app->activeUser()->ID());
-                ls->setPlaytimeString(Utils::Time::playtimeToString(rps->playtime, " and "));
-                playtime = rps->playtime;
-                delete rps;
-
-            // Session starts before and finishes after
-            } else if (stats[i].startTimestamp < s && stats[i].endTimestamp >= e) {
-                std::string str = Utils::Time::tmToString(this->app->time(), d, m, y) + ((str.length() == 0) ? "" : " ") + "12:00am - " + Utils::Time::tmToString(Utils::Time::increaseTm(this->app->time(), c), d, m, y) + " 11:59pm*";
-                ls->setTimeString(str);
-
-                NX::RecentPlayStatistics * rps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), s, e, this->app->activeUser()->ID());
-                ls->setPlaytimeString(Utils::Time::playtimeToString(rps->playtime, " and "));
-                playtime = rps->playtime;
-                delete rps;
-
-            // Session is within range
-            } else {
-                int hr = sTm.tm_hour;
-                std::string str = Utils::Time::tmToString(sTm, d, m, y) + std::to_string((hr > 12) ? hr - 12 : hr) + ":" + ((sTm.tm_min < 10) ? "0" : "") + std::to_string(sTm.tm_min) + ((sTm.tm_hour < 12) ? "am" : "pm") + " - ";
-                hr = eTm.tm_hour;
-                str += Utils::Time::tmToString(eTm, d, m, y) + std::to_string((hr > 12) ? hr - 12 : hr) + ":" + ((eTm.tm_min < 10) ? "0" : "") + std::to_string(eTm.tm_min) + ((eTm.tm_hour < 12) ? "am" : "pm");
-                ls->setTimeString(str);
-
-                ls->setPlaytimeString(Utils::Time::playtimeToString(stats[i].playtime, " and "));
+                outRange = true;
+                sTm = Utils::Time::getTm(s);
             }
 
+            // If finished after range set end as end of range
+            if (stats[i].endTimestamp > e) {
+                outRange = true;
+                eTm = Utils::Time::getTm(e);
+            }
+
+            // Get playtime if range is altered
+            if (outRange) {
+                NX::RecentPlayStatistics * rps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(sTm), Utils::Time::getTimeT(eTm), this->app->activeUser()->ID());
+                playtime = rps->playtime;
+                delete rps;
+            }
+
+            // Set timestamp string
+            std::string first = "";
+            std::string last = "";
+            struct tm nTm = Utils::Time::getTmForCurrentTime();
+            switch (this->app->viewPeriod()) {
+                case ViewPeriod::Year:
+                case ViewPeriod::Month:
+                    first = Utils::Time::tmToDate(sTm, sTm.tm_year != nTm.tm_year) + " ";
+                    // Show date on end timestamp if not the same
+                    if (sTm.tm_mday != eTm.tm_mday) {
+                        last = Utils::Time::tmToDate(eTm, eTm.tm_year != nTm.tm_year) + " ";
+                    }
+
+                case ViewPeriod::Day:
+                    std::string tmp = Utils::Time::tmToString(sTm, "%I:%M", 5);
+                    if (tmp[0] == '0') {
+                        tmp.erase(0, 1);
+                    }
+                    first += tmp + Utils::Time::getAMPM(sTm.tm_hour);
+
+                    tmp = Utils::Time::tmToString(eTm, "%I:%M", 5);
+                    if (tmp[0] == '0') {
+                        tmp.erase(0, 1);
+                    }
+                    last += tmp + Utils::Time::getAMPM(eTm.tm_hour);
+                    break;
+            }
+            ls->setTimeString(first + " - " + last + (outRange ? "*" : ""));
+            ls->setPlaytimeString(Utils::Time::playtimeToString(playtime, " and "));
+
             // Add percentage of total play time
+            std::string str;
             double percent = 100 * ((double)playtime / ((ps->playtime == 0) ? playtime : ps->playtime));
             percent = Utils::roundToDecimalPlace(percent, 2);
             if (percent < 0.01) {
@@ -465,7 +468,7 @@ namespace Screen {
             // Add date string if new day
             if (Utils::Time::areDifferentDates(lastTime, time)) {
                 struct tm now = Utils::Time::getTmForCurrentTime();
-                Aether::Text * t = new Aether::Text(0, 10, Utils::Time::tmToString(time, true, true, (time.tm_year != now.tm_year)), 18);
+                Aether::Text * t = new Aether::Text(0, 10, Utils::Time::tmToDate(time, time.tm_year != now.tm_year), 18);
                 t->setColour(this->app->theme()->text());
                 Aether::Element * c = new Aether::Element(0, 0, 100, t->h() + 20);
                 c->addElement(t);

@@ -112,30 +112,30 @@ namespace Screen {
         this->list->removeAllElements();
 
         // Change heading to new time
-        bool day = true, month = true, year = true;
+        // std::string format = "";
         struct tm t = this->app->time();
-        switch (this->app->viewPeriod()) {
-            case ViewPeriod::Day: {
-                // Hide year if this year
-                struct tm now = Utils::Time::getTmForCurrentTime();
-                if (t.tm_year == now.tm_year) {
-                    year = false;
-                }
-                break;
-            }
+        // switch (this->app->viewPeriod()) {
+        //     case ViewPeriod::Day: {
+        //         // Hide year if this year
+        //         struct tm now = Utils::Time::getTmForCurrentTime();
+        //         if (t.tm_year == now.tm_year) {
+        //             year = false;
+        //         }
+        //         break;
+        //     }
 
-            case ViewPeriod::Month:
-                // Don't show day
-                day = false;
-                break;
+        //     case ViewPeriod::Month:
+        //         // Don't show day
+        //         day = false;
+        //         break;
 
-            case ViewPeriod::Year:
-                // Only show year
-                day = false;
-                month = false;
-                break;
-        }
-        std::string ss = "Activity for: " + Utils::Time::tmToString(t, day, month, year);
+        //     case ViewPeriod::Year:
+        //         // Only show year
+        //         day = false;
+        //         month = false;
+        //         break;
+        // }
+        std::string ss = "Activity for: ";
         Aether::Text * text = new Aether::Text(0, 0, ss, 20);
         text->setColour(this->app->theme()->text());
         this->list->addElement(text);

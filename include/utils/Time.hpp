@@ -37,16 +37,24 @@ namespace Utils::Time {
     // Return number of days in tm's month
     int tmGetDaysInMonth(struct tm);
 
-    // Return a string with the date matching the tm struct
-    std::string tmToString(struct tm, bool = true, bool = true, bool = true);
+    // Return a string with the date matching the tm struct in the given format
+    // Max string length is optional and defaults to 50
+    std::string tmToString(struct tm, std::string, unsigned short = 50);
+
+    // Returns string in format "m d<suffix>, y"
+    // Year can be omitted by passing false
+    std::string tmToDate(struct tm, bool = true);
 
     // MISCELLANEOUS FUNCTIONS
-    // Returns a string containing the month for the given number (starting from 0)
-    std::string getMonthString(int);
-    std::string getShortMonthString(int);
+    // Returns am/pm for given 24-hour int
+    // Set true for upper case
+    std::string getAMPM(int, bool = false);
 
     // Returns suffix for given date (within 1 - 31)
     std::string getDateSuffix(int);
+
+    // Return three character version of month
+    std::string getShortMonthString(int);
 };
 
 #endif
