@@ -29,6 +29,12 @@ namespace NX {
                     if (this->events[a]->clockTimestamp >= start_ts && this->events[a]->clockTimestamp <= end_ts) {
                         time_c = true;
                     }
+                    // Also check if there is an event prior to event and after
+                    if (a > s) {
+                        if (this->events[a]->clockTimestamp > end_ts && this->events[a-1]->clockTimestamp < start_ts) {
+                            time_c = true;
+                        }
+                    }
 
                     switch (this->events[a]->eventType) {
                         // Check userID whenever account event encountered
@@ -286,7 +292,6 @@ namespace NX {
         for (size_t i = 0; i < sessions.size(); i++) {
             stats->launches++;
 
-            // A "valid" session must have at least 6 events (launch, in, login, out, logout, exit)
             u64 last_ts = 0;
             u64 last_clock = 0;
             bool in_before = false;
