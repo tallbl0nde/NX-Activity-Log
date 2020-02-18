@@ -2,6 +2,7 @@
 #define SCREEN_RECENTACTIVITY_HPP
 
 #include "Application.hpp"
+#include "Graph.hpp"
 #include "SortedList.hpp"
 
 // Forward declaration due to circular dependency
@@ -15,15 +16,29 @@ namespace Screen {
             // Pointer to app for theme
             Main::Application * app;
 
+            // Updates the "recent activity" part of the screen
+            void updateActivity();
+            // Updates graph if data matching current time range
+            void updateGraph();
+            // Updates the list of games played underneath
+            void updateTitles();
+
+            // Element which marks top of sessions
+            Aether::Element * topElm;
+
+            // Container holding heading and L/R
+            Aether::Container * header;
+
             // Pointers to elements
+            Aether::ListHeading * gameHeading;
+            CustomElm::Graph * graph;
+            Aether::Text * graphHeading;
+            Aether::Text * graphSubheading;
             Aether::Text * heading;
-            Aether::Text * hours;
             Aether::Image * image;
+            Aether::Text * hours;
             Aether::List * list;
             Aether::Text * noStats;
-
-            // Change the list heading and populate with stats
-            void updateList();
 
         public:
             // Passed main application object
