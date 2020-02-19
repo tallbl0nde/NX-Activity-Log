@@ -38,6 +38,7 @@ namespace Screen {
             Aether::Image * image;
             Aether::Text * hours;
             Aether::List * list;
+            Aether::Menu * menu;
             Aether::Text * noStats;
 
         public:

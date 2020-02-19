@@ -24,173 +24,6 @@ namespace Screen {
         c->setColour(this->app->theme()->text());
         this->addElement(c);
 
-        // Create side menu
-        Aether::Menu * menu = new Aether::Menu(30, 88, 388, 559);
-        menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::RecentActivity);
-        }));
-        menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::AllActivity);
-        }));
-        menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
-        Aether::MenuOption * opt = new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
-        opt->setActive(true);
-        menu->addElement(opt);
-        this->addElement(menu);
-
-        // Create list
-        this->list = new Aether::List(420, 88, 810, 559);
-        this->list->setCatchup(11);
-        this->list->setScrollBarColour(this->app->theme()->mutedLine());
-
-        // DEFAULT SORT METHOD
-        std::string str = "";
-        switch (this->app->config()->gSort()) {
-            case SortType::AlphaAsc:
-                str = "By Name";
-                break;
-
-            case SortType::HoursAsc:
-                str = "By Most Playtime";
-                break;
-
-            case SortType::HoursDec:
-                str = "By Least Playtime";
-                break;
-
-            case SortType::LaunchAsc:
-                str = "By Most Launched";
-                break;
-
-            case SortType::LaunchDec:
-                str = "By Least Launched";
-                break;
-
-            case SortType::FirstPlayed:
-                str = "By First Playtime";
-                break;
-
-            case SortType::LastPlayed:
-                str = "By Most Recently Played";
-                break;
-        }
-        this->optionSort = new Aether::ListOption("Default Sort Method", str, [this](){
-            this->setupSortOverlay();
-        });
-        this->optionSort->setHintColour(this->app->theme()->text());
-        this->optionSort->setValueColour(this->app->theme()->accent());
-        this->optionSort->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionSort);
-        Aether::ListComment * lc = new Aether::ListComment("Sets the sort method used upon application launch.");
-        lc->setTextColour(this->app->theme()->mutedText());
-        this->list->addElement(lc);
-
-        // GRAPH
-        this->optionGraph = new Aether::ListOption("Graph Values", (this->app->config()->gGraph() ? "Show" : "Hide"), [this](){
-            this->app->config()->setGGraph(!this->app->config()->gGraph());
-            this->optionGraph->setValue((this->app->config()->gGraph() ? "Show" : "Hide"));
-        });
-        this->optionGraph->setHintColour(this->app->theme()->text());
-        this->optionGraph->setValueColour(this->app->theme()->accent());
-        this->optionGraph->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionGraph);
-        lc = new Aether::ListComment("Whether to show the values above the bars in graphs.");
-        lc->setTextColour(this->app->theme()->mutedText());
-        this->list->addElement(lc);
-
-        // THEME
-        switch (this->app->config()->gTheme()) {
-            case Auto:
-                str = "Auto";
-                break;
-
-            case Custom:
-                str = "Custom";
-                break;
-
-            case Dark:
-                str = "Basic Black";
-                break;
-
-            case Light:
-                str = "Basic White";
-                break;
-        }
-        this->optionTheme = new Aether::ListOption("Theme", str, [this](){
-            this->setupThemeOverlay();
-        });
-        this->optionTheme->setHintColour(this->app->theme()->text());
-        this->optionTheme->setValueColour(this->app->theme()->accent());
-        this->optionTheme->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionTheme);
-        lc = new Aether::ListComment("Sets the theme for the application. Auto chooses black/white based on your switch settings. Note: This currently requires the app to be restarted to take effect.");
-        lc->setTextColour(this->app->theme()->mutedText());
-        this->list->addElement(lc);
-        this->list->addElement(new Aether::ListSeparator());
-
-        // HIDE DELETED
-        str = (this->app->config()->hDeleted() ? "Yes" : "No");
-        this->optionDeleted = new Aether::ListOption("Hide Deleted Games", str, [this](){
-            this->app->config()->setHDeleted(!this->app->config()->hDeleted());
-            this->optionDeleted->setValue((this->app->config()->hDeleted() ? "Yes" : "No"));
-        });
-        this->optionDeleted->setHintColour(this->app->theme()->text());
-        this->optionDeleted->setValueColour(this->app->theme()->accent());
-        this->optionDeleted->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionDeleted);
-        lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
-        lc->setTextColour(this->app->theme()->mutedText());
-        this->list->addElement(lc);
-        this->list->addElement(new Aether::ListSeparator());
-
-        // REPLACE USER PAGE
-        str = "Disabled";
-        if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp") || std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp") || std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
-            str = "Enabled";
-        }
-        this->optionPage = new Aether::ListOption("Replace User Page", str, [this](){
-            this->installForwarder();
-        });
-        this->optionPage->setHintColour(this->app->theme()->text());
-        this->optionPage->setValueColour(this->app->theme()->accent());
-        this->optionPage->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionPage);
-
-        lc = new Aether::ListComment("Uses LayeredFS to replace the User Page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported.");
-        lc->setTextColour(this->app->theme()->mutedText());
-        this->list->addElement(lc);
-        this->list->addElement(new Aether::ListSeparator());
-
-        // INFORMATION
-        lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\nThanks for using my app! I hope it's been useful! :)\n\nYou can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde");
-        lc->setTextColour(this->app->theme()->mutedText());
-        this->list->addElement(lc);
-
-        this->addElement(this->list);
-
-        // Create popuplist overlays
-        this->sortOverlay = new Aether::PopupList("Default Sort Method");
-        this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
-        this->sortOverlay->setHighlightColour(this->app->theme()->accent());
-        this->sortOverlay->setLineColour(this->app->theme()->fg());
-        this->sortOverlay->setListLineColour(this->app->theme()->mutedLine());
-        this->sortOverlay->setTextColour(this->app->theme()->text());
-        this->themeOverlay = new Aether::PopupList("Application Theme");
-        this->themeOverlay->setBackgroundColour(this->app->theme()->altBG());
-        this->themeOverlay->setHighlightColour(this->app->theme()->accent());
-        this->themeOverlay->setLineColour(this->app->theme()->fg());
-        this->themeOverlay->setListLineColour(this->app->theme()->mutedLine());
-        this->themeOverlay->setTextColour(this->app->theme()->text());
-
-        // Create base message box
-        this->msgbox = new Aether::MessageBox();
-        this->msgbox->addTopButton("OK", [this](){
-            this->msgbox->close(true);
-        });
-        this->msgbox->setLineColour(this->app->theme()->mutedLine());
-        this->msgbox->setRectangleColour(this->app->theme()->altBG());
-        this->msgbox->setTextColour(this->app->theme()->accent());
-
         // Add button callbacks
         if (!(this->app->isUserPage())) {
             this->onButtonPress(Aether::Button::B, [this](){
@@ -378,15 +211,182 @@ namespace Screen {
         this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), 4, 4);
         this->image->setWH(60, 60);
         this->addElement(this->image);
+
+        // Create side menu
+        this->menu = new Aether::Menu(30, 88, 388, 559);
+        this->menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+            this->app->setScreen(Main::ScreenID::RecentActivity);
+        }));
+        this->menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+            this->app->setScreen(Main::ScreenID::AllActivity);
+        }));
+        this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
+        Aether::MenuOption * opt = new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
+        this->menu->addElement(opt);
+        this->menu->setActiveOption(opt);
+        this->menu->setFocussed(opt);
+        this->addElement(this->menu);
+
+        // Create list
+        this->list = new Aether::List(420, 88, 810, 559);
+        this->list->setCatchup(11);
+        this->list->setScrollBarColour(this->app->theme()->mutedLine());
+
+        // DEFAULT SORT METHOD
+        std::string str = "";
+        switch (this->app->config()->gSort()) {
+            case SortType::AlphaAsc:
+                str = "By Name";
+                break;
+
+            case SortType::HoursAsc:
+                str = "By Most Playtime";
+                break;
+
+            case SortType::HoursDec:
+                str = "By Least Playtime";
+                break;
+
+            case SortType::LaunchAsc:
+                str = "By Most Launched";
+                break;
+
+            case SortType::LaunchDec:
+                str = "By Least Launched";
+                break;
+
+            case SortType::FirstPlayed:
+                str = "By First Playtime";
+                break;
+
+            case SortType::LastPlayed:
+                str = "By Most Recently Played";
+                break;
+        }
+        this->optionSort = new Aether::ListOption("Default Sort Method", str, [this](){
+            this->setupSortOverlay();
+        });
+        this->optionSort->setHintColour(this->app->theme()->text());
+        this->optionSort->setValueColour(this->app->theme()->accent());
+        this->optionSort->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionSort);
+        Aether::ListComment * lc = new Aether::ListComment("Sets the sort method used upon application launch.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        // GRAPH
+        this->optionGraph = new Aether::ListOption("Graph Values", (this->app->config()->gGraph() ? "Show" : "Hide"), [this](){
+            this->app->config()->setGGraph(!this->app->config()->gGraph());
+            this->optionGraph->setValue((this->app->config()->gGraph() ? "Show" : "Hide"));
+        });
+        this->optionGraph->setHintColour(this->app->theme()->text());
+        this->optionGraph->setValueColour(this->app->theme()->accent());
+        this->optionGraph->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionGraph);
+        lc = new Aether::ListComment("Whether to show the values above the bars in graphs.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        // THEME
+        switch (this->app->config()->gTheme()) {
+            case Auto:
+                str = "Auto";
+                break;
+
+            case Custom:
+                str = "Custom";
+                break;
+
+            case Dark:
+                str = "Basic Black";
+                break;
+
+            case Light:
+                str = "Basic White";
+                break;
+        }
+        this->optionTheme = new Aether::ListOption("Theme", str, [this](){
+            this->setupThemeOverlay();
+        });
+        this->optionTheme->setHintColour(this->app->theme()->text());
+        this->optionTheme->setValueColour(this->app->theme()->accent());
+        this->optionTheme->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionTheme);
+        lc = new Aether::ListComment("Sets the theme for the application. Auto chooses black/white based on your switch settings. Note: This currently requires the app to be restarted to take effect.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+        this->list->addElement(new Aether::ListSeparator());
+
+        // HIDE DELETED
+        str = (this->app->config()->hDeleted() ? "Yes" : "No");
+        this->optionDeleted = new Aether::ListOption("Hide Deleted Games", str, [this](){
+            this->app->config()->setHDeleted(!this->app->config()->hDeleted());
+            this->optionDeleted->setValue((this->app->config()->hDeleted() ? "Yes" : "No"));
+        });
+        this->optionDeleted->setHintColour(this->app->theme()->text());
+        this->optionDeleted->setValueColour(this->app->theme()->accent());
+        this->optionDeleted->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionDeleted);
+        lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+        this->list->addElement(new Aether::ListSeparator());
+
+        // REPLACE USER PAGE
+        str = "Disabled";
+        if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp") || std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp") || std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
+            str = "Enabled";
+        }
+        this->optionPage = new Aether::ListOption("Replace User Page", str, [this](){
+            this->installForwarder();
+        });
+        this->optionPage->setHintColour(this->app->theme()->text());
+        this->optionPage->setValueColour(this->app->theme()->accent());
+        this->optionPage->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionPage);
+
+        lc = new Aether::ListComment("Uses LayeredFS to replace the User Page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+        this->list->addElement(new Aether::ListSeparator());
+
+        // INFORMATION
+        lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\nThanks for using my app! I hope it's been useful! :)\n\nYou can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        this->addElement(this->list);
+
+        // Create popuplist overlays
+        this->sortOverlay = new Aether::PopupList("Default Sort Method");
+        this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
+        this->sortOverlay->setHighlightColour(this->app->theme()->accent());
+        this->sortOverlay->setLineColour(this->app->theme()->fg());
+        this->sortOverlay->setListLineColour(this->app->theme()->mutedLine());
+        this->sortOverlay->setTextColour(this->app->theme()->text());
+        this->themeOverlay = new Aether::PopupList("Application Theme");
+        this->themeOverlay->setBackgroundColour(this->app->theme()->altBG());
+        this->themeOverlay->setHighlightColour(this->app->theme()->accent());
+        this->themeOverlay->setLineColour(this->app->theme()->fg());
+        this->themeOverlay->setListLineColour(this->app->theme()->mutedLine());
+        this->themeOverlay->setTextColour(this->app->theme()->text());
+
+        // Create base message box
+        this->msgbox = new Aether::MessageBox();
+        this->msgbox->addTopButton("OK", [this](){
+            this->msgbox->close(true);
+        });
+        this->msgbox->setLineColour(this->app->theme()->mutedLine());
+        this->msgbox->setRectangleColour(this->app->theme()->altBG());
+        this->msgbox->setTextColour(this->app->theme()->accent());
+
     }
 
     void Settings::onUnload() {
         this->removeElement(this->heading);
         this->removeElement(this->image);
-    }
-
-    Settings::~Settings() {
-        // Delete overlays
+        this->removeElement(this->list);
+        this->removeElement(this->menu);
         delete this->msgbox;
         delete this->sortOverlay;
         delete this->themeOverlay;

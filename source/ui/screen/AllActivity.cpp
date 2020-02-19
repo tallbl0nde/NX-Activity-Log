@@ -23,20 +23,6 @@ namespace Screen {
         c->setColour(this->app->theme()->text());
         this->addElement(c);
 
-        // Create side menu
-        Aether::Menu * menu = new Aether::Menu(30, 88, 388, 559);
-        menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::RecentActivity);
-        }));
-        Aether::MenuOption * opt = new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
-        opt->setActive(true);
-        menu->addElement(opt);
-        menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
-        menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::Settings);
-        }));
-        this->addElement(menu);
-
         // Create sort overlay
         this->sortOverlay = new Aether::PopupList("Sort Titles");
         this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
@@ -115,12 +101,26 @@ namespace Screen {
         this->image->setWH(60, 60);
         this->addElement(this->image);
 
+        // Create side menu
+        this->menu = new Aether::Menu(30, 88, 388, 559);
+        this->menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+            this->app->setScreen(Main::ScreenID::RecentActivity);
+        }));
+        Aether::MenuOption * opt = new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
+        this->menu->addElement(opt);
+        this->menu->setActiveOption(opt);
+        this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
+        this->menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+            this->app->setScreen(Main::ScreenID::Settings);
+        }));
+        this->menu->setFocussed(opt);
+        this->addElement(this->menu);
+
         // Create list
         this->list = new CustomElm::SortedList(420, 88, 810, 559);
         this->list->setCatchup(11);
         this->list->setHeadingColour(this->app->theme()->mutedText());
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
-        this->addElement(this->list);
 
         // Populate list + count total time
         std::vector<NX::Title *> t = this->app->titleVector();
@@ -172,7 +172,7 @@ namespace Screen {
 
         // Sort the list
         this->list->setSort(this->app->config()->gSort());
-        this->setFocussed(this->list);
+        this->addElement(this->list);
 
         // Render total hours string
         std::string txt = "Total Playtime: " + Utils::Time::playtimeToString(totalSecs, " and ");
@@ -187,6 +187,7 @@ namespace Screen {
         this->removeElement(this->hours);
         this->removeElement(this->image);
         this->removeElement(this->list);
+        this->removeElement(this->menu);
     }
 
     AllActivity::~AllActivity() {

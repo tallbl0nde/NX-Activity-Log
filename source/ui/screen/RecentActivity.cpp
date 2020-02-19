@@ -28,21 +28,6 @@ namespace Screen {
         this->noStats->setColour(this->app->theme()->mutedText());
         this->addElement(this->noStats);
 
-        // Create side menu
-        Aether::Menu * menu = new Aether::Menu(30, 88, 388, 559);
-        Aether::MenuOption * opt = new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
-        opt->setActive(true);
-        menu->addElement(opt);
-        menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::AllActivity);
-        }));
-        menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
-        menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::Settings);
-        }));
-        this->addElement(menu);
-
-
         if (!(this->app->isUserPage())) {
             this->onButtonPress(Aether::Button::B, [this](){
                 this->app->setScreen(Main::ScreenID::UserSelect);
@@ -106,7 +91,9 @@ namespace Screen {
 
         // Remove current sessions regardless
         this->list->removeFollowingElements(this->topElm);
-        this->list->setFocussed(this->header);
+        if (this->focussed() == this->list) {
+            this->list->setFocussed(this->header);
+        }
 
         // Only update list if there is activity
         if (ps->playtime != 0) {
@@ -372,11 +359,25 @@ namespace Screen {
         this->image->setWH(60, 60);
         this->addElement(this->image);
 
+        // Create side menu
+        this->menu = new Aether::Menu(30, 88, 388, 559);
+        Aether::MenuOption * opt = new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
+        this->menu->addElement(opt);
+        this->menu->setActiveOption(opt);
+        this->menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+            this->app->setScreen(Main::ScreenID::AllActivity);
+        }));
+        this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
+        this->menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+            this->app->setScreen(Main::ScreenID::Settings);
+        }));
+        this->menu->setFocussed(opt);
+        this->addElement(this->menu);
+
         // Create list
         this->list = new Aether::List(420, 88, 810, 559);
         this->list->setCatchup(11);
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
-        this->addElement(this->list);
 
         // Add heading and L
         this->header = new Aether::Container(0, 0, 100, 70);
@@ -439,9 +440,10 @@ namespace Screen {
         this->topElm = new Aether::ListSeparator(20);
         this->list->addElement(this->topElm);
 
+        this->addElement(this->list);
+
         // Get play sessions
         this->updateActivity();
-        this->setFocussed(this->list);
     }
 
     void RecentActivity::onUnload() {
@@ -449,5 +451,6 @@ namespace Screen {
         this->removeElement(this->hours);
         this->removeElement(this->image);
         this->removeElement(this->list);
+        this->removeElement(this->menu);
     }
 };

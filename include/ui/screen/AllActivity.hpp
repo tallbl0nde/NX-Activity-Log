@@ -21,6 +21,7 @@ namespace Screen {
             Aether::Text * hours;
             Aether::Image * image;
             CustomElm::SortedList * list;
+            Aether::Menu * menu;
 
             // Choose sort overlay
             Aether::PopupList * sortOverlay;

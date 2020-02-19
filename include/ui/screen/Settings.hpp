@@ -19,6 +19,7 @@ namespace Screen {
             Aether::Text * heading;
             Aether::Image * image;
             Aether::List * list;
+            Aether::Menu * menu;
 
             // Pointers to options so the value can be updated
             Aether::ListOption * optionDeleted;
@@ -48,9 +49,6 @@ namespace Screen {
             void onLoad();
             // Delete elements created in onLoad()
             void onUnload();
-
-            // Deletes overlays
-            ~Settings();
     };
 };
 
