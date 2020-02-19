@@ -16,6 +16,8 @@ namespace Screen {
         private:
             // Pointer to app for theme
             Main::Application * app;
+            // Used to udpate prev. screen
+            bool popped;
 
             // Updates graph if data matching current time range
             void updateGraph();

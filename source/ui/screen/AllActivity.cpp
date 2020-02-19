@@ -161,6 +161,7 @@ namespace Screen {
             la->setRightMuted(str);
             la->setCallback([this, i](){
                 this->app->setActiveTitle(i);
+                this->app->pushScreen();
                 this->app->setScreen(Main::ScreenID::Details);
             });
             la->setTitleColour(this->app->theme()->text());

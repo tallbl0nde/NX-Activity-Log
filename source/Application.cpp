@@ -68,6 +68,7 @@ namespace Main {
             // No need for user select if user page
             this->scUserSelect = new Screen::UserSelect(this, this->users);
             // Start with UserSelect screen
+            this->display->setFadeIn();
             this->setScreen(ScreenID::UserSelect);
         }
     }
@@ -104,6 +105,14 @@ namespace Main {
         }
     }
 
+    void Application::pushScreen() {
+        this->display->pushScreen();
+    }
+
+    void Application::popScreen() {
+        this->display->popScreen();
+    }
+
     void Application::decreaseDate() {
         // All prevent going before 2000
         switch (this->viewType) {
@@ -128,6 +137,7 @@ namespace Main {
                 this->tm = Utils::Time::decreaseTm(this->tm, 'Y');
                 break;
         }
+        this->timeChanged_ = true;
     }
 
     void Application::increaseDate() {
@@ -154,6 +164,7 @@ namespace Main {
                 this->tm = Utils::Time::increaseTm(this->tm, 'Y');
                 break;
         }
+        this->timeChanged_ = true;
     }
 
     void Application::createDatePicker() {

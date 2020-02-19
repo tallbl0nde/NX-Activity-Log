@@ -99,6 +99,10 @@ namespace Main {
 
             // Pass screen enum to change to it
             void setScreen(ScreenID);
+            // Push current screen on stack (i.e. keep in memory)
+            void pushScreen();
+            // Pop screen from stack
+            void popScreen();
 
             // Decrease/increase date tm by one d/m/y
             void decreaseDate();

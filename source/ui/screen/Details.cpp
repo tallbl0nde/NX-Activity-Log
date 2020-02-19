@@ -59,7 +59,11 @@ namespace Screen {
 
         // Add key callbacks
         this->onButtonPress(Aether::Button::B, [this](){
-            this->app->setScreen(Main::ScreenID::AllActivity);
+            this->app->popScreen();
+            // Hacky way to update previous screen
+            this->app->increaseDate();
+            this->app->decreaseDate();
+            this->popped = true;
         });
         this->onButtonPress(Aether::Button::X, [this](){
             this->app->createDatePicker();
@@ -146,9 +150,13 @@ namespace Screen {
     }
 
     void Details::update(uint32_t dt) {
-        if (this->app->timeChanged()) {
-            this->updateActivity();
+        // Don't check!!
+        if (!this->popped) {
+            if (this->app->timeChanged()) {
+                this->updateActivity();
+            }
         }
+
         Screen::update(dt);
     }
 
@@ -530,6 +538,8 @@ namespace Screen {
     }
 
     void Details::onLoad() {
+        this->popped = false;
+
         // Render user's image
         this->userimage = new Aether::Image(1155, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), 4, 4);
         this->userimage->setWH(60, 60);

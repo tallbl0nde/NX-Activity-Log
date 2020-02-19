@@ -270,20 +270,21 @@ namespace Screen {
         this->optionSort->setValueColour(this->app->theme()->accent());
         this->optionSort->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionSort);
-        Aether::ListComment * lc = new Aether::ListComment("Sets the sort method used upon application launch.");
+        Aether::ListComment * lc = new Aether::ListComment("The sort method for 'All Activity' to use on launch.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // GRAPH
-        this->optionGraph = new Aether::ListOption("Graph Values", (this->app->config()->gGraph() ? "Show" : "Hide"), [this](){
+        this->optionGraph = new Aether::ListOption("Graph Bar Labels", (this->app->config()->gGraph() ? "On" : "Off"), [this](){
             this->app->config()->setGGraph(!this->app->config()->gGraph());
-            this->optionGraph->setValue((this->app->config()->gGraph() ? "Show" : "Hide"));
+            this->optionGraph->setValue((this->app->config()->gGraph() ? "On" : "Off"));
+            this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         });
         this->optionGraph->setHintColour(this->app->theme()->text());
-        this->optionGraph->setValueColour(this->app->theme()->accent());
+        this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         this->optionGraph->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionGraph);
-        lc = new Aether::ListComment("Whether to show the values above the bars in graphs.");
+        lc = new Aether::ListComment("Toggles the small numbers visible above each bar on graphs.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
@@ -312,7 +313,7 @@ namespace Screen {
         this->optionTheme->setValueColour(this->app->theme()->accent());
         this->optionTheme->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionTheme);
-        lc = new Aether::ListComment("Sets the theme for the application. Auto chooses black/white based on your switch settings. Note: This currently requires the app to be restarted to take effect.");
+        lc = new Aether::ListComment("The theme to use for the application. Auto chooses black/white based on your Switch settings. Note: This currently requires the app to be restarted to take effect.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         this->list->addElement(new Aether::ListSeparator());
@@ -322,9 +323,10 @@ namespace Screen {
         this->optionDeleted = new Aether::ListOption("Hide Deleted Games", str, [this](){
             this->app->config()->setHDeleted(!this->app->config()->hDeleted());
             this->optionDeleted->setValue((this->app->config()->hDeleted() ? "Yes" : "No"));
+            this->optionDeleted->setValueColour((this->app->config()->hDeleted() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         });
         this->optionDeleted->setHintColour(this->app->theme()->text());
-        this->optionDeleted->setValueColour(this->app->theme()->accent());
+        this->optionDeleted->setValueColour((this->app->config()->hDeleted() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         this->optionDeleted->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionDeleted);
         lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
@@ -345,7 +347,7 @@ namespace Screen {
         this->optionPage->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionPage);
 
-        lc = new Aether::ListComment("Uses LayeredFS to replace the User Page with this app. Atmosphere 0.10.0+, ReiNX and SXOS supported.");
+        lc = new Aether::ListComment("Replace the User Page with this app. Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         this->list->addElement(new Aether::ListSeparator());

@@ -321,6 +321,7 @@ namespace Screen {
                 unsigned int j = stats[i].second;
                 la->setCallback([this, j](){
                     this->app->setActiveTitle(j);
+                    this->app->pushScreen();
                     this->app->setScreen(Main::ScreenID::Details);
                 });
                 la->setTitleColour(this->app->theme()->text());
