@@ -6,8 +6,8 @@
 // Enumerations for sorting methods
 enum SortType {
     AlphaAsc,       // Alphabetically (A-Z)
-    HoursAsc,       // Play time (ascending)
-    HoursDec,       // Play time (descending)
+    HoursAsc,       // Playtime (ascending)
+    HoursDec,       // Playtime (descending)
     LaunchAsc,      // Launches (ascending)
     LaunchDec,      // Launches (descending)
     FirstPlayed,    // First played (earliest first)

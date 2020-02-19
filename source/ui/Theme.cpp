@@ -21,6 +21,10 @@ Aether::Colour Theme::fg() {
     return this->fg_;
 }
 
+std::function<Aether::Colour(uint32_t)> Theme::highlightFunc() {
+    return this->highlightFunc_;
+}
+
 Aether::Colour Theme::highlightBG() {
     return this->highlightBG_;
 }
@@ -86,6 +90,7 @@ void Theme::setThemeDark() {
     this->altBG_ = Aether::Theme::Dark.altBG;
     this->bg_ = Aether::Theme::Dark.bg;
     this->fg_ = Aether::Theme::Dark.fg;
+    this->highlightFunc_ = Aether::Theme::Dark.highlightFunc;
     this->highlightBG_ = Aether::Theme::Dark.highlightBG;
     this->mutedLine_ = Aether::Theme::Dark.mutedLine;
     this->mutedText_ = Aether::Theme::Dark.mutedText;
@@ -98,6 +103,7 @@ void Theme::setThemeLight() {
     this->altBG_ = Aether::Theme::Light.altBG;
     this->bg_ = Aether::Theme::Light.bg;
     this->fg_ = Aether::Theme::Light.fg;
+    this->highlightFunc_ = Aether::Theme::Light.highlightFunc;
     this->highlightBG_ = Aether::Theme::Light.highlightBG;
     this->mutedLine_ = Aether::Theme::Light.mutedLine;
     this->mutedText_ = Aether::Theme::Light.mutedText;

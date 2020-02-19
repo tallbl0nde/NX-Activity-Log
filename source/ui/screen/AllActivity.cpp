@@ -78,16 +78,16 @@ namespace Screen {
         this->sortOverlay->addEntry("By Name", [this](){
             this->list->setSort(SortType::AlphaAsc);
         }, t == SortType::AlphaAsc);
-        this->sortOverlay->addEntry("By First Play Time", [this](){
+        this->sortOverlay->addEntry("By First Playtime", [this](){
             this->list->setSort(SortType::FirstPlayed);
         }, t == SortType::FirstPlayed);
         this->sortOverlay->addEntry("By Most Recently Played", [this](){
             this->list->setSort(SortType::LastPlayed);
         }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("By Most Play Time", [this](){
+        this->sortOverlay->addEntry("By Most Playtime", [this](){
             this->list->setSort(SortType::HoursAsc);
         }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("By Least Play Time", [this](){
+        this->sortOverlay->addEntry("By Least Playtime", [this](){
             this->list->setSort(SortType::HoursDec);
         }, t == SortType::HoursDec);
         this->sortOverlay->addEntry("By Most Launched", [this](){
@@ -175,7 +175,7 @@ namespace Screen {
         this->setFocussed(this->list);
 
         // Render total hours string
-        std::string txt = "Total Play Time: " + Utils::Time::playtimeToString(totalSecs, " and ");
+        std::string txt = "Total Playtime: " + Utils::Time::playtimeToString(totalSecs, " and ");
         this->hours = new Aether::Text(1215, 44, txt, 20);
         this->hours->setXY(this->hours->x() - this->hours->w(), this->hours->y() - this->hours->h()/2);
         this->hours->setColour(this->app->theme()->mutedText());

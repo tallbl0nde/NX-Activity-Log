@@ -51,11 +51,11 @@ namespace Screen {
                 break;
 
             case SortType::HoursAsc:
-                str = "By Most Play Time";
+                str = "By Most Playtime";
                 break;
 
             case SortType::HoursDec:
-                str = "By Least Play Time";
+                str = "By Least Playtime";
                 break;
 
             case SortType::LaunchAsc:
@@ -67,7 +67,7 @@ namespace Screen {
                 break;
 
             case SortType::FirstPlayed:
-                str = "By First Play Time";
+                str = "By First Playtime";
                 break;
 
             case SortType::LastPlayed:
@@ -312,21 +312,21 @@ namespace Screen {
             this->app->config()->setGSort(SortType::AlphaAsc);
             this->optionSort->setValue("By Name");
         }, t == SortType::AlphaAsc);
-        this->sortOverlay->addEntry("By First Play Time", [this](){
+        this->sortOverlay->addEntry("By First Playtime", [this](){
             this->app->config()->setGSort(SortType::FirstPlayed);
-            this->optionSort->setValue("By First Play Time");
+            this->optionSort->setValue("By First Playtime");
         }, t == SortType::FirstPlayed);
         this->sortOverlay->addEntry("By Most Recently Played", [this](){
             this->app->config()->setGSort(SortType::LastPlayed);
             this->optionSort->setValue("By Most Recently Played");
         }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("By Most Play Time", [this](){
+        this->sortOverlay->addEntry("By Most Playtime", [this](){
             this->app->config()->setGSort(SortType::HoursAsc);
-            this->optionSort->setValue("By Most Play Time");
+            this->optionSort->setValue("By Most Playtime");
         }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("By Least Play Time", [this](){
+        this->sortOverlay->addEntry("By Least Playtime", [this](){
             this->app->config()->setGSort(SortType::HoursDec);
-            this->optionSort->setValue("By Least Play Time");
+            this->optionSort->setValue("By Least Playtime");
         }, t == SortType::HoursDec);
         this->sortOverlay->addEntry("By Most Launched", [this](){
             this->app->config()->setGSort(SortType::LaunchAsc);

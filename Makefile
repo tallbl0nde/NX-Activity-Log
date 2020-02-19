@@ -144,8 +144,8 @@ DEPENDS	:=	$(OFILES:.o=.d)
 # Important binaries are copied into approporiate places
 # (I gave up figuring out how to do it properly)
 all: $(OUTPUT).nro
-	@mkdir -p $(TOPDIR)/$(OUTDIR)/switch
-	@cp $(OUTPUT).nro $(TOPDIR)/$(OUTDIR)/switch/
+	@mkdir -p $(TOPDIR)/$(OUTDIR)/switch/$(TARGET)
+	@cp $(OUTPUT).nro $(TOPDIR)/$(OUTDIR)/switch/$(TARGET)/
 	@echo
 	@echo "All done! Simply copy the folders within ./$(OUTDIR) to your SD card :)"
 

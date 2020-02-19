@@ -28,7 +28,7 @@ namespace CustomOvl {
         this->addElement(this->length);
         this->lengthSub = new Aether::Text(this->rect->x() + 3*this->rect->w()/4, this->bottom->y() - 50, "", 18);
         this->addElement(this->lengthSub);
-        this->playtime = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 80, "Total Play Time", 20);
+        this->playtime = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 80, "Total Playtime", 20);
         this->playtime->setX(this->playtime->x() - this->playtime->w()/2);
         this->addElement(this->playtime);
         this->playtimeSub = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 50, "", 18);

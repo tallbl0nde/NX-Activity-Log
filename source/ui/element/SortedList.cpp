@@ -43,13 +43,13 @@ namespace CustomElm {
                 });
                 break;
             case HoursAsc:
-                this->heading->setString("Sorting by: Most Play Time");
+                this->heading->setString("Sorting by: Most Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime > rhs.second->playtime;
                 });
                 break;
             case HoursDec:
-                this->heading->setString("Sorting by: Least Play Time");
+                this->heading->setString("Sorting by: Least Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime < rhs.second->playtime;
                 });
@@ -67,7 +67,7 @@ namespace CustomElm {
                 });
                 break;
             case FirstPlayed:
-                this->heading->setString("Sorting by: First Play Time");
+                this->heading->setString("Sorting by: First Playtime");
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->firstPlayed < rhs.second->firstPlayed;
                 });

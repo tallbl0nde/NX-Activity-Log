@@ -11,6 +11,7 @@ class Theme {
         Aether::Colour altBG_;
         Aether::Colour bg_;
         Aether::Colour fg_;
+        std::function<Aether::Colour(uint32_t)> highlightFunc_;
         Aether::Colour highlightBG_;
         Aether::Colour mutedLine_;
         Aether::Colour mutedText_;
@@ -32,6 +33,7 @@ class Theme {
         Aether::Colour altBG();
         Aether::Colour bg();
         Aether::Colour fg();
+        std::function<Aether::Colour(uint32_t)> highlightFunc();
         Aether::Colour highlightBG();
         Aether::Colour mutedLine();
         Aether::Colour mutedText();

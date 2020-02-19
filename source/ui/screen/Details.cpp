@@ -36,11 +36,11 @@ namespace Screen {
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 190, "Play Time", 22);
+        t = new Aether::Text(1070, 190, "Playtime", 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 280, "Average Play Time", 22);
+        t = new Aether::Text(1070, 280, "Average Playtime", 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
@@ -196,7 +196,7 @@ namespace Screen {
                 break;
         }
 
-        // Read play time and set graph values
+        // Read playtime and set graph values
         struct tm t = tm;
         unsigned int totalSecs = 0;
         switch (this->app->viewPeriod()) {
@@ -290,12 +290,12 @@ namespace Screen {
         // Set headings etc...
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
-                this->graphSubheading->setString("Play Time (in minutes)");
+                this->graphSubheading->setString("Playtime (in minutes)");
                 break;
 
             case ViewPeriod::Month:
             case ViewPeriod::Year:
-                this->graphSubheading->setString("Play Time (in hours)");
+                this->graphSubheading->setString("Playtime (in hours)");
                 break;
         }
 
@@ -410,7 +410,7 @@ namespace Screen {
             ls->setTimeString(first + " - " + last + (outRange ? "*" : ""));
             ls->setPlaytimeString(Utils::Time::playtimeToString(playtime, " and "));
 
-            // Add percentage of total play time
+            // Add percentage of total playtime
             std::string str;
             double percent = 100 * ((double)playtime / ((ps->playtime == 0) ? playtime : ps->playtime));
             percent = Utils::roundToDecimalPlace(percent, 2);
@@ -437,7 +437,7 @@ namespace Screen {
         Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "A Play Session represents the time between when a game was launched to when it was quit in succession.", 22, bw - 100);
         tb->setColour(this->app->theme()->text());
         body->addElement(tb);
-        tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "The time of launch, time of exit, play time and percentage of overall playtime is shown.\n\nSelect a session to view a more detailed breakdown.\n\nNote: Sessions with an asterisk start before and/or end after the selected date. Their playtime has been adjusted to reflect the current time range, however their breakdown will show the full duration of the session.", 20, bw - 100);
+        tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "The time of launch, time of exit, playtime and percentage of overall playtime is shown.\n\nSelect a session to view a more detailed breakdown.\n\nNote: Sessions with an asterisk start before and/or end after the selected date. Their playtime has been adjusted to reflect the current time range, however their breakdown will show the full duration of the session.", 20, bw - 100);
         tb->setColour(this->app->theme()->mutedText());
         body->addElement(tb);
         body->setWH(bw, tb->y() + tb->h() + 40);
@@ -613,7 +613,7 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator(30));
 
         this->graphTotal = new Aether::Element(0, 0, 100, 30);
-        this->graphTotalHead = new Aether::Text(this->graphTotal->x(), this->graphTotal->y(), "Total Play Time: ", 20);
+        this->graphTotalHead = new Aether::Text(this->graphTotal->x(), this->graphTotal->y(), "Total Playtime: ", 20);
         this->graphTotalHead->setColour(this->app->theme()->text());
         this->graphTotal->addElement(this->graphTotalHead);
         this->graphTotalSub = new Aether::Text(this->graphTotalHead->x() + this->graphTotalHead->w(), this->graphTotal->y(), "", 20);

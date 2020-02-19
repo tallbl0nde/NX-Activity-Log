@@ -183,7 +183,7 @@ namespace Screen {
                 break;
         }
 
-        // Read play time and set graph values
+        // Read playtime and set graph values
         struct tm t = tm;
         unsigned int totalSecs = 0;
         switch (this->app->viewPeriod()) {
@@ -276,9 +276,9 @@ namespace Screen {
 
         // Set headings
         if (this->app->viewPeriod() == ViewPeriod::Day) {
-            this->graphSubheading->setString("Play Time (in minutes)");
+            this->graphSubheading->setString("Playtime (in minutes)");
         } else {
-            this->graphSubheading->setString("Play Time (in hours)");
+            this->graphSubheading->setString("Playtime (in hours)");
         }
         this->graphSubheading->setX(this->header->x() + (this->header->w() - this->graphSubheading->w())/2);
     }
@@ -303,24 +303,37 @@ namespace Screen {
         // Minus one second so end time is 11:59pm and not 12:00am next day
         unsigned int e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
 
-        // Get stats and add ListActivities
+        // Get stats
         unsigned int totalSecs = 0;
+        std::vector<std::pair<NX::RecentPlayStatistics *, unsigned int> > stats;
         for (size_t i = 0; i < this->app->titleVector().size(); i++) {
-            NX::RecentPlayStatistics * stat = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->titleVector()[i]->titleID(), s, e, this->app->activeUser()->ID());
+            std::pair<NX::RecentPlayStatistics *, unsigned int> stat;
+            stat.first = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->titleVector()[i]->titleID(), s, e, this->app->activeUser()->ID());
+            stat.second = i;
+            stats.push_back(stat);
+        }
 
+        // Sort to have most played first
+        std::sort(stats.begin(), stats.end(), [](const std::pair<NX::RecentPlayStatistics *, unsigned int> lhs, const std::pair<NX::RecentPlayStatistics *, unsigned int> rhs) {
+            return lhs.first->playtime > rhs.first->playtime;
+        });
+
+        // Add to list
+        for (size_t i = 0; i < stats.size(); i++) {
             // Only show games that have actually been played
-            if (stat->playtime > 0) {
-                totalSecs += stat->playtime;
+            if (stats[i].first->launches > 0) {
+                totalSecs += stats[i].first->playtime;
                 CustomElm::ListActivity * la = new CustomElm::ListActivity();
-                la->setImage(new Aether::Image(0, 0, this->app->titleVector()[i]->imgPtr(), this->app->titleVector()[i]->imgSize(), 2, 2));
-                la->setTitle(this->app->titleVector()[i]->name());
-                std::string str = "Played for " + Utils::Time::playtimeToString(stat->playtime, " and ");
+                la->setImage(new Aether::Image(0, 0, this->app->titleVector()[stats[i].second]->imgPtr(), this->app->titleVector()[stats[i].second]->imgSize(), 2, 2));
+                la->setTitle(this->app->titleVector()[stats[i].second]->name());
+                std::string str = "Played for " + Utils::Time::playtimeToString(stats[i].first->playtime, " and ");
                 la->setPlaytime(str);
-                str = "Played " + std::to_string(stat->launches);
-                (stat->launches == 1) ? str += " time" : str += " times";
+                str = "Played " + std::to_string(stats[i].first->launches);
+                (stats[i].first->launches == 1) ? str += " time" : str += " times";
                 la->setLeftMuted(str);
-                la->setCallback([this, i](){
-                    this->app->setActiveTitle(i);
+                unsigned int j = stats[i].second;
+                la->setCallback([this, j](){
+                    this->app->setActiveTitle(j);
                     this->app->setScreen(Main::ScreenID::Details);
                 });
                 la->setTitleColour(this->app->theme()->text());
@@ -330,11 +343,12 @@ namespace Screen {
                 this->list->addElement(la);
             }
 
-            delete stat;
+            // Can delete each pointer after it's accessed
+            delete stats[i].first;
         }
 
         // Update playtime string
-        std::string txt = "Total Play Time: " + Utils::Time::playtimeToString(totalSecs, " and ");
+        std::string txt = "Total Playtime: " + Utils::Time::playtimeToString(totalSecs, " and ");
         this->hours->setString(txt);
         this->hours->setX(1215 - this->hours->w());
     }
