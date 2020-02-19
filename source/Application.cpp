@@ -44,7 +44,7 @@ namespace Main {
         this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
         this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
         this->display->setHighlightAnimation(this->theme_->highlightFunc());
-        this->display->setShowFPS(true);
+        // this->display->setShowFPS(true);
 
         // Create overlays
         this->dtpicker = nullptr;

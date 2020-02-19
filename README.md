@@ -1,8 +1,20 @@
 # NX Activity Log
 
-**NX Activity Log** is a homebrew application for the Nintendo Switch which displays more accurate information about your play activity. The UI has been designed to feel familiar and is navigated in a similar manner to the Switch's firmware.
+**NX Activity Log** is a homebrew application for the Nintendo Switch which displays more precise information about your play activity.
 
-Currently, this application includes the following features:
+[Download](https://github.com/tallbl0nde/NX-Activity-Log/releases)
+
+## Contents
+
+1. [Features](#features)
+2. [Screenshots](#screenshots)
+3. [Known Issues](#known-issues)
+4. [Credits](#credits)
+5. [Support](#support-3)
+
+## Features
+
+This application currently has the following features:
 
 * Viewing Play Activity (per user)
   * All Time Activity
@@ -13,19 +25,19 @@ Currently, this application includes the following features:
     * Average time spent in a game
     * Sorting games by time played, recently played, etc.
   * Recent Activity (see note below)
+    * Graph visualizing play time
     * View by day, month or year
     * Total playtime in seconds
     * Number of launches
-    * Sorted by most played
-* Filtering Games
-  * Ability to omit deleted games from 'All Activity'
+    * Viewing each 'Play Session'
 * Miscellaneous
   * Automatic theme detection to match the Switch's colour scheme
-  * Ability to override User Page
+  * Event-by-event breakdown of your activity
+  * Ability to replace User Page
     * Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS (or build and copy the forwarder to your CFW-specific titles folder)
-    * **Requires .nro to be at /switch/NX-Activity-Log.nro**
+    * **Requires .nro to be at /switch/NX-Activity-Log/NX-Activity-Log.nro**
 
-_Note: The data shown in Recent Activity may be slightly inaccurate over larger periods of time (ie. off by a few minutes) but I will try to improve this over time. If activity is not being shown for earlier periods of time it is likely your switch has been reset at some point, which wipes the data used to calculate playtime in this way._
+_Note: The data shown in Recent Activity and Details may be slightly inaccurate over larger periods of time (ie. off by a few minutes) but I will try to improve this over time. If activity is not being shown for earlier periods of time it is likely your switch has been reset at some point, which wipes the data used to calculate playtime in this way._
 
 ## Screenshots
 
@@ -36,22 +48,27 @@ _Note: The data shown in Recent Activity may be slightly inaccurate over larger 
 ## Known Issues
 
 * The main issue at the moment is that a few users' playtime is incorrect. This is due to the Switch being factory reset at some point and/or some games not requiring a user to be selected to play it. _I am looking into how to fix the former!_
-* The right half of the "game details" screen is blank
-  * This isn't an issue, I just left it empty to place something there later ;)
-* Tapping on a game in 'Recent Activity' does nothing
-  * Again, not an issue as I haven't added anything to appear just yet
+* Having a lot of games logged can cause too much memory usage when launched via User Page/Album, leading to out of memory crashes and/or missing images/text.
+  * I think I know a way to fix this but if it impacts you you'll have to launch this app in title mode for now.
+* Having a lot of games logged causes a long pause/freeze when loading the 'All Activity' screen
+  * Once I learn how to handle threads this won't be a problem :)
+* Changing the date while a game is minimised causes incorrect playtime/play sessions to be shown
+  * Nothing I can do as the time has literally been changed!
 
-## Support
+## Credits
 
-There is absolutely no obligation, however if you have found this software useful you can support me on Ko-fi!
-
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/J3J718RRQ)
-
-Knowing my software is being used is enough to motivate we to continue work on it!
-
-## Thanks to
+I'd like to thank:
 
 * AtlasNX for [SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
   * Used to read/write the config file
 * Switchbrew for [nx-hbloader](https://github.com/switchbrew/nx-hbloader)
   * Adapted to override User Page with this app
+* Anyone else involved with the development of homebrew tools and reverse engineering of the Switch!
+
+## Support <3
+
+There is absolutely no obligation, however if you have found this software useful you can support me on Ko-fi!
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/J3J718RRQ)
+
+Knowing my software is being used is enough to motivate me to continue work on it!
