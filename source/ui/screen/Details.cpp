@@ -115,7 +115,7 @@ namespace Screen {
         }
         this->graphHeading->setString(heading);
         this->graphHeading->setX(this->header->x() + (this->header->w() - this->graphHeading->w())/2);
-        NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+        NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
 
         // Remove current sessions regardless
         this->list->removeFollowingElements(this->topElm);
@@ -209,7 +209,7 @@ namespace Screen {
                 for (size_t i = 0; i < this->graph->entries(); i++) {
                     t.tm_hour = i;
                     e.tm_hour = i;
-                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
                     totalSecs += s->playtime;
                     double val = s->playtime/60.0;
                     this->graph->setValue(i, val);
@@ -230,7 +230,7 @@ namespace Screen {
                 for (size_t i = 0; i < this->graph->entries(); i++) {
                     t.tm_mday = i + 1;
                     e.tm_mday = i + 1;
-                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
                     totalSecs += s->playtime;
                     if (s->playtime > max) {
                         max = s->playtime;
@@ -265,7 +265,7 @@ namespace Screen {
                     t.tm_mon = i;
                     e.tm_mon = i;
                     e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
-                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
                     totalSecs += s->playtime;
                     if (s->playtime > max) {
                         max = s->playtime;
@@ -375,7 +375,7 @@ namespace Screen {
 
             // Get playtime if range is altered
             if (outRange) {
-                NX::RecentPlayStatistics * rps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(sTm), Utils::Time::getTimeT(eTm), this->app->activeUser()->ID());
+                NX::RecentPlayStatistics * rps = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(sTm), Utils::Time::getTimeT(eTm), this->app->activeUser()->ID());
                 playtime = rps->playtime;
                 delete rps;
             }

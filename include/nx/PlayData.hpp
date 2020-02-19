@@ -1,7 +1,7 @@
 #ifndef PLAYDATA_HPP
 #define PLAYDATA_HPP
 
-#include <switch.h>
+#include "Types.hpp"
 #include <vector>
 
 namespace NX {
@@ -25,7 +25,7 @@ namespace NX {
     struct PlayEvent {
         PlayEventType type;     // Type of PlayEvent
         AccountUid userID;      // UserID
-        u64 titleID;            // TitleID
+        TitleID titleID;        // TitleID
         EventType eventType;    // See EventType enum
         u64 clockTimestamp;     // Time of event
         u64 steadyTimestamp;    // Steady timestamp (used for calculating duration)
@@ -42,7 +42,7 @@ namespace NX {
 
     // PdmPlayStatistics but only the necessary things
     struct PlayStatistics {
-        u64 titleID;            // TitleID of these stats
+        TitleID titleID;        // TitleID of these stats
         u32 firstPlayed;        // Timestamp of first launch
         u32 lastPlayed;         // Timestamp of last play (exit)
         u32 playtime;           // Total playtime in seconds
@@ -52,7 +52,7 @@ namespace NX {
     // RecentPlayStatistics struct is similar to PdmPlayStatistics but
     // only contains recent values
     struct RecentPlayStatistics {
-        u64 titleID;            // TitleID of these statistics
+        TitleID titleID;        // TitleID of these statistics
         u32 playtime;           // Total playtime in seconds
         u32 launches;           // Total launches
     };
@@ -73,28 +73,35 @@ namespace NX {
             std::vector<PlayEvent *> events;
 
             // Return vector of PD_Sessions for given title/user IDs + time range
-            // Used internally
-            std::vector<PD_Session> getPDSessions(u64, AccountUid, u64, u64);
+            // Give a titleID of zero to include all titles
+            std::vector<PD_Session> getPDSessions(TitleID, AccountUid, u64, u64);
+
+            // Counts playtime and launches for the given sessions
+            // TitleID in returned struct is zero
+            RecentPlayStatistics * countPlaytime(std::vector<PD_Session>, u64, u64);
 
         public:
             // The constructor prepares + creates PlayEvents
             PlayData();
 
             // Returns all titleIDs found within the play log (some may no longer be valid?)
-            std::vector<u64> getLoggedTitleIDs();
+            std::vector<TitleID> getLoggedTitleIDs();
 
             // Returns vector containing PlayEvents between the given times
             // Start time, end time, titleID, userID
-            std::vector<PlayEvent> getPlayEvents(u64, u64, u64, AccountUid);
+            std::vector<PlayEvent> getPlayEvents(u64, u64, TitleID, AccountUid);
 
             // Returns all play sessions for the given title ID and user ID
-            std::vector<PlaySession> getPlaySessionsForUser(u64, AccountUid);
+            std::vector<PlaySession> getPlaySessionsForUser(TitleID, AccountUid);
+
+            // Returns a RecentPlayStatistics for the given time range for all users
+            RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, AccountUid);
 
             // Returns a RecentPlayStatistics for the given time range and user ID
-            RecentPlayStatistics * getRecentStatisticsForUser(u64, u64, u64, AccountUid);
+            RecentPlayStatistics * getRecentStatisticsForTitleAndUser(TitleID, u64, u64, AccountUid);
 
             // Returns a PlayStatistics for the given titleID and userID
-            PlayStatistics * getStatisticsForUser(u64, AccountUid);
+            PlayStatistics * getStatisticsForUser(TitleID, AccountUid);
 
             // The destructor deletes PlayEvents (frees memory)
             ~PlayData();

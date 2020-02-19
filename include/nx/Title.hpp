@@ -2,13 +2,13 @@
 #define TITLE_HPP
 
 #include <string>
-#include <switch.h>
+#include "Types.hpp"
 
 namespace NX {
     class Title {
         private:
             // Game's titleID
-            u64 titleID_;
+            TitleID titleID_;
             // Is the game installed?
             bool is_installed;
             // Game's name
@@ -19,10 +19,10 @@ namespace NX {
 
         public:
             // The constructor derives all relevant info from given titleID
-            Title(u64, bool);
+            Title(TitleID, bool);
 
             // These functions return Title's data
-            u64 titleID();
+            TitleID titleID();
             bool isInstalled();
             std::string name();
             u8 * imgPtr();

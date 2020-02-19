@@ -87,10 +87,10 @@ namespace Utils::NX {
 
         // Get ALL played titles for ALL users
         // (this doesn't include installed games that haven't been played)
-        std::vector<u64> playedIDs;
+        std::vector<TitleID> playedIDs;
         for (unsigned short i = 0; i < u.size(); i++) {
             s32 playedTotal = 0;
-            u64 * tmpIDs = new u64[MAX_TITLES];
+            TitleID * tmpIDs = new TitleID[MAX_TITLES];
             pdmqryQueryRecentlyPlayedApplication(u[i]->ID(), tmpIDs, MAX_TITLES, &playedTotal);
 
             // Push back ID if not already in the vector
@@ -111,7 +111,7 @@ namespace Utils::NX {
         }
 
         // Get IDs of all installed titles
-        std::vector<u64> installedIDs;
+        std::vector<TitleID> installedIDs;
         NsApplicationRecord * records = new NsApplicationRecord[MAX_TITLES];
         s32 count = 0;
         s32 installedTotal = 0;

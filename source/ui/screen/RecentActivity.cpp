@@ -23,7 +23,7 @@ namespace Screen {
         c->addItem(new Aether::ControlItem(Aether::Button::Y, "Change View"));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
-        this->noStats = new Aether::Text(825, 300, "No play activity has been recorded for this period of time.", 20);
+        this->noStats = new Aether::Text(825, 350, "No play activity has been recorded for this period of time.", 20);
         this->noStats->setXY(this->noStats->x() - this->noStats->w()/2, this->noStats->y() - this->noStats->h()/2);
         this->noStats->setColour(this->app->theme()->mutedText());
         this->addElement(this->noStats);
@@ -102,7 +102,7 @@ namespace Screen {
         }
         this->graphHeading->setString(heading);
         this->graphHeading->setX(this->header->x() + (this->header->w() - this->graphHeading->w())/2);
-        NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+        NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForUser(Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
 
         // Remove current sessions regardless
         this->list->removeFollowingElements(this->topElm);
@@ -123,6 +123,7 @@ namespace Screen {
             this->graph->setHidden(true);
             this->graphSubheading->setHidden(true);
             this->hours->setString("Total Playtime: 0 minutes");
+            this->hours->setX(1215 - this->hours->w());
             this->list->setShowScrollBar(false);
             this->list->setCanScroll(false);
             this->noStats->setHidden(false);
@@ -139,151 +140,147 @@ namespace Screen {
     }
 
     void RecentActivity::updateGraph() {
-        // // Setup graph columns + labels
-        // for (unsigned int i = 0; i < this->graph->entries(); i++) {
-        //     this->graph->setLabel(i, "");
-        // }
-        // struct tm tm = this->app->time();
-        // switch (this->app->viewPeriod()) {
-        //     case ViewPeriod::Day:
-        //         this->graph->setFontSize(14);
-        //         this->graph->setMaximumValue(60);
-        //         this->graph->setYSteps(6);
-        //         this->graph->setValuePrecision(0);
-        //         this->graph->setNumberOfEntries(24);
-        //         this->graph->setLabel(0, "12am");
-        //         this->graph->setLabel(3, "3am");
-        //         this->graph->setLabel(6, "6am");
-        //         this->graph->setLabel(9, "9am");
-        //         this->graph->setLabel(12, "12pm");
-        //         this->graph->setLabel(15, "3pm");
-        //         this->graph->setLabel(18, "6pm");
-        //         this->graph->setLabel(21, "9pm");
-        //         break;
+        // Setup graph columns + labels
+        for (unsigned int i = 0; i < this->graph->entries(); i++) {
+            this->graph->setLabel(i, "");
+        }
+        struct tm tm = this->app->time();
+        switch (this->app->viewPeriod()) {
+            case ViewPeriod::Day:
+                this->graph->setFontSize(14);
+                this->graph->setMaximumValue(60);
+                this->graph->setYSteps(6);
+                this->graph->setValuePrecision(0);
+                this->graph->setNumberOfEntries(24);
+                this->graph->setLabel(0, "12am");
+                this->graph->setLabel(3, "3am");
+                this->graph->setLabel(6, "6am");
+                this->graph->setLabel(9, "9am");
+                this->graph->setLabel(12, "12pm");
+                this->graph->setLabel(15, "3pm");
+                this->graph->setLabel(18, "6pm");
+                this->graph->setLabel(21, "9pm");
+                break;
 
-        //     case ViewPeriod::Month: {
-        //         unsigned int c = Utils::Time::tmGetDaysInMonth(tm);
-        //         this->graph->setFontSize(13);
-        //         this->graph->setValuePrecision(1);
-        //         this->graph->setNumberOfEntries(c);
-        //         for (unsigned int i = 0; i < c; i+=3) {
-        //             this->graph->setLabel(i, std::to_string(i + 1) + Utils::Time::getDateSuffix(i + 1));
-        //         }
-        //         break;
-        //     }
+            case ViewPeriod::Month: {
+                unsigned int c = Utils::Time::tmGetDaysInMonth(tm);
+                this->graph->setFontSize(13);
+                this->graph->setValuePrecision(1);
+                this->graph->setNumberOfEntries(c);
+                for (unsigned int i = 0; i < c; i+=3) {
+                    this->graph->setLabel(i, std::to_string(i + 1) + Utils::Time::getDateSuffix(i + 1));
+                }
+                break;
+            }
 
-        //     case ViewPeriod::Year:
-        //         this->graph->setFontSize(16);
-        //         this->graph->setValuePrecision(1);
-        //         this->graph->setNumberOfEntries(12);
-        //         for (int i = 0; i < 12; i++) {
-        //             this->graph->setLabel(i, Utils::Time::getShortMonthString(i));
-        //         }
-        //         break;
-        // }
+            case ViewPeriod::Year:
+                this->graph->setFontSize(16);
+                this->graph->setValuePrecision(1);
+                this->graph->setNumberOfEntries(12);
+                for (int i = 0; i < 12; i++) {
+                    this->graph->setLabel(i, Utils::Time::getShortMonthString(i));
+                }
+                break;
+        }
 
-        // // Read play time and set graph values
-        // struct tm t = tm;
-        // unsigned int totalSecs = 0;
-        // switch (this->app->viewPeriod()) {
-        //     case ViewPeriod::Day: {
-        //         t.tm_min = 0;
-        //         t.tm_sec = 0;
-        //         struct tm e = t;
-        //         e.tm_min = 59;
-        //         e.tm_sec = 59;
-        //         for (size_t i = 0; i < this->graph->entries(); i++) {
-        //             t.tm_hour = i;
-        //             e.tm_hour = i;
-        //             NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
-        //             totalSecs += s->playtime;
-        //             double val = s->playtime/60.0;
-        //             this->graph->setValue(i, val);
-        //             delete s;
-        //         }
-        //         break;
-        //     }
+        // Read play time and set graph values
+        struct tm t = tm;
+        unsigned int totalSecs = 0;
+        switch (this->app->viewPeriod()) {
+            case ViewPeriod::Day: {
+                t.tm_min = 0;
+                t.tm_sec = 0;
+                struct tm e = t;
+                e.tm_min = 59;
+                e.tm_sec = 59;
+                for (size_t i = 0; i < this->graph->entries(); i++) {
+                    t.tm_hour = i;
+                    e.tm_hour = i;
+                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    totalSecs += s->playtime;
+                    double val = s->playtime/60.0;
+                    this->graph->setValue(i, val);
+                    delete s;
+                }
+                break;
+            }
 
-        //     case ViewPeriod::Month: {
-        //         t.tm_hour = 0;
-        //         t.tm_min = 0;
-        //         t.tm_sec = 0;
-        //         struct tm e = t;
-        //         e.tm_hour = 23;
-        //         e.tm_min = 59;
-        //         e.tm_sec = 59;
-        //         unsigned int max = 0;
-        //         for (size_t i = 0; i < this->graph->entries(); i++) {
-        //             t.tm_mday = i + 1;
-        //             e.tm_mday = i + 1;
-        //             NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
-        //             totalSecs += s->playtime;
-        //             if (s->playtime > max) {
-        //                 max = s->playtime;
-        //             }
-        //             double val = s->playtime/60/60.0;
-        //             this->graph->setValue(i, val);
-        //             delete s;
-        //         }
-        //         max /= 60.0;
-        //         max /= 60.0;
-        //         if (max <= 2) {
-        //             this->graph->setMaximumValue(max + 2 - max%2);
-        //             this->graph->setYSteps(2);
-        //         } else {
-        //             this->graph->setMaximumValue(max + 5 - max%5);
-        //             this->graph->setYSteps(5);
-        //         }
-        //         break;
-        //     }
+            case ViewPeriod::Month: {
+                t.tm_hour = 0;
+                t.tm_min = 0;
+                t.tm_sec = 0;
+                struct tm e = t;
+                e.tm_hour = 23;
+                e.tm_min = 59;
+                e.tm_sec = 59;
+                unsigned int max = 0;
+                for (size_t i = 0; i < this->graph->entries(); i++) {
+                    t.tm_mday = i + 1;
+                    e.tm_mday = i + 1;
+                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    totalSecs += s->playtime;
+                    if (s->playtime > max) {
+                        max = s->playtime;
+                    }
+                    double val = s->playtime/60/60.0;
+                    this->graph->setValue(i, val);
+                    delete s;
+                }
+                max /= 60.0;
+                max /= 60.0;
+                if (max <= 2) {
+                    this->graph->setMaximumValue(max + 2 - max%2);
+                    this->graph->setYSteps(2);
+                } else {
+                    this->graph->setMaximumValue(max + 5 - max%5);
+                    this->graph->setYSteps(5);
+                }
+                break;
+            }
 
-        //     case ViewPeriod::Year: {
-        //         t.tm_mday = 1;
-        //         t.tm_hour = 0;
-        //         t.tm_min = 0;
-        //         t.tm_sec = 0;
-        //         struct tm e = t;
-        //         e.tm_hour = 23;
-        //         e.tm_min = 59;
-        //         e.tm_sec = 59;
-        //         unsigned int max = 0;
-        //         for (size_t i = 0; i < this->graph->entries(); i++) {
-        //             t.tm_mon = i;
-        //             e.tm_mon = i;
-        //             e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
-        //             NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
-        //             totalSecs += s->playtime;
-        //             if (s->playtime > max) {
-        //                 max = s->playtime;
-        //             }
-        //             double val = s->playtime/60/60.0;
-        //             this->graph->setValue(i, val);
-        //             delete s;
-        //         }
-        //         max /= 60.0;
-        //         max /= 60.0;
-        //         if (max <= 2) {
-        //             this->graph->setMaximumValue(max + 2 - max%2);
-        //             this->graph->setYSteps(2);
-        //         } else {
-        //             this->graph->setMaximumValue(max + 5 - max%5);
-        //             this->graph->setYSteps(5);
-        //         }
-        //         break;
-        //     }
-        // }
+            case ViewPeriod::Year: {
+                t.tm_mday = 1;
+                t.tm_hour = 0;
+                t.tm_min = 0;
+                t.tm_sec = 0;
+                struct tm e = t;
+                e.tm_hour = 23;
+                e.tm_min = 59;
+                e.tm_sec = 59;
+                unsigned int max = 0;
+                for (size_t i = 0; i < this->graph->entries(); i++) {
+                    t.tm_mon = i;
+                    e.tm_mon = i;
+                    e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
+                    NX::RecentPlayStatistics * s = this->app->playdata()->getRecentStatisticsForUser(Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
+                    totalSecs += s->playtime;
+                    if (s->playtime > max) {
+                        max = s->playtime;
+                    }
+                    double val = s->playtime/60/60.0;
+                    this->graph->setValue(i, val);
+                    delete s;
+                }
+                max /= 60.0;
+                max /= 60.0;
+                if (max <= 2) {
+                    this->graph->setMaximumValue(max + 2 - max%2);
+                    this->graph->setYSteps(2);
+                } else {
+                    this->graph->setMaximumValue(max + 5 - max%5);
+                    this->graph->setYSteps(5);
+                }
+                break;
+            }
+        }
 
-        // // Set headings etc...
-        // switch (this->app->viewPeriod()) {
-        //     case ViewPeriod::Day:
-        //         this->graphSubheading->setString("Play Time (in minutes)");
-        //         break;
-
-        //     case ViewPeriod::Month:
-        //     case ViewPeriod::Year:
-        //         this->graphSubheading->setString("Play Time (in hours)");
-        //         break;
-        // }
+        // Set headings
+        if (this->app->viewPeriod() == ViewPeriod::Day) {
+            this->graphSubheading->setString("Play Time (in minutes)");
+        } else {
+            this->graphSubheading->setString("Play Time (in hours)");
+        }
+        this->graphSubheading->setX(this->header->x() + (this->header->w() - this->graphSubheading->w())/2);
     }
 
     void RecentActivity::updateTitles() {
@@ -309,7 +306,7 @@ namespace Screen {
         // Get stats and add ListActivities
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < this->app->titleVector().size(); i++) {
-            NX::RecentPlayStatistics * stat = this->app->playdata()->getRecentStatisticsForUser(this->app->titleVector()[i]->titleID(), s, e, this->app->activeUser()->ID());
+            NX::RecentPlayStatistics * stat = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->titleVector()[i]->titleID(), s, e, this->app->activeUser()->ID());
 
             // Only show games that have actually been played
             if (stat->playtime > 0) {
@@ -337,7 +334,7 @@ namespace Screen {
         }
 
         // Update playtime string
-        std::string txt = "Total Playtime: " + Utils::Time::playtimeToString(totalSecs, " and ");
+        std::string txt = "Total Play Time: " + Utils::Time::playtimeToString(totalSecs, " and ");
         this->hours->setString(txt);
         this->hours->setX(1215 - this->hours->w());
     }

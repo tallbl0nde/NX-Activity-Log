@@ -2,7 +2,6 @@
 #define UTILS_NX_HPP
 
 #include "Title.hpp"
-#include "Types.hpp"
 #include "User.hpp"
 #include <vector>
 

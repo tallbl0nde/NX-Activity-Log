@@ -2,7 +2,7 @@
 #include "Title.hpp"
 
 namespace NX {
-    Title::Title(u64 titleID, bool installed) {
+    Title::Title(TitleID titleID, bool installed) {
         this->titleID_ = titleID;
         this->is_installed = installed;
         this->name_ = "";
@@ -27,7 +27,7 @@ namespace NX {
         }
     }
 
-    u64 Title::titleID() {
+    TitleID Title::titleID() {
         return this->titleID_;
     }
 

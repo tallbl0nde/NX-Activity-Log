@@ -7,7 +7,7 @@
 #define MAX_PROCESS_ENTRIES 1000
 
 namespace NX {
-    std::vector<PD_Session> PlayData::getPDSessions(u64 titleID, AccountUid userID, u64 start_ts, u64 end_ts) {
+    std::vector<PD_Session> PlayData::getPDSessions(TitleID titleID, AccountUid userID, u64 start_ts, u64 end_ts) {
         // Break each "session" apart and keep if matching titleID and userID
         std::vector<PD_Session> sessions;
         size_t a = 0;
@@ -17,10 +17,10 @@ namespace NX {
                 size_t s = a;
                 bool time_c = false;
                 bool titleID_c = false;
-                bool userID_c = false;
-                if (this->events[a]->titleID == titleID) {
+                if (titleID == 0 || this->events[a]->titleID == titleID) {
                     titleID_c = true;
                 }
+                bool userID_c = false;
 
                 a++;
                 bool end = false;
@@ -79,6 +79,76 @@ namespace NX {
         }
 
         return sessions;
+    }
+
+    RecentPlayStatistics * PlayData::countPlaytime(std::vector<PD_Session> sessions, u64 start_ts, u64 end_ts) {
+        // Count playtime + launches
+        RecentPlayStatistics * stats = new RecentPlayStatistics;
+        stats->titleID = 0;
+        stats->playtime = 0;
+        stats->launches = 0;
+
+        if (sessions.size() == 0) {
+            return stats;
+        }
+
+        // Iterate over valid sessions to calculate statistics
+        for (size_t i = 0; i < sessions.size(); i++) {
+            stats->launches++;
+
+            u64 last_ts = 0;
+            u64 last_clock = 0;
+            bool in_before = false;
+            bool done = false;
+            for (size_t j = sessions[i].index; j < sessions[i].index + sessions[i].num; j++) {
+                if (done) {
+                    break;
+                }
+
+                switch (this->events[j]->eventType) {
+                    case Applet_Launch:
+                    case Applet_Exit:
+                    case Account_Active:
+                    case Account_Inactive:
+                        break;
+
+                    case Applet_InFocus:
+                        last_ts = this->events[j]->steadyTimestamp;
+                        last_clock = this->events[j]->clockTimestamp;
+                        in_before = false;
+                        if (this->events[j]->clockTimestamp < start_ts) {
+                            last_clock = start_ts;
+                            in_before = true;
+                        } else if (this->events[j]->clockTimestamp >= end_ts) {
+                            done = true;
+                        }
+                        break;
+
+                    case Applet_OutFocus:
+                        if (this->events[j]->clockTimestamp >= end_ts) {
+                            stats->playtime += (end_ts - last_clock);
+                        } else if (this->events[j]->clockTimestamp >= start_ts) {
+                            if (in_before) {
+                                stats->playtime += (this->events[j]->clockTimestamp - last_clock);
+                            } else {
+                                stats->playtime += (this->events[j]->steadyTimestamp - last_ts);
+                            }
+                        }
+
+                        // Move to last out focus (I don't know why the log has multiple)
+                        while (j+1 < this->events.size()) {
+                            if (this->events[j+1]->eventType == Applet_OutFocus) {
+                                j++;
+                            } else {
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        return stats;
     }
 
     PlayData::PlayData() {
@@ -180,8 +250,8 @@ namespace NX {
         delete[] pEvents;
     }
 
-    std::vector<u64> PlayData::getLoggedTitleIDs() {
-        std::vector<u64> ids;
+    std::vector<TitleID> PlayData::getLoggedTitleIDs() {
+        std::vector<TitleID> ids;
         for (size_t i = 0; i < this->events.size(); i++) {
             if (this->events[i]->type == PlayEvent_Applet) {
                 // Exclude this title (I dunno what it is but it causes crashes)
@@ -198,7 +268,7 @@ namespace NX {
         return ids;
     }
 
-    std::vector<PlayEvent> PlayData::getPlayEvents(u64 start, u64 end, u64 titleID, AccountUid userID) {
+    std::vector<PlayEvent> PlayData::getPlayEvents(u64 start, u64 end, TitleID titleID, AccountUid userID) {
         std::vector<PlayEvent> events;
 
         // Get a vector of PD_Sessions -> should only be one if the provided timestamps are correct
@@ -216,7 +286,7 @@ namespace NX {
         return events;
     }
 
-    std::vector<PlaySession> PlayData::getPlaySessionsForUser(u64 titleID, AccountUid userID) {
+    std::vector<PlaySession> PlayData::getPlaySessionsForUser(TitleID titleID, AccountUid userID) {
         // Get list of pd_sessions
         struct tm end = Utils::Time::getTmForCurrentTime();
         std::vector<PD_Session> pd_sessions = this->getPDSessions(titleID, userID, 0, std::mktime(&end));
@@ -274,80 +344,17 @@ namespace NX {
         return sessions;
     }
 
-    RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 titleID, u64 start_ts, u64 end_ts, AccountUid userID) {
-        // Get valid sessions
-        std::vector<PD_Session> sessions = this->getPDSessions(titleID, userID, start_ts, end_ts);
-
-        // Count playtime + launches
-        RecentPlayStatistics * stats = new RecentPlayStatistics;
-        stats->titleID = titleID;
-        stats->playtime = 0;
-        stats->launches = 0;
-
-        if (sessions.size() == 0) {
-            return stats;
-        }
-
-        // Iterate over valid sessions to calculate statistics
-        for (size_t i = 0; i < sessions.size(); i++) {
-            stats->launches++;
-
-            u64 last_ts = 0;
-            u64 last_clock = 0;
-            bool in_before = false;
-            bool done = false;
-            for (size_t j = sessions[i].index; j < sessions[i].index + sessions[i].num; j++) {
-                if (done) {
-                    break;
-                }
-
-                switch (this->events[j]->eventType) {
-                    case Applet_Launch:
-                    case Applet_Exit:
-                    case Account_Active:
-                    case Account_Inactive:
-                        break;
-
-                    case Applet_InFocus:
-                        last_ts = this->events[j]->steadyTimestamp;
-                        last_clock = this->events[j]->clockTimestamp;
-                        in_before = false;
-                        if (this->events[j]->clockTimestamp < start_ts) {
-                            last_clock = start_ts;
-                            in_before = true;
-                        } else if (this->events[j]->clockTimestamp >= end_ts) {
-                            done = true;
-                        }
-                        break;
-
-                    case Applet_OutFocus:
-                        if (this->events[j]->clockTimestamp >= end_ts) {
-                            stats->playtime += (end_ts - last_clock);
-                        } else if (this->events[j]->clockTimestamp >= start_ts) {
-                            if (in_before) {
-                                stats->playtime += (this->events[j]->clockTimestamp - last_clock);
-                            } else {
-                                stats->playtime += (this->events[j]->steadyTimestamp - last_ts);
-                            }
-                        }
-
-                        // Move to last out focus (I don't know why the log has multiple)
-                        while (j+1 < this->events.size()) {
-                            if (this->events[j+1]->eventType == Applet_OutFocus) {
-                                j++;
-                            } else {
-                                break;
-                            }
-                        }
-                        break;
-                }
-            }
-        }
-
-        return stats;
+    RecentPlayStatistics * PlayData::getRecentStatisticsForUser(u64 start_ts, u64 end_ts, AccountUid userID) {
+        return this->countPlaytime(this->getPDSessions(0, userID, start_ts, end_ts), start_ts, end_ts);
     }
 
-    PlayStatistics * PlayData::getStatisticsForUser(u64 titleID, AccountUid userID) {
+    RecentPlayStatistics * PlayData::getRecentStatisticsForTitleAndUser(TitleID titleID, u64 start_ts, u64 end_ts, AccountUid userID) {
+        RecentPlayStatistics * s = this->countPlaytime(this->getPDSessions(titleID, userID, start_ts, end_ts), start_ts, end_ts);
+        s->titleID = titleID;
+        return s;
+    }
+
+    PlayStatistics * PlayData::getStatisticsForUser(TitleID titleID, AccountUid userID) {
         PdmPlayStatistics tmp;
         pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleID, userID, &tmp);
         PlayStatistics * stats = new PlayStatistics;
