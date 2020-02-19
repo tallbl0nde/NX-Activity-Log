@@ -4,6 +4,8 @@
 
 [Download](https://github.com/tallbl0nde/NX-Activity-Log/releases)
 
+Curious about what's next? See my to-do list on [Trello](https://trello.com/b/HaJ1THGq/nx-activity-log)
+
 ## Contents
 
 1. [Features](#features)
