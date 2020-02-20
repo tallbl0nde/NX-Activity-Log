@@ -10,9 +10,10 @@ Curious about what's next? See my to-do list on [Trello](https://trello.com/b/Ha
 
 1. [Features](#features)
 2. [Screenshots](#screenshots)
-3. [Known Issues](#known-issues)
-4. [Credits](#credits)
-5. [Support](#support-3)
+3. [Reporting Incorrect Data](#reporting-incorrect-data)
+4. [Known Issues](#known-issues)
+5. [Credits](#credits)
+6. [Support](#support-3)
 
 ## Features
 
@@ -46,6 +47,19 @@ _Note: The data shown in Recent Activity and Details may be slightly inaccurate 
 ![Recent View](/img/sc_recent.jpg)
 ![All Activity View](/img/sc_activity.jpg)
 ![Detailed View](/img/sc_detailed.jpg)
+
+## Reporting Incorrect Data
+
+If you are seeing wildly incorrect values/believe the playtime shown is incorrect within Recent Activity or the Details screen, please do the following:
+
+1. Download and run the .nro from [here](https://github.com/tallbl0nde/PlayEventParser/releases)
+2. Leave it run; if it appears to be frozen leave it for up to a minute!
+3. Once it is done there should be a playlog.txt at the root of your SD card.
+4. Create an issue with the following:
+    * Screenshots of the incorrect data (make sure the date/time and playtime are visible!)
+    * The playlog.txt acquired from the last steps
+
+_Note: If the data shown under All Activity is incorrect there is nothing I can do! These values are read directly from the Switch and aren't the result of any calculations._
 
 ## Known Issues
 
