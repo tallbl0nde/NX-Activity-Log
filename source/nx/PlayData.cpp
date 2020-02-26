@@ -303,17 +303,16 @@ namespace NX {
         std::vector<PlaySession> sessions;
         for (size_t i = 0; i < pd_sessions.size(); i++) {
             struct PlaySession p;
-            p.playtime = 0;
             p.startTimestamp = 0;
             p.endTimestamp = 0;
 
-            // A "valid" session must have at least 6 events (launch, in, login, out, logout, exit)
-            u64 last_ts = 0;
+            // Get start and end timestamps
             for (size_t j = pd_sessions[i].index; j < pd_sessions[i].index + pd_sessions[i].num; j++) {
                 switch (this->events[j]->eventType) {
                     // Ignore account events
                     case Account_Active:
                     case Account_Inactive:
+                    case Applet_InFocus:
                         break;
 
                     // Set start/end timestamps
@@ -325,13 +324,8 @@ namespace NX {
                         p.endTimestamp = this->events[j]->clockTimestamp;
                         break;
 
-                    // Calculate playtime when in focus
-                    case Applet_InFocus:
-                        last_ts = this->events[j]->steadyTimestamp;
-                        break;
 
                     case Applet_OutFocus:
-                        p.playtime += (this->events[j]->steadyTimestamp - last_ts);
                         p.endTimestamp = this->events[j]->clockTimestamp;   // In case of a firmware crash there is no Applet_Exit event logged
 
                         // Move to last out focus (I don't know why the log has multiple)
@@ -345,6 +339,11 @@ namespace NX {
                         break;
                 }
             }
+
+            // Get playtime
+            RecentPlayStatistics * rps = countPlaytime(pd_sessions, p.startTimestamp, p.endTimestamp);
+            p.playtime = rps->playtime;
+            delete rps;
 
             sessions.push_back(p);
         }
