@@ -107,6 +107,14 @@ namespace NX {
 
                 switch (this->events[j]->eventType) {
                     case Applet_Launch:
+                        // Skip to first in focus event
+                        while (j+1 < this->events.size()) {
+                            if (this->events[j+1]->eventType != Applet_InFocus) {
+                                j++;
+                            } else {
+                                break;
+                            }
+                        }
                     case Applet_Exit:
                     case Account_Active:
                     case Account_Inactive:
