@@ -12,11 +12,12 @@ namespace Main {
             simpleIniParser::Ini * ini;
 
             bool gGraph_;
-            ScreenID gScreen_;
-            SortType gSort_;
+            bool gIs24H_;
             ThemeType gTheme_;
-            ViewPeriod gView_;
             bool hDeleted_;
+            ScreenID lScreen_;
+            SortType lSort_;
+            ViewPeriod lView_;
 
         public:
             // Sets ini to nullptr
@@ -31,18 +32,20 @@ namespace Main {
 
             // Getters + setters for all settings
             bool gGraph();
-            ScreenID gScreen();
-            SortType gSort();
+            bool gIs24H();
             ThemeType gTheme();
-            ViewPeriod gView();
             bool hDeleted();
+            ScreenID lScreen();
+            SortType lSort();
+            ViewPeriod lView();
 
             void setGGraph(bool);
-            void setGScreen(ScreenID);
-            void setGSort(SortType);
+            void setGIs24H(bool);
             void setGTheme(ThemeType);
-            void setGView(ViewPeriod);
             void setHDeleted(bool);
+            void setLScreen(ScreenID);
+            void setLSort(SortType);
+            void setLView(ViewPeriod);
     };
 };
 

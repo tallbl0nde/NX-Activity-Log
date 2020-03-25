@@ -139,14 +139,20 @@ namespace Screen {
                 this->graph->setYSteps(6);
                 this->graph->setValuePrecision(0);
                 this->graph->setNumberOfEntries(24);
-                this->graph->setLabel(0, "12am");
-                this->graph->setLabel(3, "3am");
-                this->graph->setLabel(6, "6am");
-                this->graph->setLabel(9, "9am");
-                this->graph->setLabel(12, "12pm");
-                this->graph->setLabel(15, "3pm");
-                this->graph->setLabel(18, "6pm");
-                this->graph->setLabel(21, "9pm");
+                if (this->app->config()->gIs24H()) {
+                    for (int i = 0; i < 24; i += 2) {
+                        this->graph->setLabel(i, std::to_string(i));
+                    }
+                } else {
+                    this->graph->setLabel(0, "12am");
+                    this->graph->setLabel(3, "3am");
+                    this->graph->setLabel(6, "6am");
+                    this->graph->setLabel(9, "9am");
+                    this->graph->setLabel(12, "12pm");
+                    this->graph->setLabel(15, "3pm");
+                    this->graph->setLabel(18, "6pm");
+                    this->graph->setLabel(21, "9pm");
+                }
                 break;
 
             case ViewPeriod::Month: {

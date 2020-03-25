@@ -27,28 +27,11 @@ namespace Main {
             this->gGraph_ = true;
         }
 
-        option = sec->findOrCreateFirstOption("screen", "RecentActivity");
-        if (option->value == "AllActivity") {
-            this->gScreen_ = ScreenID::AllActivity;
+        option = sec->findOrCreateFirstOption("use24h", "false");
+        if (option->value == "true") {
+            this->gIs24H_ = true;
         } else {
-            this->gScreen_ = ScreenID::RecentActivity;
-        }
-        
-        option = sec->findOrCreateFirstOption("sort", "LastPlayed");
-        if (option->value == "AlphaAsc") {
-            this->gSort_ = AlphaAsc;
-        } else if (option->value == "HoursAsc") {
-            this->gSort_ = HoursAsc;
-        } else if (option->value == "HoursDec") {
-            this->gSort_ = HoursDec;
-        } else if (option->value == "LaunchAsc") {
-            this->gSort_ = LaunchAsc;
-        } else if (option->value == "LaunchDec") {
-            this->gSort_ = LaunchDec;
-        } else if (option->value == "FirstPlayed") {
-            this->gSort_ = FirstPlayed;
-        } else {
-            this->gSort_ = LastPlayed;
+            this->gIs24H_ = false;
         }
 
         option = sec->findOrCreateFirstOption("theme", "Auto");
@@ -60,15 +43,39 @@ namespace Main {
             this->gTheme_ = Auto;
         }
 
-        option = sec->findOrCreateFirstOption("view", "Day");
-        if (option->value == "Month") {
-            this->gView_ = ViewPeriod::Month;
-        } else if (option->value == "Year") {
-            this->gView_ = ViewPeriod::Year;
+        option = sec->findOrCreateFirstOption("screen", "RecentActivity");
+        if (option->value == "AllActivity") {
+            this->lScreen_ = ScreenID::AllActivity;
         } else {
-            this->gView_ = ViewPeriod::Day;
+            this->lScreen_ = ScreenID::RecentActivity;
         }
         
+        option = sec->findOrCreateFirstOption("sort", "LastPlayed");
+        if (option->value == "AlphaAsc") {
+            this->lSort_ = AlphaAsc;
+        } else if (option->value == "HoursAsc") {
+            this->lSort_ = HoursAsc;
+        } else if (option->value == "HoursDec") {
+            this->lSort_ = HoursDec;
+        } else if (option->value == "LaunchAsc") {
+            this->lSort_ = LaunchAsc;
+        } else if (option->value == "LaunchDec") {
+            this->lSort_ = LaunchDec;
+        } else if (option->value == "FirstPlayed") {
+            this->lSort_ = FirstPlayed;
+        } else {
+            this->lSort_ = LastPlayed;
+        }
+
+        option = sec->findOrCreateFirstOption("view", "Day");
+        if (option->value == "Month") {
+            this->lView_ = ViewPeriod::Month;
+        } else if (option->value == "Year") {
+            this->lView_ = ViewPeriod::Year;
+        } else {
+            this->lView_ = ViewPeriod::Day;
+        }
+
         sec = ini->findOrCreateSection("hidden");
         option = sec->findOrCreateFirstOption("deleted", "false");
         if (option->value == "true") {
@@ -84,35 +91,18 @@ namespace Main {
         }
 
         // Write file
-        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("showGraphValues", false);
+        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("showGraphValues");
         if (this->gGraph_ == true) {
             option->value = "true";
         } else if (this->gGraph_ == false) {
             option->value = "false";
         }
 
-        option = ini->findSection("general")->findFirstOption("screen");
-        if (this->gScreen_ == ScreenID::AllActivity) {
-            option->value = "AllActivity";
-        } else if (this->gScreen_ == ScreenID::RecentActivity) {
-            option->value = "RecentActivity";
-        }
-
-        option = ini->findSection("general")->findFirstOption("sort");
-        if (this->gSort_ == AlphaAsc) {
-            option->value = "AlphaAsc";
-        } else if (this->gSort_ == HoursAsc) {
-            option->value = "HoursAsc";
-        } else if (this->gSort_ == HoursDec) {
-            option->value = "HoursDec";
-        } else if (this->gSort_ == LaunchAsc) {
-            option->value = "LaunchAsc";
-        } else if (this->gSort_ == LaunchDec) {
-            option->value = "LaunchDec";
-        } else if (this->gSort_ == FirstPlayed) {
-            option->value = "FirstPlayed";
-        } else if (this->gSort_ == LastPlayed) {
-            option->value = "LastPlayed";
+        option = ini->findSection("general")->findFirstOption("use24h");
+        if (this->gIs24H_ == true) {
+            option->value = "true";
+        } else if (this->gIs24H_ == false) {
+            option->value = "false";
         }
 
         option = ini->findSection("general")->findFirstOption("theme");
@@ -124,20 +114,44 @@ namespace Main {
             option->value = "Auto";
         }
 
-        option = ini->findSection("general")->findFirstOption("view");
-        if (this->gView_ == ViewPeriod::Month) {
-            option->value = "Month";
-        } else if (this->gView_ == ViewPeriod::Year) {
-            option->value = "Year";
-        } else if (this->gView_ == ViewPeriod::Day) {
-            option->value = "Day";
-        }
-
         option = ini->findSection("hidden")->findFirstOption("deleted");
         if (this->hDeleted_ == true) {
             option->value = "true";
         } else if (this->hDeleted_ == false) {
             option->value = "false";
+        }
+
+        option = ini->findSection("general")->findFirstOption("screen");
+        if (this->lScreen_ == ScreenID::AllActivity) {
+            option->value = "AllActivity";
+        } else if (this->lScreen_ == ScreenID::RecentActivity) {
+            option->value = "RecentActivity";
+        }
+
+        option = ini->findSection("general")->findFirstOption("sort");
+        if (this->lSort_ == AlphaAsc) {
+            option->value = "AlphaAsc";
+        } else if (this->lSort_ == HoursAsc) {
+            option->value = "HoursAsc";
+        } else if (this->lSort_ == HoursDec) {
+            option->value = "HoursDec";
+        } else if (this->lSort_ == LaunchAsc) {
+            option->value = "LaunchAsc";
+        } else if (this->lSort_ == LaunchDec) {
+            option->value = "LaunchDec";
+        } else if (this->lSort_ == FirstPlayed) {
+            option->value = "FirstPlayed";
+        } else if (this->lSort_ == LastPlayed) {
+            option->value = "LastPlayed";
+        }
+
+        option = ini->findSection("general")->findFirstOption("view");
+        if (this->lView_ == ViewPeriod::Month) {
+            option->value = "Month";
+        } else if (this->lView_ == ViewPeriod::Year) {
+            option->value = "Year";
+        } else if (this->lView_ == ViewPeriod::Day) {
+            option->value = "Day";
         }
 
         ini->writeToFile("/config/NX-Activity-Log/config.ini");
@@ -147,24 +161,28 @@ namespace Main {
         return this->gGraph_;
     }
 
-    ScreenID Config::gScreen() {
-        return this->gScreen_;
-    }
-
-    SortType Config::gSort() {
-        return this->gSort_;
+    bool Config::gIs24H() {
+        return this->gIs24H_;
     }
 
     ThemeType Config::gTheme() {
         return this->gTheme_;
     }
 
-    ViewPeriod Config::gView() {
-        return this->gView_;
-    }
-
     bool Config::hDeleted() {
         return this->hDeleted_;
+    }
+
+    ScreenID Config::lScreen() {
+        return this->lScreen_;
+    }
+
+    SortType Config::lSort() {
+        return this->lSort_;
+    }
+
+    ViewPeriod Config::lView() {
+        return this->lView_;
     }
 
     void Config::setGGraph(bool b) {
@@ -172,13 +190,8 @@ namespace Main {
         this->writeConfig();
     }
 
-    void Config::setGScreen(ScreenID v) {
-        this->gScreen_ = v;
-        this->writeConfig();
-    }
-
-    void Config::setGSort(SortType v) {
-        this->gSort_ = v;
+    void Config::setGIs24H(bool b) {
+        this->gIs24H_ = b;
         this->writeConfig();
     }
 
@@ -187,13 +200,23 @@ namespace Main {
         this->writeConfig();
     }
 
-    void Config::setGView(ViewPeriod v) {
-        this->gView_ = v;
+    void Config::setHDeleted(bool v) {
+        this->hDeleted_ = v;
         this->writeConfig();
     }
 
-    void Config::setHDeleted(bool v) {
-        this->hDeleted_ = v;
+    void Config::setLScreen(ScreenID v) {
+        this->lScreen_ = v;
+        this->writeConfig();
+    }
+
+    void Config::setLSort(SortType v) {
+        this->lSort_ = v;
+        this->writeConfig();
+    }
+
+    void Config::setLView(ViewPeriod v) {
+        this->lView_ = v;
         this->writeConfig();
     }
 };

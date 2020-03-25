@@ -152,13 +152,13 @@ namespace Screen {
         this->preparePopupList("Default Screen");
 
         // Add an entry for each sort method
-        ScreenID s = this->app->config()->gScreen();
+        ScreenID s = this->app->config()->lScreen();
         this->popuplist->addEntry("Recent Activity", [this](){
-            this->app->config()->setGScreen(ScreenID::RecentActivity);
+            this->app->config()->setLScreen(ScreenID::RecentActivity);
             this->optionScreen->setValue("Recent Activity");
         }, s == ScreenID::RecentActivity);
         this->popuplist->addEntry("All Activity", [this](){
-            this->app->config()->setGScreen(ScreenID::AllActivity);
+            this->app->config()->setLScreen(ScreenID::AllActivity);
             this->optionScreen->setValue("All Activity");
         }, s == ScreenID::AllActivity);
 
@@ -169,33 +169,33 @@ namespace Screen {
         this->preparePopupList("Default Sort Method");
 
         // Add an entry for each sort method
-        SortType t = this->app->config()->gSort();
+        SortType t = this->app->config()->lSort();
         this->popuplist->addEntry("By Name", [this](){
-            this->app->config()->setGSort(SortType::AlphaAsc);
+            this->app->config()->setLSort(SortType::AlphaAsc);
             this->optionSort->setValue("By Name");
         }, t == SortType::AlphaAsc);
         this->popuplist->addEntry("By First Playtime", [this](){
-            this->app->config()->setGSort(SortType::FirstPlayed);
+            this->app->config()->setLSort(SortType::FirstPlayed);
             this->optionSort->setValue("By First Playtime");
         }, t == SortType::FirstPlayed);
         this->popuplist->addEntry("By Most Recently Played", [this](){
-            this->app->config()->setGSort(SortType::LastPlayed);
+            this->app->config()->setLSort(SortType::LastPlayed);
             this->optionSort->setValue("By Most Recently Played");
         }, t == SortType::LastPlayed);
         this->popuplist->addEntry("By Most Playtime", [this](){
-            this->app->config()->setGSort(SortType::HoursAsc);
+            this->app->config()->setLSort(SortType::HoursAsc);
             this->optionSort->setValue("By Most Playtime");
         }, t == SortType::HoursAsc);
         this->popuplist->addEntry("By Least Playtime", [this](){
-            this->app->config()->setGSort(SortType::HoursDec);
+            this->app->config()->setLSort(SortType::HoursDec);
             this->optionSort->setValue("By Least Playtime");
         }, t == SortType::HoursDec);
         this->popuplist->addEntry("By Most Launched", [this](){
-            this->app->config()->setGSort(SortType::LaunchAsc);
+            this->app->config()->setLSort(SortType::LaunchAsc);
             this->optionSort->setValue("By Most Launched");
         }, t == SortType::LaunchAsc);
         this->popuplist->addEntry("By Least Launched", [this](){
-            this->app->config()->setGSort(SortType::LaunchDec);
+            this->app->config()->setLSort(SortType::LaunchDec);
             this->optionSort->setValue("By Least Launched");
         }, t == SortType::LaunchDec);
 
@@ -231,17 +231,17 @@ namespace Screen {
         this->preparePopupList("Default View Type");
 
         // Add an entry for each sort method
-        ViewPeriod v = this->app->config()->gView();
+        ViewPeriod v = this->app->config()->lView();
         this->popuplist->addEntry("By Day", [this](){
-            this->app->config()->setGView(ViewPeriod::Day);
+            this->app->config()->setLView(ViewPeriod::Day);
             this->optionView->setValue("By Day");
         }, v == ViewPeriod::Day);
         this->popuplist->addEntry("By Month", [this](){
-            this->app->config()->setGView(ViewPeriod::Month);
+            this->app->config()->setLView(ViewPeriod::Month);
             this->optionView->setValue("By Month");
         }, v == ViewPeriod::Month);
         this->popuplist->addEntry("By Year", [this](){
-            this->app->config()->setGView(ViewPeriod::Year);
+            this->app->config()->setLView(ViewPeriod::Year);
             this->optionView->setValue("By Year");
         }, v == ViewPeriod::Year);
 
@@ -290,7 +290,7 @@ namespace Screen {
 
         // LAUNCH SCREEN
         std::string str = "";
-        switch (this->app->config()->gScreen()) {
+        switch (this->app->config()->lScreen()) {
             case ScreenID::RecentActivity:
                 str = "Recent Activity";
                 break;
@@ -315,7 +315,7 @@ namespace Screen {
         this->list->addElement(lc);
 
         // DEFAULT SORT METHOD
-        switch (this->app->config()->gSort()) {
+        switch (this->app->config()->lSort()) {
             case SortType::AlphaAsc:
                 str = "By Name";
                 break;
@@ -356,7 +356,7 @@ namespace Screen {
         this->list->addElement(lc);
         
         // VIEW
-        switch (this->app->config()->gView()) {
+        switch (this->app->config()->lView()) {
             case ViewPeriod::Day:
                 str = "By Day";
                 break;
@@ -464,6 +464,21 @@ namespace Screen {
         lc = new Aether::ListComment("Replace the User Page with this app. Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
+
+        // 24H
+        this->option24H = new Aether::ListOption("Use 24 Hour Time", (this->app->config()->gIs24H() ? "On" : "Off"), [this](){
+            this->app->config()->setGIs24H(!this->app->config()->gIs24H());
+            this->option24H->setValue((this->app->config()->gIs24H() ? "On" : "Off"));
+            this->option24H->setValueColour((this->app->config()->gIs24H() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
+        });
+        this->option24H->setHintColour(this->app->theme()->text());
+        this->option24H->setValueColour((this->app->config()->gIs24H() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
+        this->option24H->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->option24H);
+        lc = new Aether::ListComment("Use 24 hour time instead of 12 hour where applicable.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION

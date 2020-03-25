@@ -173,14 +173,20 @@ namespace Screen {
                 this->graph->setYSteps(6);
                 this->graph->setValuePrecision(0);
                 this->graph->setNumberOfEntries(24);
-                this->graph->setLabel(0, "12am");
-                this->graph->setLabel(3, "3am");
-                this->graph->setLabel(6, "6am");
-                this->graph->setLabel(9, "9am");
-                this->graph->setLabel(12, "12pm");
-                this->graph->setLabel(15, "3pm");
-                this->graph->setLabel(18, "6pm");
-                this->graph->setLabel(21, "9pm");
+                if (this->app->config()->gIs24H()) {
+                    for (int i = 0; i < 24; i += 2) {
+                        this->graph->setLabel(i, std::to_string(i));
+                    }
+                } else {
+                    this->graph->setLabel(0, "12am");
+                    this->graph->setLabel(3, "3am");
+                    this->graph->setLabel(6, "6am");
+                    this->graph->setLabel(9, "9am");
+                    this->graph->setLabel(12, "12pm");
+                    this->graph->setLabel(15, "3pm");
+                    this->graph->setLabel(18, "6pm");
+                    this->graph->setLabel(21, "9pm");
+                }
                 break;
 
             case ViewPeriod::Month: {
@@ -402,17 +408,22 @@ namespace Screen {
                     }
 
                 case ViewPeriod::Day:
-                    std::string tmp = Utils::Time::tmToString(sTm, "%I:%M", 5);
-                    if (tmp[0] == '0') {
-                        tmp.erase(0, 1);
-                    }
-                    first += tmp + Utils::Time::getAMPM(sTm.tm_hour);
+                    if (this->app->config()->gIs24H()) {
+                        first += Utils::Time::tmToString(sTm, "%R", 5);
+                        last += Utils::Time::tmToString(eTm, "%R", 5);
+                    } else {
+                        std::string tmp = Utils::Time::tmToString(sTm, "%I:%M", 5);
+                        if (tmp[0] == '0') {
+                            tmp.erase(0, 1);
+                        }
+                        first += tmp + Utils::Time::getAMPM(sTm.tm_hour);
 
-                    tmp = Utils::Time::tmToString(eTm, "%I:%M", 5);
-                    if (tmp[0] == '0') {
-                        tmp.erase(0, 1);
+                        tmp = Utils::Time::tmToString(eTm, "%I:%M", 5);
+                        if (tmp[0] == '0') {
+                            tmp.erase(0, 1);
+                        }
+                        last += tmp + Utils::Time::getAMPM(eTm.tm_hour);
                     }
-                    last += tmp + Utils::Time::getAMPM(eTm.tm_hour);
                     break;
             }
             ls->setTimeString(first + " - " + last + (outRange ? "*" : ""));

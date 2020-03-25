@@ -172,7 +172,7 @@ namespace Screen {
         }
 
         // Sort the list
-        this->list->setSort(this->app->config()->gSort());
+        this->list->setSort(this->app->config()->lSort());
         this->addElement(this->list);
 
         // Render total hours string

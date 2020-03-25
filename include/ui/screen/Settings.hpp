@@ -27,6 +27,7 @@ namespace Screen {
             Aether::ListOption * optionTheme;
             Aether::ListOption * optionView;
 
+            Aether::ListOption * option24H;
             Aether::ListOption * optionGraph;
             Aether::ListOption * optionDeleted;
             Aether::ListOption * optionPage;
