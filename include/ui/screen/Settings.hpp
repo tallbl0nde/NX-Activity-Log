@@ -22,24 +22,28 @@ namespace Screen {
             Aether::Menu * menu;
 
             // Pointers to options so the value can be updated
-            Aether::ListOption * optionDeleted;
-            Aether::ListOption * optionGraph;
-            Aether::ListOption * optionPage;
+            Aether::ListOption * optionScreen;
             Aether::ListOption * optionSort;
             Aether::ListOption * optionTheme;
+            Aether::ListOption * optionView;
 
-            // MessageBox for forwarder info
+            Aether::ListOption * optionGraph;
+            Aether::ListOption * optionDeleted;
+            Aether::ListOption * optionPage;
+
+            // MessageBox for forwarder/setting info
             Aether::MessageBox * msgbox;
-            // Choose sort overlay
-            Aether::PopupList * sortOverlay;
-            // Choose theme overlay
-            Aether::PopupList * themeOverlay;
+            // PopupList for list-related options
+            Aether::PopupList * popuplist;
 
             void installForwarder();
 
             // Set elements and highlight one in overlay
+            void preparePopupList(std::string);
+            void setupScreenOverlay();
             void setupSortOverlay();
             void setupThemeOverlay();
+            void setupViewOverlay();
 
         public:
             // Passed main application object

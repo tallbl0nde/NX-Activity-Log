@@ -30,7 +30,7 @@ namespace Screen {
 
         if (!(this->app->isUserPage())) {
             this->onButtonPress(Aether::Button::B, [this](){
-                this->app->setScreen(Main::ScreenID::UserSelect);
+                this->app->setScreen(ScreenID::UserSelect);
             });
         }
         this->onButtonPress(Aether::Button::X, [this](){
@@ -322,7 +322,7 @@ namespace Screen {
                 la->setCallback([this, j](){
                     this->app->setActiveTitle(j);
                     this->app->pushScreen();
-                    this->app->setScreen(Main::ScreenID::Details);
+                    this->app->setScreen(ScreenID::Details);
                 });
                 la->setTitleColour(this->app->theme()->text());
                 la->setPlaytimeColour(this->app->theme()->accent());
@@ -366,11 +366,11 @@ namespace Screen {
         this->menu->addElement(opt);
         this->menu->setActiveOption(opt);
         this->menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::AllActivity);
+            this->app->setScreen(ScreenID::AllActivity);
         }));
         this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
         this->menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::Settings);
+            this->app->setScreen(ScreenID::Settings);
         }));
         this->menu->setFocussed(opt);
         this->addElement(this->menu);

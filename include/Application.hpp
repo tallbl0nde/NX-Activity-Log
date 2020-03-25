@@ -22,23 +22,7 @@ namespace Screen {
     class UserSelect;
 };
 
-// Period to view recent stats for
-enum class ViewPeriod {
-    Day,
-    Month,
-    Year
-};
-
 namespace Main {
-    // Enumeration for screens (allows for easy switching)
-    enum ScreenID {
-        UserSelect,
-        AllActivity,
-        RecentActivity,
-        Settings,
-        Details
-    };
-
     // The Application class represents the "root" object of the app. It stores/handles all states
     // and objects used through the app
     class Application {

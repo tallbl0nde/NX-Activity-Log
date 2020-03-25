@@ -26,7 +26,7 @@ namespace Main {
         this->tm.tm_hour = 0;
         this->tm.tm_min = 0;
         this->tm.tm_sec = 0;
-        this->viewType = ViewPeriod::Day;
+        this->viewType = this->config_->gView();
         this->timeChanged_ = false;
 
         // Populate users vector
@@ -63,7 +63,7 @@ namespace Main {
 
         if (this->isUserPage_) {
             // Skip UserSelect screen if launched via user page
-            this->setScreen(ScreenID::RecentActivity);
+            this->setScreen(this->config_->gScreen());
         } else {
             // No need for user select if user page
             this->scUserSelect = new Screen::UserSelect(this, this->users);

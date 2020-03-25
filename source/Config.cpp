@@ -27,6 +27,13 @@ namespace Main {
             this->gGraph_ = true;
         }
 
+        option = sec->findOrCreateFirstOption("screen", "RecentActivity");
+        if (option->value == "AllActivity") {
+            this->gScreen_ = ScreenID::AllActivity;
+        } else {
+            this->gScreen_ = ScreenID::RecentActivity;
+        }
+        
         option = sec->findOrCreateFirstOption("sort", "LastPlayed");
         if (option->value == "AlphaAsc") {
             this->gSort_ = AlphaAsc;
@@ -53,6 +60,15 @@ namespace Main {
             this->gTheme_ = Auto;
         }
 
+        option = sec->findOrCreateFirstOption("view", "Day");
+        if (option->value == "Month") {
+            this->gView_ = ViewPeriod::Month;
+        } else if (option->value == "Year") {
+            this->gView_ = ViewPeriod::Year;
+        } else {
+            this->gView_ = ViewPeriod::Day;
+        }
+        
         sec = ini->findOrCreateSection("hidden");
         option = sec->findOrCreateFirstOption("deleted", "false");
         if (option->value == "true") {
@@ -73,6 +89,13 @@ namespace Main {
             option->value = "true";
         } else if (this->gGraph_ == false) {
             option->value = "false";
+        }
+
+        option = ini->findSection("general")->findFirstOption("screen");
+        if (this->gScreen_ == ScreenID::AllActivity) {
+            option->value = "AllActivity";
+        } else if (this->gScreen_ == ScreenID::RecentActivity) {
+            option->value = "RecentActivity";
         }
 
         option = ini->findSection("general")->findFirstOption("sort");
@@ -101,6 +124,15 @@ namespace Main {
             option->value = "Auto";
         }
 
+        option = ini->findSection("general")->findFirstOption("view");
+        if (this->gView_ == ViewPeriod::Month) {
+            option->value = "Month";
+        } else if (this->gView_ == ViewPeriod::Year) {
+            option->value = "Year";
+        } else if (this->gView_ == ViewPeriod::Day) {
+            option->value = "Day";
+        }
+
         option = ini->findSection("hidden")->findFirstOption("deleted");
         if (this->hDeleted_ == true) {
             option->value = "true";
@@ -115,12 +147,20 @@ namespace Main {
         return this->gGraph_;
     }
 
+    ScreenID Config::gScreen() {
+        return this->gScreen_;
+    }
+
     SortType Config::gSort() {
         return this->gSort_;
     }
 
     ThemeType Config::gTheme() {
         return this->gTheme_;
+    }
+
+    ViewPeriod Config::gView() {
+        return this->gView_;
     }
 
     bool Config::hDeleted() {
@@ -132,6 +172,11 @@ namespace Main {
         this->writeConfig();
     }
 
+    void Config::setGScreen(ScreenID v) {
+        this->gScreen_ = v;
+        this->writeConfig();
+    }
+
     void Config::setGSort(SortType v) {
         this->gSort_ = v;
         this->writeConfig();
@@ -139,6 +184,11 @@ namespace Main {
 
     void Config::setGTheme(ThemeType v) {
         this->gTheme_ = v;
+        this->writeConfig();
+    }
+
+    void Config::setGView(ViewPeriod v) {
+        this->gView_ = v;
         this->writeConfig();
     }
 

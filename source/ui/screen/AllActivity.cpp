@@ -37,7 +37,7 @@ namespace Screen {
         });
         if (!(this->app->isUserPage())) {
             this->onButtonPress(Aether::Button::B, [this](){
-                this->app->setScreen(Main::ScreenID::UserSelect);
+                this->app->setScreen(ScreenID::UserSelect);
             });
         }
         this->onButtonPress(Aether::Button::ZR, [this](){
@@ -104,14 +104,14 @@ namespace Screen {
         // Create side menu
         this->menu = new Aether::Menu(30, 88, 388, 559);
         this->menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::RecentActivity);
+            this->app->setScreen(ScreenID::RecentActivity);
         }));
         Aether::MenuOption * opt = new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
         this->menu->addElement(opt);
         this->menu->setActiveOption(opt);
         this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
         this->menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::Settings);
+            this->app->setScreen(ScreenID::Settings);
         }));
         this->menu->setFocussed(opt);
         this->addElement(this->menu);
@@ -162,7 +162,7 @@ namespace Screen {
             la->setCallback([this, i](){
                 this->app->setActiveTitle(i);
                 this->app->pushScreen();
-                this->app->setScreen(Main::ScreenID::Details);
+                this->app->setScreen(ScreenID::Details);
             });
             la->setTitleColour(this->app->theme()->text());
             la->setPlaytimeColour(this->app->theme()->accent());

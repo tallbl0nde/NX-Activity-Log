@@ -27,7 +27,7 @@ namespace Screen {
         // Add button callbacks
         if (!(this->app->isUserPage())) {
             this->onButtonPress(Aether::Button::B, [this](){
-                this->app->setScreen(Main::ScreenID::UserSelect);
+                this->app->setScreen(ScreenID::UserSelect);
             });
         }
     }
@@ -134,70 +134,118 @@ namespace Screen {
         }
     }
 
+    void Settings::preparePopupList(std::string s) {
+        // Remove previous overlay
+        if (this->popuplist != nullptr) {
+            delete this->popuplist;
+        }
+
+        this->popuplist = new Aether::PopupList(s);
+        this->popuplist->setBackgroundColour(this->app->theme()->altBG());
+        this->popuplist->setHighlightColour(this->app->theme()->accent());
+        this->popuplist->setLineColour(this->app->theme()->fg());
+        this->popuplist->setListLineColour(this->app->theme()->mutedLine());
+        this->popuplist->setTextColour(this->app->theme()->text());
+    }
+
+    void Settings::setupScreenOverlay() {
+        this->preparePopupList("Default Screen");
+
+        // Add an entry for each sort method
+        ScreenID s = this->app->config()->gScreen();
+        this->popuplist->addEntry("Recent Activity", [this](){
+            this->app->config()->setGScreen(ScreenID::RecentActivity);
+            this->optionScreen->setValue("Recent Activity");
+        }, s == ScreenID::RecentActivity);
+        this->popuplist->addEntry("All Activity", [this](){
+            this->app->config()->setGScreen(ScreenID::AllActivity);
+            this->optionScreen->setValue("All Activity");
+        }, s == ScreenID::AllActivity);
+
+        this->app->addOverlay(this->popuplist);
+    }
+
     void Settings::setupSortOverlay() {
-        // Remove previous entries
-        this->sortOverlay->close(false);
-        this->sortOverlay->removeEntries();
+        this->preparePopupList("Default Sort Method");
 
         // Add an entry for each sort method
         SortType t = this->app->config()->gSort();
-        this->sortOverlay->addEntry("By Name", [this](){
+        this->popuplist->addEntry("By Name", [this](){
             this->app->config()->setGSort(SortType::AlphaAsc);
             this->optionSort->setValue("By Name");
         }, t == SortType::AlphaAsc);
-        this->sortOverlay->addEntry("By First Playtime", [this](){
+        this->popuplist->addEntry("By First Playtime", [this](){
             this->app->config()->setGSort(SortType::FirstPlayed);
             this->optionSort->setValue("By First Playtime");
         }, t == SortType::FirstPlayed);
-        this->sortOverlay->addEntry("By Most Recently Played", [this](){
+        this->popuplist->addEntry("By Most Recently Played", [this](){
             this->app->config()->setGSort(SortType::LastPlayed);
             this->optionSort->setValue("By Most Recently Played");
         }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("By Most Playtime", [this](){
+        this->popuplist->addEntry("By Most Playtime", [this](){
             this->app->config()->setGSort(SortType::HoursAsc);
             this->optionSort->setValue("By Most Playtime");
         }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("By Least Playtime", [this](){
+        this->popuplist->addEntry("By Least Playtime", [this](){
             this->app->config()->setGSort(SortType::HoursDec);
             this->optionSort->setValue("By Least Playtime");
         }, t == SortType::HoursDec);
-        this->sortOverlay->addEntry("By Most Launched", [this](){
+        this->popuplist->addEntry("By Most Launched", [this](){
             this->app->config()->setGSort(SortType::LaunchAsc);
             this->optionSort->setValue("By Most Launched");
         }, t == SortType::LaunchAsc);
-        this->sortOverlay->addEntry("By Least Launched", [this](){
+        this->popuplist->addEntry("By Least Launched", [this](){
             this->app->config()->setGSort(SortType::LaunchDec);
             this->optionSort->setValue("By Least Launched");
         }, t == SortType::LaunchDec);
 
-        this->app->addOverlay(this->sortOverlay);
+        this->app->addOverlay(this->popuplist);
     }
 
     void Settings::setupThemeOverlay() {
-        // Remove previous entries
-        this->themeOverlay->close(false);
-        this->themeOverlay->removeEntries();
+        this->preparePopupList("Application Theme");
 
         // Add an entry for each sort method
         ThemeType t = this->app->config()->gTheme();
-        this->themeOverlay->addEntry("Auto", [this](){
+        this->popuplist->addEntry("Auto", [this](){
             this->app->config()->setGTheme(ThemeType::Auto);
             this->optionTheme->setValue("Auto");
         }, t == ThemeType::Auto);
-        this->themeOverlay->addEntry("Basic Black", [this](){
+        this->popuplist->addEntry("Basic Black", [this](){
             this->app->config()->setGTheme(ThemeType::Dark);
             this->optionTheme->setValue("Basic Black");
         }, t == ThemeType::Dark);
-        this->themeOverlay->addEntry("Basic White", [this](){
+        this->popuplist->addEntry("Basic White", [this](){
             this->app->config()->setGTheme(ThemeType::Light);
             this->optionTheme->setValue("Basic White");
         }, t == ThemeType::Light);
-        // this->themeOverlay->addEntry("Custom", [this](){
+        // this->popuplist->addEntry("Custom", [this](){
             // this->app->config()->setGTheme(ThemeType::Custom);
             // this->optionTheme->setValue("Custom");
         // }, t == ThemeType::Custom);
 
-        this->app->addOverlay(this->themeOverlay);
+        this->app->addOverlay(this->popuplist);
+    }
+
+    void Settings::setupViewOverlay() {
+        this->preparePopupList("Default View Type");
+
+        // Add an entry for each sort method
+        ViewPeriod v = this->app->config()->gView();
+        this->popuplist->addEntry("By Day", [this](){
+            this->app->config()->setGView(ViewPeriod::Day);
+            this->optionView->setValue("By Day");
+        }, v == ViewPeriod::Day);
+        this->popuplist->addEntry("By Month", [this](){
+            this->app->config()->setGView(ViewPeriod::Month);
+            this->optionView->setValue("By Month");
+        }, v == ViewPeriod::Month);
+        this->popuplist->addEntry("By Year", [this](){
+            this->app->config()->setGView(ViewPeriod::Year);
+            this->optionView->setValue("By Year");
+        }, v == ViewPeriod::Year);
+
+        this->app->addOverlay(this->popuplist);
     }
 
     void Settings::onLoad() {
@@ -215,10 +263,10 @@ namespace Screen {
         // Create side menu
         this->menu = new Aether::Menu(30, 88, 388, 559);
         this->menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::RecentActivity);
+            this->app->setScreen(ScreenID::RecentActivity);
         }));
         this->menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
-            this->app->setScreen(Main::ScreenID::AllActivity);
+            this->app->setScreen(ScreenID::AllActivity);
         }));
         this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
         Aether::MenuOption * opt = new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
@@ -232,8 +280,41 @@ namespace Screen {
         this->list->setCatchup(11);
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
-        // DEFAULT SORT METHOD
+        // ===== LAUNCH OPTIONS =====
+        Aether::ListHeading * lh = new Aether::ListHeading("Launch Options");
+        lh->setRectColour(this->app->theme()->mutedLine());
+        lh->setTextColour(this->app->theme()->text());
+        this->list->addElement(lh);
+
+        this->list->addElement(new Aether::ListSeparator(20));
+
+        // LAUNCH SCREEN
         std::string str = "";
+        switch (this->app->config()->gScreen()) {
+            case ScreenID::RecentActivity:
+                str = "Recent Activity";
+                break;
+
+            case ScreenID::AllActivity:
+                str = "All Activity";
+                break;
+
+            default:
+                // Never called but I don't like compiler warnings
+                break;
+        }
+        this->optionScreen = new Aether::ListOption("Default Screen", str, [this]() {
+            this->setupScreenOverlay();
+        });
+        this->optionScreen->setHintColour(this->app->theme()->text());
+        this->optionScreen->setValueColour(this->app->theme()->accent());
+        this->optionScreen->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionScreen);
+        Aether::ListComment * lc = new Aether::ListComment("The screen to show on launch/after selecting a user.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        // DEFAULT SORT METHOD
         switch (this->app->config()->gSort()) {
             case SortType::AlphaAsc:
                 str = "By Name";
@@ -270,21 +351,32 @@ namespace Screen {
         this->optionSort->setValueColour(this->app->theme()->accent());
         this->optionSort->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionSort);
-        Aether::ListComment * lc = new Aether::ListComment("The sort method for 'All Activity' to use on launch.");
+        lc = new Aether::ListComment("The sort method for 'All Activity' to use on launch.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
+        
+        // VIEW
+        switch (this->app->config()->gView()) {
+            case ViewPeriod::Day:
+                str = "By Day";
+                break;
 
-        // GRAPH
-        this->optionGraph = new Aether::ListOption("Graph Bar Labels", (this->app->config()->gGraph() ? "On" : "Off"), [this](){
-            this->app->config()->setGGraph(!this->app->config()->gGraph());
-            this->optionGraph->setValue((this->app->config()->gGraph() ? "On" : "Off"));
-            this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
+            case ViewPeriod::Month:
+                str = "By Month";
+                break;
+
+            case ViewPeriod::Year:
+                str = "By Year";
+                break;
+        }
+        this->optionView = new Aether::ListOption("Default View Type", str, [this](){
+            this->setupViewOverlay();
         });
-        this->optionGraph->setHintColour(this->app->theme()->text());
-        this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
-        this->optionGraph->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionGraph);
-        lc = new Aether::ListComment("Toggles the small numbers visible above each bar on graphs.");
+        this->optionView->setHintColour(this->app->theme()->text());
+        this->optionView->setValueColour(this->app->theme()->accent());
+        this->optionView->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionView);
+        lc = new Aether::ListComment("The period of activity to view on launch.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
@@ -316,7 +408,30 @@ namespace Screen {
         lc = new Aether::ListComment("The theme to use for the application. Auto chooses black/white based on your Switch settings. Note: This currently requires the app to be restarted to take effect.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
+
         this->list->addElement(new Aether::ListSeparator());
+
+        // ===== OTHERS =====
+        lh = new Aether::ListHeading("Other Options");
+        lh->setRectColour(this->app->theme()->mutedLine());
+        lh->setTextColour(this->app->theme()->text());
+        this->list->addElement(lh);
+
+        this->list->addElement(new Aether::ListSeparator(20));
+
+        // GRAPH
+        this->optionGraph = new Aether::ListOption("Graph Bar Labels", (this->app->config()->gGraph() ? "On" : "Off"), [this](){
+            this->app->config()->setGGraph(!this->app->config()->gGraph());
+            this->optionGraph->setValue((this->app->config()->gGraph() ? "On" : "Off"));
+            this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
+        });
+        this->optionGraph->setHintColour(this->app->theme()->text());
+        this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
+        this->optionGraph->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionGraph);
+        lc = new Aether::ListComment("Toggles the small numbers visible above each bar on graphs.");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
 
         // HIDE DELETED
         str = (this->app->config()->hDeleted() ? "Yes" : "No");
@@ -332,7 +447,6 @@ namespace Screen {
         lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
-        this->list->addElement(new Aether::ListSeparator());
 
         // REPLACE USER PAGE
         str = "Disabled";
@@ -359,20 +473,6 @@ namespace Screen {
 
         this->addElement(this->list);
 
-        // Create popuplist overlays
-        this->sortOverlay = new Aether::PopupList("Default Sort Method");
-        this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
-        this->sortOverlay->setHighlightColour(this->app->theme()->accent());
-        this->sortOverlay->setLineColour(this->app->theme()->fg());
-        this->sortOverlay->setListLineColour(this->app->theme()->mutedLine());
-        this->sortOverlay->setTextColour(this->app->theme()->text());
-        this->themeOverlay = new Aether::PopupList("Application Theme");
-        this->themeOverlay->setBackgroundColour(this->app->theme()->altBG());
-        this->themeOverlay->setHighlightColour(this->app->theme()->accent());
-        this->themeOverlay->setLineColour(this->app->theme()->fg());
-        this->themeOverlay->setListLineColour(this->app->theme()->mutedLine());
-        this->themeOverlay->setTextColour(this->app->theme()->text());
-
         // Create base message box
         this->msgbox = new Aether::MessageBox();
         this->msgbox->addTopButton("OK", [this](){
@@ -382,6 +482,7 @@ namespace Screen {
         this->msgbox->setRectangleColour(this->app->theme()->altBG());
         this->msgbox->setTextColour(this->app->theme()->accent());
 
+        this->popuplist = nullptr;
     }
 
     void Settings::onUnload() {
@@ -390,7 +491,6 @@ namespace Screen {
         this->removeElement(this->list);
         this->removeElement(this->menu);
         delete this->msgbox;
-        delete this->sortOverlay;
-        delete this->themeOverlay;
+        delete this->popuplist;
     }
 };

@@ -3,6 +3,15 @@
 
 #include <switch.h>
 
+// Enumeration for screens (allows for easy switching)
+enum ScreenID {
+    UserSelect,
+    AllActivity,
+    RecentActivity,
+    Settings,
+    Details
+};
+
 // Enumerations for sorting methods
 enum SortType {
     AlphaAsc,       // Alphabetically (A-Z)
@@ -19,6 +28,13 @@ enum ThemeType {
     Light,
     Dark,
     Custom
+};
+
+// Period to view recent stats for
+enum class ViewPeriod {
+    Day,
+    Month,
+    Year
 };
 
 // Just so function decs. are easier to read
