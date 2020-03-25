@@ -476,13 +476,20 @@ namespace Screen {
         struct tm lastTime = Utils::Time::getTm(0);
         time_t lastTs = 0;
         for (size_t i = 0; i < events.size(); i++) {
-            // Print time of event in 12 hour format
             struct tm time = Utils::Time::getTm(events[i].clockTimestamp);
-            bool isAM = ((time.tm_hour < 12) ? true : false);
-            if (time.tm_hour == 0) {
-                time.tm_hour = 12;
+            std::string str;
+            if (this->app->config()->gIs24H()) {
+                // Print time of event in 24 hour format
+                str = Utils::Time::tmToString(time, "%R", 5) + " - ";
+
+            } else {
+                // Print time of event in 12 hour format
+                bool isAM = ((time.tm_hour < 12) ? true : false);
+                if (time.tm_hour == 0) {
+                    time.tm_hour = 12;
+                }
+                str = std::to_string(((time.tm_hour > 12) ? time.tm_hour - 12 : time.tm_hour)) + ":" + ((time.tm_min < 10) ? "0" : "") + std::to_string(time.tm_min) + ((isAM) ? "am" : "pm") + " - ";
             }
-            std::string str = std::to_string(((time.tm_hour > 12) ? time.tm_hour - 12 : time.tm_hour)) + ":" + ((time.tm_min < 10) ? "0" : "") + std::to_string(time.tm_min) + ((isAM) ? "am" : "pm") + " - ";
 
             // Add date string if new day
             if (Utils::Time::areDifferentDates(lastTime, time)) {
