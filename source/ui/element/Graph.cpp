@@ -103,21 +103,28 @@ namespace CustomElm {
         }
 
         // Convert to string
-        v = Utils::roundToDecimalPlace(v, this->valuePrecision);
-        std::string str = Utils::truncateToDecimalPlace(std::to_string(v), this->valuePrecision);
+        std::string str;
+        if (v > this->yMax) {
+            // If above max value set to max +
+            str = Utils::truncateToDecimalPlace(std::to_string(this->yMax), 0) + "+";
 
-        // Check for trailing zeroes and if so don't show decimal places
-        size_t p = str.find(".");
-        bool allZero = true;
-        if (p != std::string::npos) {
-            for (size_t i = p + 1; i < str.length(); i++) {
-                if (str[i] != '0') {
-                    allZero = false;
-                    break;
+        } else {
+            v = Utils::roundToDecimalPlace(v, this->valuePrecision);
+            str = Utils::truncateToDecimalPlace(std::to_string(v), this->valuePrecision);
+
+            // Check for trailing zeroes and if so don't show decimal places
+            size_t p = str.find(".");
+            bool allZero = true;
+            if (p != std::string::npos) {
+                for (size_t i = p + 1; i < str.length(); i++) {
+                    if (str[i] != '0') {
+                        allZero = false;
+                        break;
+                    }
                 }
-            }
-            if (allZero) {
-                str = Utils::truncateToDecimalPlace(str, 0);
+                if (allZero) {
+                    str = Utils::truncateToDecimalPlace(str, 0);
+                }
             }
         }
 
@@ -281,21 +288,32 @@ namespace CustomElm {
             this->column[i].label->setFontSize(this->labelFont);
             this->column[i].label->setXY(x + 1 + (gap - this->column[i].label->w())/2, this->xAxis->y() + LABEL_PADDING);
 
+            // Handle values larger than max value
+            std::string tmp = this->column[i].value->string();
+            std::string ftmp = "";
+            double val; 
+            if (tmp[tmp.length() - 1] == '+') {
+                ftmp = tmp.substr(0, tmp.length() - 1);
+                val = std::stod(ftmp);
+            } else {
+                val = std::stod(tmp);
+            }
+
             // Recreate bars + values to ensure they're on top of horizontal lines
             if (this->removeElement(this->column[i].bar)) {
-                this->column[i].bar = new Aether::Rectangle(0, 0, gap*this->barWidth, (this->xAxis->y() - this->steps[this->steps.size() - 1]->y()) * (std::stod(this->column[i].value->string()) / (float)this->yMax));
+                this->column[i].bar = new Aether::Rectangle(0, 0, gap*this->barWidth, (this->xAxis->y() - this->steps[this->steps.size() - 1]->y()) * (val / (float)this->yMax));
                 this->column[i].bar->setColour(this->barC);
                 this->addElement(this->column[i].bar);
             }
             this->column[i].bar->setXY(x + 1 + (gap - this->column[i].bar->w())/2, this->xAxis->y() - this->column[i].bar->h());
-            std::string tmp = this->column[i].value->string();
+            
             if (this->removeElement(this->column[i].value)) {
                 this->column[i].value = new Aether::Text(0, 0, tmp, this->labelFont);
                 this->column[i].value->setColour(this->barC);
                 this->addElement(this->column[i].value);
             }
             this->column[i].value->setXY(x + 1 + (gap - this->column[i].value->w())/2, this->column[i].bar->y() - this->column[i].value->h() - LABEL_PADDING/2);
-            if (tmp == "0" || !(this->showValues)) {
+            if (val == 0 || !(this->showValues)) {
                 this->column[i].value->setHidden(true);
             } else {
                 this->column[i].value->setHidden(false);
