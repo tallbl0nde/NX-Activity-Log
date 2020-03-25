@@ -102,33 +102,7 @@ namespace CustomElm {
             return;
         }
 
-        // Convert to string
-        std::string str;
-        if (v > this->yMax) {
-            // If above max value set to max +
-            str = Utils::truncateToDecimalPlace(std::to_string(this->yMax), 0) + "+";
-
-        } else {
-            v = Utils::roundToDecimalPlace(v, this->valuePrecision);
-            str = Utils::truncateToDecimalPlace(std::to_string(v), this->valuePrecision);
-
-            // Check for trailing zeroes and if so don't show decimal places
-            size_t p = str.find(".");
-            bool allZero = true;
-            if (p != std::string::npos) {
-                for (size_t i = p + 1; i < str.length(); i++) {
-                    if (str[i] != '0') {
-                        allZero = false;
-                        break;
-                    }
-                }
-                if (allZero) {
-                    str = Utils::truncateToDecimalPlace(str, 0);
-                }
-            }
-        }
-
-        this->column[i].value->setString(str);
+        this->column[i].value->setString(std::to_string(v));
         this->needsUpdate = true;
     }
 
@@ -288,15 +262,13 @@ namespace CustomElm {
             this->column[i].label->setFontSize(this->labelFont);
             this->column[i].label->setXY(x + 1 + (gap - this->column[i].label->w())/2, this->xAxis->y() + LABEL_PADDING);
 
-            // Handle values larger than max value
-            std::string tmp = this->column[i].value->string();
-            std::string ftmp = "";
-            double val; 
-            if (tmp[tmp.length() - 1] == '+') {
-                ftmp = tmp.substr(0, tmp.length() - 1);
-                val = std::stod(ftmp);
-            } else {
-                val = std::stod(tmp);
+            // Cap values larger than max value
+            bool isLarger = false;
+            double val = std::stod(this->column[i].value->string());
+            val = Utils::roundToDecimalPlace(val, this->valuePrecision);
+            if (val > this->yMax) {
+                isLarger = true;
+                val = this->yMax;
             }
 
             // Recreate bars + values to ensure they're on top of horizontal lines
@@ -308,6 +280,27 @@ namespace CustomElm {
             this->column[i].bar->setXY(x + 1 + (gap - this->column[i].bar->w())/2, this->xAxis->y() - this->column[i].bar->h());
             
             if (this->removeElement(this->column[i].value)) {
+                // Format string correctly
+                std::string tmp = Utils::truncateToDecimalPlace(std::to_string(val), this->valuePrecision);
+                if (isLarger) {
+                    tmp += "+";
+                }
+
+                // Check for trailing zeroes and if so don't show decimal places
+                size_t p = tmp.find(".");
+                bool allZero = true;
+                if (p != std::string::npos) {
+                    for (size_t i = p + 1; i < tmp.length(); i++) {
+                        if (tmp[i] != '0') {
+                            allZero = false;
+                            break;
+                        }
+                    }
+                    if (allZero) {
+                        tmp = Utils::truncateToDecimalPlace(tmp, 0);
+                    }
+                }
+
                 this->column[i].value = new Aether::Text(0, 0, tmp, this->labelFont);
                 this->column[i].value->setColour(this->barC);
                 this->addElement(this->column[i].value);
