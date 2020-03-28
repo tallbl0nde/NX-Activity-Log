@@ -22,11 +22,21 @@ namespace Main {
 
         // Set view to today and by day
         this->tm = Utils::Time::getTmForCurrentTime();
-        this->tmCopy = this->tm;
         this->tm.tm_hour = 0;
         this->tm.tm_min = 0;
         this->tm.tm_sec = 0;
         this->viewType = this->config_->lView();
+        switch (this->viewType) {
+            case ViewPeriod::Year:
+                this->tm.tm_mon = 0;
+
+            case ViewPeriod::Month:
+                this->tm.tm_mday = 1;
+
+            case ViewPeriod::Day:
+                break;
+        }
+        this->tmCopy = this->tm;
         this->timeChanged_ = false;
 
         // Populate users vector
