@@ -1,3 +1,4 @@
+#include "Lang.hpp"
 #include "ListUser.hpp"
 #include "UserSelect.hpp"
 
@@ -13,13 +14,13 @@ namespace Screen {
         r = new Aether::Rectangle(30, 647, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
-        Aether::Text * t = new Aether::Text(65, 44, "Select a User", 28);
+        Aether::Text * t = new Aether::Text(65, 44, "userSelect.heading"_lang, 28);
         t->setY(t->y() - t->h()/2);
         t->setColour(this->app->theme()->text());
         this->addElement(t);
         Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
-        c->addItem(new Aether::ControlItem(Aether::Button::PLUS, "Exit"));
+        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
+        c->addItem(new Aether::ControlItem(Aether::Button::PLUS, "common.buttonHint.exit"_lang));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
 

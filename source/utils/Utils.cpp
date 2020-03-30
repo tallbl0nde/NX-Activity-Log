@@ -1,6 +1,9 @@
 #include <cmath>
 #include <fstream>
+#include "Lang.hpp"
+#include <regex>
 #include "Utils.hpp"
+#include "Time.hpp"
 
 namespace Utils {
     void copyFile(std::string src, std::string dest) {
@@ -14,6 +17,19 @@ namespace Utils {
         destF.close();
     }
 
+    std::string format12H(unsigned short h) {
+        int h2 = (h > 12 ? h - 12 : h);
+        if (h2 == 0) {
+            h2 = 12;
+        }
+        std::string str = std::regex_replace("common.12H"_lang, std::regex("\\$\\[h]"), std::to_string(h2));
+        return std::regex_replace(str, std::regex("\\$\\[s]"), Utils::Time::getAMPM(h, false));
+    }
+
+    std::string formatHeading(std::string name) {
+        return std::regex_replace("common.heading"_lang, std::regex("\\$\\[name]"), name);
+    }
+
     // Add commas to a number (only does one but shhh)
     std::string formatNumberComma(unsigned int number) {
         std::string s = std::to_string(number);
@@ -21,6 +37,179 @@ namespace Utils {
             return s.substr(0, s.length() - 3) + "," + s.substr(s.length() - 3, 3);
         }
         return s;
+    }
+
+    std::string lastPlayedToString(unsigned int t) {
+        struct tm now = Utils::Time::getTmForCurrentTime();
+        struct tm ts = Utils::Time::getTm(t);
+        int diff = Utils::Time::getTimeT(now) - Utils::Time::getTimeT(ts);
+
+        // In the future
+        if (diff < 0) {
+            return "common.lastPlayed.future"_lang;
+
+        // Within last minute
+        } else if (diff < 60) {
+            return "common.lastPlayed.secs"_lang;
+        }
+
+        // Within last hour
+        if (diff < 3600) {
+            int m = diff/60;
+            if (m == 1) {
+                return "common.lastPlayed.1min"_lang;
+            } else {
+                return std::regex_replace("common.lastPlayed.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+
+        // Within last day
+        } else if (diff < 86400) {
+            int h = diff/3600;
+            if (h == 1) {
+                return "common.lastPlayed.1hr"_lang;
+            } else {
+                return std::regex_replace("common.lastPlayed.hrs"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            }
+
+        // Within last month
+        } else if (diff < 2678400) {
+            int d = diff/86400;
+            if (d == 1) {
+                return "common.lastPlayed.1day"_lang;
+            } else {
+                return std::regex_replace("common.lastPlayed.days"_lang, std::regex("\\$\\[d]"), std::to_string(d));
+            }
+        }
+
+        // Otherwise show date
+        std::string str;
+        // Show year if not within the same year
+        if (now.tm_year != ts.tm_year) {
+            str = std::regex_replace("common.lastPlayed.dateYear"_lang, std::regex("\\$\\[y]"), Utils::Time::tmToString(ts, "%Y", 4));
+        } else {
+            str = "common.lastPlayed.date"_lang;
+        }
+        str = std::regex_replace(str, std::regex("\\$\\[d]"), std::to_string(ts.tm_mday));
+        str = std::regex_replace(str, std::regex("\\$\\[s]"), Utils::Time::getDateSuffix(ts.tm_mday));
+        str = std::regex_replace(str, std::regex("\\$\\[m]"), Utils::Time::getMonthString(ts.tm_mon));
+
+        return str;
+    }
+
+    std::string launchesToString(unsigned int l) {
+        if (l != 1) {
+            return std::regex_replace("details.timesPlayed.multiple"_lang, std::regex("\\$\\[t]"), std::to_string(l));
+        }
+        return "details.timesPlayed.once"_lang;
+    }
+
+    std::string launchesToPlayedString(unsigned int l) {
+        if (l != 1) {
+            return std::regex_replace("common.timesPlayed.multiple"_lang, std::regex("\\$\\[t]"), std::to_string(l));
+        }
+        return "common.timesPlayed.once"_lang;
+    }
+
+    std::string playtimeToString(unsigned int s) {
+        if (s < 60) {
+            return "common.playtime.0min"_lang;
+        }
+
+        unsigned int h = s/3600;
+        unsigned int m = (s/60)%60;
+
+        if (h == 0) {
+            if (m == 1) {
+                return "common.playtime.1min"_lang;
+            } else {
+                return std::regex_replace("common.playtime.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+        } else if (h == 1) {
+            if (m == 0) {
+                return "common.playtime.1hr"_lang;
+            } else if (m == 1) {
+                return "common.playtime.1hr1min"_lang;
+            } else {
+                return std::regex_replace("common.playtime.1hrMins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+        } else {
+            if (m == 0) {
+                return std::regex_replace("common.playtime.hrs"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            } else if (m == 1) {
+                return std::regex_replace("common.playtime.hrs1min"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            }
+        }
+
+        std::string str = std::regex_replace("common.playtime.hrsMins"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+        return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
+    }
+
+    std::string playtimeToPlayedForString(unsigned int s) {
+        if (s < 60) {
+            return "common.playedFor.0min"_lang;
+        }
+
+        unsigned int h = s/3600;
+        unsigned int m = (s/60)%60;
+
+        if (h == 0) {
+            if (m == 1) {
+                return "common.playedFor.1min"_lang;
+            } else {
+                return std::regex_replace("common.playedFor.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+        } else if (h == 1) {
+            if (m == 0) {
+                return "common.playedFor.1hr"_lang;
+            } else if (m == 1) {
+                return "common.playedFor.1hr1min"_lang;
+            } else {
+                return std::regex_replace("common.playedFor.1hrMins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+        } else {
+            if (m == 0) {
+                return std::regex_replace("common.playedFor.hrs"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            } else if (m == 1) {
+                return std::regex_replace("common.playedFor.hrs1min"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            }
+        }
+
+        std::string str = std::regex_replace("common.playedFor.hrsMins"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+        return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
+    }
+
+    std::string playtimeToTotalPlaytimeString(unsigned int s) {
+        if (s < 60) {
+            return "common.totalPlaytime.0min"_lang;
+        }
+
+        unsigned int h = s/3600;
+        unsigned int m = (s/60)%60;
+
+        if (h == 0) {
+            if (m == 1) {
+                return "common.totalPlaytime.1min"_lang;
+            } else {
+                return std::regex_replace("common.totalPlaytime.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+        } else if (h == 1) {
+            if (m == 0) {
+                return "common.totalPlaytime.1hr"_lang;
+            } else if (m == 1) {
+                return "common.totalPlaytime.1hr1min"_lang;
+            } else {
+                return std::regex_replace("common.totalPlaytime.1hrMins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+            }
+        } else {
+            if (m == 0) {
+                return std::regex_replace("common.totalPlaytime.hrs"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            } else if (m == 1) {
+                return std::regex_replace("common.totalPlaytime.hrs1min"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+            }
+        }
+
+        std::string str = std::regex_replace("common.totalPlaytime.hrsMins"_lang, std::regex("\\$\\[h]"), std::to_string(h));
+        return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
     }
 
     // Round a double to given decimal places

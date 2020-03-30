@@ -1,4 +1,5 @@
 #include "Details.hpp"
+#include "Lang.hpp"
 #include "ListSession.hpp"
 #include "Utils.hpp"
 
@@ -21,38 +22,38 @@ namespace Screen {
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
-        c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
-        c->addItem(new Aether::ControlItem(Aether::Button::X, "Select Date"));
-        c->addItem(new Aether::ControlItem(Aether::Button::Y, "Change View"));
+        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
+        c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
+        c->addItem(new Aether::ControlItem(Aether::Button::X, "common.buttonHint.date"_lang));
+        c->addItem(new Aether::ControlItem(Aether::Button::Y, "common.buttonHint.view"_lang));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
-        this->noStats = new Aether::Text(460, 350, "No play activity has been recorded for this period of time.", 20);
+        this->noStats = new Aether::Text(460, 350, "common.noActivity"_lang, 20);
         this->noStats->setXY(this->noStats->x() - this->noStats->w()/2, this->noStats->y() - this->noStats->h()/2);
         this->noStats->setColour(this->app->theme()->mutedText());
         this->addElement(this->noStats);
 
-        Aether::Text * t = new Aether::Text(1070, 120, "All Time Activity", 24);
+        Aether::Text * t = new Aether::Text(1070, 120, "details.allTime"_lang, 24);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 190, "Playtime", 22);
+        t = new Aether::Text(1070, 190, "details.playtime"_lang, 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 280, "Average Playtime", 22);
+        t = new Aether::Text(1070, 280, "details.avgPlaytime"_lang, 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 370, "Times Played", 22);
+        t = new Aether::Text(1070, 370, "details.timesPlayed.heading"_lang, 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 460, "First Played", 22);
+        t = new Aether::Text(1070, 460, "details.firstPlayed"_lang, 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
-        t = new Aether::Text(1070, 550, "Last Played", 22);
+        t = new Aether::Text(1070, 550, "details.lastPlayed"_lang, 22);
         t->setColour(this->app->theme()->text());
         t->setX(t->x() - t->w()/2);
         this->addElement(t);
@@ -93,7 +94,6 @@ namespace Screen {
 
     void Details::updateActivity() {
         // Check if there is any activity + update heading
-        std::string heading = "Activity for ";
         struct tm t = this->app->time();
         t.tm_min = 0;
         t.tm_sec = 0;
@@ -102,22 +102,19 @@ namespace Screen {
         e.tm_sec = 59;
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
-                heading += Utils::Time::tmToDate(t, t.tm_year != Utils::Time::getTmForCurrentTime().tm_year);
                 e.tm_hour = 23;
                 break;
 
             case ViewPeriod::Month:
-                heading += Utils::Time::tmToString(t, "%B %Y", 14);
                 e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
                 break;
 
             case ViewPeriod::Year:
-                heading += Utils::Time::tmToString(t, "%Y", 4);
                 e.tm_mon = 11;
                 e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
                 break;
         }
-        this->graphHeading->setString(heading);
+        this->graphHeading->setString(Utils::Time::dateToActivityForString(t, this->app->viewPeriod()));
         this->graphHeading->setX(this->header->x() + (this->header->w() - this->graphHeading->w())/2);
         NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
 
@@ -178,14 +175,9 @@ namespace Screen {
                         this->graph->setLabel(i, std::to_string(i));
                     }
                 } else {
-                    this->graph->setLabel(0, "12am");
-                    this->graph->setLabel(3, "3am");
-                    this->graph->setLabel(6, "6am");
-                    this->graph->setLabel(9, "9am");
-                    this->graph->setLabel(12, "12pm");
-                    this->graph->setLabel(15, "3pm");
-                    this->graph->setLabel(18, "6pm");
-                    this->graph->setLabel(21, "9pm");
+                    for (int i = 0; i < 24; i += 3) {
+                        this->graph->setLabel(i, Utils::format12H(i));
+                    }
                 }
                 break;
 
@@ -304,20 +296,20 @@ namespace Screen {
         // Set headings etc...
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day:
-                this->graphSubheading->setString("Playtime (in minutes)");
+                this->graphSubheading->setString("common.playtimeMinutes"_lang);
                 break;
 
             case ViewPeriod::Month:
             case ViewPeriod::Year:
-                this->graphSubheading->setString("Playtime (in hours)");
+                this->graphSubheading->setString("common.playtimeHours"_lang);
                 break;
         }
 
         this->graphSubheading->setX(this->header->x() + (this->header->w() - this->graphSubheading->w())/2);
         if (totalSecs == 0) {
-            this->graphTotalSub->setString("0 seconds");
+            this->graphTotalSub->setString("common.playtime.0sec"_lang);
         } else {
-            this->graphTotalSub->setString(Utils::Time::playtimeToString(totalSecs, ", "));
+            this->graphTotalSub->setString(Utils::playtimeToString(totalSecs));
         }
 
         int w = this->graphTotalHead->w() + this->graphTotalSub->w();
@@ -427,7 +419,7 @@ namespace Screen {
                     break;
             }
             ls->setTimeString(first + " - " + last + (outRange ? "*" : ""));
-            ls->setPlaytimeString(Utils::Time::playtimeToString(playtime, " and "));
+            ls->setPlaytimeString(Utils::playtimeToString(playtime));
 
             // Add percentage of total playtime
             std::string str;
@@ -453,10 +445,10 @@ namespace Screen {
         int bw, bh;
         this->msgbox->getBodySize(&bw, &bh);
         Aether::Element * body = new Aether::Element(0, 0, bw, bh);
-        Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "A Play Session represents the time between when a game was launched to when it was quit in succession.", 22, bw - 100);
+        Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "details.popup.heading"_lang, 22, bw - 100);
         tb->setColour(this->app->theme()->text());
         body->addElement(tb);
-        tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "The time of launch, time of exit, playtime and percentage of overall playtime is shown.\n\nSelect a session to view a more detailed breakdown.\n\nNote: Sessions with an asterisk start before and/or end after the selected date. Their playtime has been adjusted to reflect the current time range, however their breakdown will show the full duration of the session.", 20, bw - 100);
+        tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "details.popup.msg1"_lang + "\n\n" + "details.popup.msg2"_lang + "\n\n" + "details.popup.msg3"_lang, 20, bw - 100);
         tb->setColour(this->app->theme()->mutedText());
         body->addElement(tb);
         body->setWH(bw, tb->y() + tb->h() + 40);
@@ -468,8 +460,8 @@ namespace Screen {
 
     void Details::setupSessionBreakdown(NX::PlaySession s) {
         this->panel->close(false);
-        this->panel->setPlaytime(Utils::Time::playtimeToString(s.playtime, " and "));
-        this->panel->setLength(Utils::Time::playtimeToString(s.endTimestamp - s.startTimestamp, " and "));
+        this->panel->setPlaytime(Utils::playtimeToString(s.playtime));
+        this->panel->setLength(Utils::playtimeToString(s.endTimestamp - s.startTimestamp));
 
         // Container element to prevent stretching of text in list
         std::vector<NX::PlayEvent> events = this->app->playdata()->getPlayEvents(s.startTimestamp, s.endTimestamp, this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
@@ -488,7 +480,7 @@ namespace Screen {
                 if (time.tm_hour == 0) {
                     time.tm_hour = 12;
                 }
-                str = std::to_string(((time.tm_hour > 12) ? time.tm_hour - 12 : time.tm_hour)) + ":" + ((time.tm_min < 10) ? "0" : "") + std::to_string(time.tm_min) + ((isAM) ? "am" : "pm") + " - ";
+                str = std::to_string(((time.tm_hour > 12) ? time.tm_hour - 12 : time.tm_hour)) + ":" + ((time.tm_min < 10) ? "0" : "") + std::to_string(time.tm_min) + ((isAM) ? "common.am"_lang : "common.pm"_lang) + " - ";
             }
 
             // Add date string if new day
@@ -506,7 +498,7 @@ namespace Screen {
             bool addPlaytime = false;
             switch (events[i].eventType) {
                 case NX::EventType::Applet_Launch:
-                    str += "Application Launched";
+                    str += "details.break.appLaunched"_lang;
                     lastTs = events[i].steadyTimestamp;
                     break;
 
@@ -514,7 +506,7 @@ namespace Screen {
                     if (events[i-1].eventType == NX::EventType::Account_Active || events[i-1].eventType == NX::EventType::Applet_Launch) {
                         continue;
                     }
-                    str += "Application Resumed";
+                    str += "details.break.appResumed"_lang;
                     lastTs = events[i].steadyTimestamp;
                     break;
 
@@ -522,12 +514,12 @@ namespace Screen {
                     if (events[i+1].eventType == NX::EventType::Account_Inactive || events[i+1].eventType == NX::EventType::Applet_Exit) {
                         continue;
                     }
-                    str += "Application Suspended";
+                    str += "details.break.appSuspended"_lang;
                     addPlaytime = true;
                     break;
 
                 case NX::EventType::Applet_Exit:
-                    str += "Application Closed";
+                    str += "details.break.appClosed"_lang;
                     addPlaytime = true;
                     break;
 
@@ -544,7 +536,7 @@ namespace Screen {
 
             // Add playtime from last "burst"
             if (addPlaytime) {
-                t = new Aether::Text(t->x() + t->w() + 10, t->y() + t->h()/2, "(" + Utils::Time::playtimeToString(events[i].steadyTimestamp - lastTs, " and ") + ")", 16);
+                t = new Aether::Text(t->x() + t->w() + 10, t->y() + t->h()/2, "(" + Utils::playtimeToString(events[i].steadyTimestamp - lastTs) + ")", 16);
                 t->setY(t->y() - t->h()/2);
                 t->setColour(this->app->theme()->accent());
                 c->addElement(t);
@@ -641,7 +633,7 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator(30));
 
         this->graphTotal = new Aether::Element(0, 0, 100, 30);
-        this->graphTotalHead = new Aether::Text(this->graphTotal->x(), this->graphTotal->y(), "Total Playtime: ", 20);
+        this->graphTotalHead = new Aether::Text(this->graphTotal->x(), this->graphTotal->y(), "common.totalPlaytime.heading"_lang + " ", 20);
         this->graphTotalHead->setColour(this->app->theme()->text());
         this->graphTotal->addElement(this->graphTotalHead);
         this->graphTotalSub = new Aether::Text(this->graphTotalHead->x() + this->graphTotalHead->w(), this->graphTotal->y(), "", 20);
@@ -651,7 +643,7 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator(20));
 
         // Add play sessions heading
-        this->playHeading = new Aether::ListHeadingHelp("Play Sessions", [this](){
+        this->playHeading = new Aether::ListHeadingHelp("details.playSessions"_lang, [this](){
             this->setupSessionHelp();
         });
         this->playHeading->setHelpColour(this->app->theme()->mutedText());
@@ -669,17 +661,17 @@ namespace Screen {
 
         // Add side stats
         NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
-        this->playtime = new Aether::Text(1070, 220, Utils::Time::playtimeToString(ps->playtime, " and "), 20);
+        this->playtime = new Aether::Text(1070, 220, Utils::playtimeToString(ps->playtime), 20);
         this->playtime->setColour(this->app->theme()->accent());
         this->playtime->setX(this->playtime->x() - this->playtime->w()/2);
         this->addElement(this->playtime);
 
-        this->avgplaytime = new Aether::Text(1070, 310, Utils::Time::playtimeToString(ps->playtime / ps->launches, ", "), 20);
+        this->avgplaytime = new Aether::Text(1070, 310, Utils::playtimeToString(ps->playtime / ps->launches), 20);
         this->avgplaytime->setColour(this->app->theme()->accent());
         this->avgplaytime->setX(this->avgplaytime->x() - this->avgplaytime->w()/2);
         this->addElement(this->avgplaytime);
 
-        this->timeplayed = new Aether::Text(1070, 400, Utils::formatNumberComma(ps->launches) + " times", 20);
+        this->timeplayed = new Aether::Text(1070, 400, Utils::launchesToString(ps->launches), 20);
         this->timeplayed->setColour(this->app->theme()->accent());
         this->timeplayed->setX(this->timeplayed->x() - this->timeplayed->w()/2);
         this->addElement(this->timeplayed);
@@ -697,7 +689,7 @@ namespace Screen {
 
         // Create blank messagebox
         this->msgbox = new Aether::MessageBox();
-        this->msgbox->addTopButton("Close", [this](){
+        this->msgbox->addTopButton("common.close"_lang, [this](){
             this->msgbox->close(true);
         });
         this->msgbox->setLineColour(this->app->theme()->mutedLine());

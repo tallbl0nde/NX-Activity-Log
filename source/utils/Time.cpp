@@ -1,3 +1,5 @@
+#include "Lang.hpp"
+#include <regex>
 #include "Time.hpp"
 
 namespace Utils::Time {
@@ -5,125 +7,9 @@ namespace Utils::Time {
         return std::mktime(&t);
     }
 
-    std::string playtimeToString(time_t secs, std::string sep) {
-        if (secs == 0) {
-            return "less than a minute";
-        }
-
-        std::string str = "";
-
-        // Convert seconds into hrs, mins, secs
-        unsigned int mins = secs/60;
-        unsigned int hrs = mins/60;
-        mins %= 60;
-        secs %= 60;
-
-        switch (hrs) {
-            case 0:
-                break;
-            case 1:
-                str += "1 hour";
-                break;
-            default:
-                str += std::to_string(hrs) + " hours";
-                break;
-        }
-
-        if (mins != 0 && hrs != 0){
-            str += sep;
-        }
-
-        switch (mins){
-            case 0:
-                break;
-            case 1:
-                str += "1 minute";
-                break;
-            default:
-                str += std::to_string(mins) + " minutes";
-                break;
-        }
-
-        if (hrs == 0) {
-            if (mins != 0 && secs != 0){
-                str += sep;
-            }
-
-            switch (secs){
-                case 0:
-                    break;
-                case 1:
-                    str += "1 second";
-                    break;
-                default:
-                    str += std::to_string(secs) + " seconds";
-                    break;
-            }
-        }
-
-        return str;
-    }
-
     std::string timestampToString(time_t ts) {
         struct tm tmp = getTm(ts);
-        return tmToString(tmp, "%B ", 10) + std::to_string(tmp.tm_mday) + getDateSuffix(tmp.tm_mday) + tmToString(tmp, ", %Y", 6);
-    }
-
-    std::string lastPlayedTimestampToString(time_t ts) {
-        // Get difference between timestamps in seconds
-        time_t t = std::time(nullptr);
-        double diff = std::difftime(t, ts);
-
-        // Negative values indicate played with a future date
-        if (diff < 0) {
-            return "Played in the future";
-        }
-
-        std::string str = "Last played ";
-        if (diff < 60) {
-            str += "seconds ago";
-
-        // If within the last hour show minutes
-        } else if (diff < 3600) {
-            str += std::to_string((int)diff/60);
-            if ((int)(diff/60) == 1) {
-                str += " minute ago";
-            } else {
-                str += " minutes ago";
-            }
-
-        // If within last day show hours
-        } else if (diff < 86400) {
-            str += std::to_string((int)diff/3600);
-            if ((int)(diff/3600) == 1) {
-                str += " hour ago";
-            } else {
-                str += " hours ago";
-            }
-
-        // If within last month show days
-        } else if (diff < 2678400) {
-            str += std::to_string((int)diff/86400);
-            if ((int)(diff/86400) == 1) {
-                str += " day ago";
-            } else {
-                str += " days ago";
-            }
-
-        // Otherwise show date
-        } else {
-            // Add month + date
-            struct tm tmp = getTm(ts);
-            str += tmToString(tmp, "on %B ", 13) + std::to_string(tmp.tm_mday) + getDateSuffix(tmp.tm_mday);
-
-            // If not in this year show year as well
-            struct tm now = getTmForCurrentTime();
-            if (now.tm_year != tmp.tm_year) {
-                str += tmToString(tmp, ", %Y", 6);
-            }
-        }
-
-        return str;
+        return tmToDate(tmp, true);
     }
 
     bool areDifferentDates(struct tm a, struct tm b) {
@@ -249,19 +135,53 @@ namespace Utils::Time {
     }
 
     std::string tmToDate(struct tm t, bool b) {
-        std::string str = tmToString(t, "%B ", 10);
-        str += std::to_string(t.tm_mday) + getDateSuffix(t.tm_mday);
+        std::string str;
         if (b) {
-            str += tmToString(t, ", %Y", 6);
+            str = std::regex_replace("common.dateFormatYear"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+        } else {
+            str = "common.dateFormat"_lang;
         }
+        str = std::regex_replace(str, std::regex("\\$\\[d]"), std::to_string(t.tm_mday));
+        str = std::regex_replace(str, std::regex("\\$\\[s]"), getDateSuffix(t.tm_mday));
+        str = std::regex_replace(str, std::regex("\\$\\[m]"), getMonthString(t.tm_mon));
+
         return str;
+    }
+
+    std::string dateToActivityForString(struct tm t, ViewPeriod v) {
+        switch (v) {
+            case ViewPeriod::Day: {
+                std::string str;
+                if (t.tm_year != getTmForCurrentTime().tm_year) {
+                    str = std::regex_replace("common.activityFor.dayYear"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+                } else {
+                    str = "common.activityFor.day"_lang;
+                }
+                str = std::regex_replace(str, std::regex("\\$\\[d]"), std::to_string(t.tm_mday));
+                str = std::regex_replace(str, std::regex("\\$\\[s]"), getDateSuffix(t.tm_mday));
+                return std::regex_replace(str, std::regex("\\$\\[m]"), getMonthString(t.tm_mon));
+                break;
+            }
+
+            case ViewPeriod::Month: {
+                std::string str = std::regex_replace("common.activityFor.month"_lang, std::regex("\\$\\[m]"), getMonthString(t.tm_mon));
+                return std::regex_replace(str, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+                break;
+            }
+
+            case ViewPeriod::Year:
+                return std::regex_replace("common.activityFor.year"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+                break;
+        }
+
+        return "";
     }
 
     std::string getAMPM(int h, bool b) {
         if (h < 12) {
-            return (b ? "AM" : "am");
+            return (b ? "common.AM"_lang : "common.am"_lang);
         }
-        return (b ? "PM" : "pm");
+        return (b ? "common.PM"_lang : "common.pm"_lang);
     }
 
     std::string getDateSuffix(int d) {
@@ -269,18 +189,59 @@ namespace Utils::Time {
             case 1:
             case 21:
             case 31:
-                return "st";
+                return "common.dateSuffix.st"_lang;
                 break;
             case 2:
             case 22:
-                return "nd";
+                return "common.dateSuffix.nd"_lang;
                 break;
             case 3:
             case 23:
-                return "rd";
+                return "common.dateSuffix.rd"_lang;
                 break;
             default:
-                return "th";
+                return "common.dateSuffix.th"_lang;
+                break;
+        }
+    }
+
+    std::string getMonthString(int m) {
+        switch (m) {
+            case 0:
+                return "common.month.jan"_lang;
+                break;
+            case 1:
+                return "common.month.feb"_lang;
+                break;
+            case 2:
+                return "common.month.mar"_lang;
+                break;
+            case 3:
+                return "common.month.apr"_lang;
+                break;
+            case 4:
+                return "common.month.may"_lang;
+                break;
+            case 5:
+                return "common.month.jun"_lang;
+                break;
+            case 6:
+                return "common.month.jul"_lang;
+                break;
+            case 7:
+                return "common.month.aug"_lang;
+                break;
+            case 8:
+                return "common.month.sep"_lang;
+                break;
+            case 9:
+                return "common.month.oct"_lang;
+                break;
+            case 10:
+                return "common.month.nov"_lang;
+                break;
+            default:
+                return "common.month.dec"_lang;
                 break;
         }
     }
@@ -288,40 +249,40 @@ namespace Utils::Time {
     std::string getShortMonthString(int m) {
         switch (m) {
             case 0:
-                return "Jan";
+                return "common.month.short.jan"_lang;
                 break;
             case 1:
-                return "Feb";
+                return "common.month.short.feb"_lang;
                 break;
             case 2:
-                return "Mar";
+                return "common.month.short.mar"_lang;
                 break;
             case 3:
-                return "Apr";
+                return "common.month.short.apr"_lang;
                 break;
             case 4:
-                return "May";
+                return "common.month.short.may"_lang;
                 break;
             case 5:
-                return "Jun";
+                return "common.month.short.jun"_lang;
                 break;
             case 6:
-                return "Jul";
+                return "common.month.short.jul"_lang;
                 break;
             case 7:
-                return "Aug";
+                return "common.month.short.aug"_lang;
                 break;
             case 8:
-                return "Sep";
+                return "common.month.short.sep"_lang;
                 break;
             case 9:
-                return "Oct";
+                return "common.month.short.oct"_lang;
                 break;
             case 10:
-                return "Nov";
+                return "common.month.short.nov"_lang;
                 break;
             default:
-                return "Dec";
+                return "common.month.short.dec"_lang;
                 break;
         }
     }

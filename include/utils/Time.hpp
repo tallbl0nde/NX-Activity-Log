@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <string>
+#include "Types.hpp"
 
 // Bunch of helper functions for time_t and tm structs
 namespace Utils::Time {
@@ -10,15 +11,8 @@ namespace Utils::Time {
     // Get time_t equivalent of given tm
     time_t getTimeT(struct tm);
 
-    // Return a string containing number of hours, minutes and seconds
-    // Hours and minutes are split with the provided separator if there are no seconds
-    std::string playtimeToString(time_t, std::string);
-
     // Returns a string containing time since timestamp
     std::string timestampToString(time_t);
-
-    // Returns a string with the time since last played
-    std::string lastPlayedTimestampToString(time_t);
 
     // TM STRUCT FUNCTIONS
     // Return true if two structs have different dates
@@ -46,12 +40,18 @@ namespace Utils::Time {
     std::string tmToDate(struct tm, bool = true);
 
     // MISCELLANEOUS FUNCTIONS
+    // Format given date to 'activity for' string
+    std::string dateToActivityForString(struct tm, ViewPeriod);
+
     // Returns am/pm for given 24-hour int
     // Set true for upper case
     std::string getAMPM(int, bool = false);
 
     // Returns suffix for given date (within 1 - 31)
     std::string getDateSuffix(int);
+
+    // Return full month string
+    std::string getMonthString(int);
 
     // Return three character version of month
     std::string getShortMonthString(int);

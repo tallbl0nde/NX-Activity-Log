@@ -1,3 +1,4 @@
+#include "Lang.hpp"
 #include "SortedList.hpp"
 #include "Utils.hpp"
 
@@ -37,37 +38,37 @@ namespace CustomElm {
         // Change heading text + reorder items
         switch (t) {
             case AlphaAsc:
-                this->heading->setString("Sorting by: Name");
+                this->heading->setString("allActivity.sort.name"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->name < rhs.second->name;
                 });
                 break;
             case HoursAsc:
-                this->heading->setString("Sorting by: Most Playtime");
+                this->heading->setString("allActivity.sort.mostPlaytime"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime > rhs.second->playtime;
                 });
                 break;
             case HoursDec:
-                this->heading->setString("Sorting by: Least Playtime");
+                this->heading->setString("allActivity.sort.leastPlaytime"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->playtime < rhs.second->playtime;
                 });
                 break;
             case LaunchAsc:
-                this->heading->setString("Sorting by: Most Launched");
+                this->heading->setString("allActivity.sort.mostLaunched"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->launches > rhs.second->launches;
                 });
                 break;
             case LaunchDec:
-                this->heading->setString("Sorting by: Least Launched");
+                this->heading->setString("allActivity.sort.leastLaunched"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->launches < rhs.second->launches;
                 });
                 break;
             case FirstPlayed:
-                this->heading->setString("Sorting by: First Playtime");
+                this->heading->setString("allActivity.sort.firstPlayed"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->firstPlayed < rhs.second->firstPlayed;
                 });
@@ -77,7 +78,7 @@ namespace CustomElm {
                 }
                 break;
             case LastPlayed:
-                this->heading->setString("Sorting by: Most Recently Played");
+                this->heading->setString("allActivity.sort.recentlyPlayed"_lang);
                 std::sort(merged.begin(), merged.end(), [](std::pair<Element *, SortInfo *> lhs, std::pair<Element *, SortInfo *> rhs){
                     return lhs.second->lastPlayed > rhs.second->lastPlayed;
                 });

@@ -1,3 +1,4 @@
+#include "Lang.hpp"
 #include "PlaySession.hpp"
 
 #define WIDTH 800
@@ -7,7 +8,7 @@ namespace CustomOvl {
         // Create elements
         this->rect = new Aether::Rectangle(this->x() + (this->w() - WIDTH)/2, this->y(), WIDTH, this->h());
         this->addElement(this->rect);
-        this->title = new Aether::Text(this->rect->x() + 50, this->rect->y() + 45, "Play Session Details", 28);
+        this->title = new Aether::Text(this->rect->x() + 50, this->rect->y() + 45, "details.break.heading"_lang, 28);
         this->title->setY(this->title->y() - this->title->h()/2);
         this->addElement(this->title);
         this->top = new Aether::Rectangle(this->rect->x() + 30, this->rect->y() + 87, this->rect->w() - 60, 1);
@@ -17,18 +18,18 @@ namespace CustomOvl {
         this->sep = new Aether::Rectangle(this->rect->x() + 30, this->bottom->y() - 110, this->bottom->w(), 1);
         this->addElement(this->sep);
         this->ctrl = new Aether::Controls(this->rect->x() + 45, 647, this->rect->w() - 90);
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, "Close"));
+        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, "common.close"_lang));
         this->addElement(this->ctrl);
 
         this->list = nullptr;
         this->col = Aether::Colour{255, 255, 255, 255};
 
-        this->length = new Aether::Text(this->rect->x() + 3*this->rect->w()/4, this->bottom->y() - 80, "Session Length", 20);
+        this->length = new Aether::Text(this->rect->x() + 3*this->rect->w()/4, this->bottom->y() - 80, "details.break.length"_lang, 20);
         this->length->setX(this->length->x() - this->length->w()/2);
         this->addElement(this->length);
         this->lengthSub = new Aether::Text(this->rect->x() + 3*this->rect->w()/4, this->bottom->y() - 50, "", 18);
         this->addElement(this->lengthSub);
-        this->playtime = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 80, "Total Playtime", 20);
+        this->playtime = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 80, "details.break.playtime"_lang, 20);
         this->playtime->setX(this->playtime->x() - this->playtime->w()/2);
         this->addElement(this->playtime);
         this->playtimeSub = new Aether::Text(this->rect->x() + this->rect->w()/4, this->bottom->y() - 50, "", 18);
