@@ -1,0 +1,243 @@
+{
+    "allActivity": {
+        "sort": {
+            "firstPlayed": "Ordinato per: Giocati meno di recente",
+            "leastLaunched": "Ordinato per: Giocati meno volte",
+            "leastPlaytime": "Ordinato per: Giocati meno a lungo",
+            "mostLaunched": "Ordinato per: Giocati più volte",
+            "mostPlaytime": "Ordinato per: Giocati più a lungo",
+            "name": "Ordinato per: Titolo",
+            "recentlyPlayed": "Ordinato per: Giocati più di recente"
+        }
+    },
+    "common": {
+        "12H": "$[h]$[s]",
+        "activityFor": {
+            "day": "Attività per $[d] $[m]",
+            "dayYear": "Attività per $[d] $[m], $[y]",
+            "month": "Attività per $[m] $[y]",
+            "year": "Attività per $[y]"
+        },
+        "AM": "AM",
+        "am": "am",
+        "atmosphere": "Atmosphere",
+        "buttonHint": {
+            "back": "Indietro",
+            "date": "Seleziona data",
+            "exit": "Esci",
+            "ok": "Ok",
+            "sort": "Ordina",
+            "view": "Cambia visuale"
+        },
+        "close": "Chiudi",
+        "dateFormat": "$[d] $[m]",
+        "dateFormatYear": "$[d] $[m], $[y]",
+        "dateSuffix": {
+            "nd": "",
+            "rd": "",
+            "st": "",
+            "th": ""
+        },
+        "datePanel": {
+            "headingDate": "Guarda data",
+            "headingMonth": "Guarda mese",
+            "headingYear": "Guarda anno",
+            "day": "Giorno",
+            "month": "Mese",
+            "year": "Anno"
+        },
+        "disabled": "Disabilitato",
+        "enabled": "Abilitato",
+        "heading": "Pagina di $[name]",
+        "lastPlayed": {
+            "future": "Giocato nel futuro",
+            "secs": "Giocato secondi fa",
+            "1min": "Giocato un secondo fa",
+            "mins": "Giocato $[m] minuti fa",
+            "1hr": "Giocato un'ora fa",
+            "hrs": "Giocato $[h] ore fa",
+            "1day": "Giocato un giorno fa",
+            "days": "Giocato $[d] giorni fa",
+            "date": "Giocato $[d] $[m]",
+            "dateYear": "Giocato $[d] $[m], $[y]"
+        },
+        "month": {
+            "jan": "gennaio",
+            "feb": "febbraio",
+            "mar": "marzo",
+            "apr": "aprile",
+            "may": "maggio",
+            "jun": "giugno",
+            "jul": "luglio",
+            "aug": "agosto",
+            "sep": "settembre",
+            "oct": "ottobre",
+            "nov": "novembre",
+            "dec": "decembre",
+            "short": {
+                "jan": "Gen",
+                "feb": "Feb",
+                "mar": "Mar",
+                "apr": "Apr",
+                "may": "Mag",
+                "jun": "Giu",
+                "jul": "Lug",
+                "aug": "Ago",
+                "sep": "Set",
+                "oct": "Ott",
+                "nov": "Nov",
+                "dec": "Dic"
+            }
+        },
+        "off": "No",
+        "on": "Sì",
+        "no": "No",
+        "noActivity": "Nessuna attività di gioco è stata registrata per questo periodo di tempo.",
+        "playedFor" : {
+            "0min": "Giocato per meno di un minuto",
+            "1min": "Giocato per un minuto",
+            "mins": "Giocato per $[m] minuti",
+            "1hr": "Giocato per un'ora",
+            "hrs": "Giocato per $[h] ore",
+            "hrs1min": "Giocato per $[h] ore e un minuto",
+            "1hr1min": "Giocato per un'ora e un minuto",
+            "1hrMins": "Giocato per un'ora e $[m] minuti",
+            "hrsMins": "Giocato per $[h] ore e $[m] minuti"
+        },
+        "playtime": {
+            "0sec": "0 secondi",
+            "0min": "0 minuti",
+            "1min": "Un minuto",
+            "mins": "$[m] minuti",
+            "1hr": "Un'ora",
+            "hrs": "$[h] ore",
+            "hrs1min": "$[h] ore e un minuto",
+            "1hr1min": "Un'ora e un minuto",
+            "1hrMins": "Un'ora e $[m] minuti",
+            "hrsMins": "$[h] ore e $[m] minuti"
+        },
+        "playtimeHours": "Attività di gioco (in ore)",
+        "playtimeMinutes": "Attività di gioco (in minuti)",
+        "PM": "PM",
+        "pm": "pm",
+        "reinx": "ReiNX",
+        "screen": {
+            "allActivity": "Attività totale",
+            "recentActivity": "Attività recente",
+            "settings": "Impostazioni utente"
+        },
+        "sort": {
+            "firstPlayed": "Giocati prima",
+            "heading": "Ordina i software",
+            "leastLaunched": "Giocati meno volte",
+            "leastPlaytime": "Giocati meno a lungo",
+            "mostLaunched": "Giocati più volte",
+            "mostPlaytime": "Giocati più a lungo",
+            "name": "Titolo",
+            "recentlyPlayed": "Giocati più di recente"
+        },
+        "sxos": "SX OS",
+        "timesPlayed": {
+            "multiple": "Giocato $[t] volte",
+            "once": "Giocato una volta"
+        },
+        "totalPlaytime": {
+            "heading": "Attività di gioco totale:",
+            "0min": "Attività di gioco: 0 minuti",
+            "1min": "Attività di gioco: un minuto",
+            "mins": "Attività di gioco: $[m] minuti",
+            "1hr": "Attività di gioco: un'ore",
+            "hrs": "Attività di gioco: $[h] ore",
+            "hrs1min": "Attività di gioco: $[h] ore e un minuto",
+            "1hr1min": "Attività di gioco: un'ora e un minuto",
+            "1hr1mins": "Attività di gioco: un'ora e $[m] minuti",
+            "hrsMins": "Attività di gioco: $[h] ore e $[m] minuti"
+        },
+        "view": {
+            "day": "Giorno",
+            "heading": "Guarda attività",
+            "month": "Mese",
+            "year": "Anno"
+        },
+        "yes": "Sì"
+    },
+    "details": {
+        "allTime": "Attività di gioco totale",
+        "avgPlaytime": "Attività di gioco media",
+        "break": {
+            "appClosed": "Software chiuso",
+            "appLaunched": "Software avviato",
+            "appResumed": "Software ripreso",
+            "appSuspended": "Software sospeso",
+            "heading": "Dettagli sessione di gioco",
+            "length": "Durata sessione",
+            "playtime": "Attività di gioco totale"
+        },
+        "firstPlayed": "Giocato per la prima volta",
+        "lastPlayed": "Giocato più di recente",
+        "playSessions": "Sessioni di gioco",
+        "playtime": "Attività di gioco",
+        "popup": {
+            "heading": "Una sessione di gioco rappresenta il tempo in cui un gioco è stato avviato fino a quando è stato chiuso in successione.",
+            "msg1": "È mostrato il tempo di gioco, tempo di uscita, attività di gioco e percentuale dell'attività di gioco complessiva..",
+            "msg2": "Seleziona una sessione per vedere un rapporto più dettagliato.",
+            "msg3": "Nota: Sessioni con un asterisco iniziano prima e/o finiscono dopo la data selezionata. La loro attività di gioco è stata aggiustata per riflettere la visuale attuale, tuttavia il rapporto mostrerà la durata intera della sessione."
+        },
+        "timesPlayed": {
+            "heading": "Giocato per",
+            "multiple": "$[t] volte",
+            "once": "una volta"
+        }
+    },
+    "recentActivity": {
+        "titleHeading": "Attività di gioco"
+    },
+    "settings": {
+        "about": "Grazie per usare la mia applicazione! Spero ti sia utile! :)",
+        "launch": {
+            "default": "Predefinito",
+            "heading": "Opzioni di lancio",
+            "language": "Lingua",
+            "languageHint": "Lingua per l'applicazione. Predefinito sceglierà la tua lingua di sistema se una traduzione è disponibile.",
+            "screen": "Schermata predefinita",
+            "screenHint": "Schermata di lancio.",
+            "sort": "Ordine predefinito",
+            "sortHint": "Ordine da usare al lancio per 'Attività totale'.",
+            "view": "Visuale predefinita",
+            "viewHint": "Periodo di attività da vedere al lancio.",
+            "theme": {
+                "auto": "Automatico",
+                "dark": "Nero base",
+                "heading": "Tema",
+                "light": "Bianco base"
+            },
+            "themeHint": "Tema per l'applicazione. Automatico sceglie tra bianco e nero in base alle impostazioni della tua Switch. Nota: Questo attualmente richiede che l'applicazione venga riavviata per prendere effetto."
+        },
+        "other": {
+            "24H": "Usa sistema orario a 24 ore",
+            "24HHint": "Usa sistema orario a 24 ore invece di quello a 12 ore dove possibile.",
+            "heading": "Altre opzioni",
+            "hideDeleted": "Nascondi giochi eliminati",
+            "hideDeletedHint": "Esclude giochi eliminati da 'Attività totale'.",
+            "graph": "Etichette grafici a barre",
+            "graphHint": "Aziona i piccoli numeri visibili sopra ogni barra sui grafici.",
+            "replace": "Sostituisci Pagina utente",
+            "replaceBox": {
+                "error": "Si è verificato un errore:",
+                "errorMsg1": "L'.nro dell'applicazione non è stato trovato nella posizione prevista:",
+                "errorMsg2": "Questa funzione richiede che l'.nro sia presente in questa posizione.",
+                "errorMsg3": "Muovi e rinomina come d'accordo file e cartelle e riprova di nuovo.",
+                "success": "Installazione avvenuta con successo!",
+                "successMsg1": "I seguenti CFW sono stati rilevati e hanno questa funzione abilitata:",
+                "successMsg2": "Nota: Questa funzione non usa uno sysmodule, se riscontri errori prova o a disabilitare la funzione o cancellare",
+                "successMsg3": "<cartella del CFW>/0100000000001013/exefs.nsp"
+            },
+            "replaceHint": "Sostituisci la Pagina utente con questa applicazione. Richiede LayeredFS e Atmosphere 0.10.0+, ReiNX o SXOS."
+        },
+        "support": "Mi puoi supportare su Ko-fi:",
+        "translations": "Un grazie a queste persone per il loro aiuto nel tradurre l'applicazione:"
+    },
+    "userSelect": {
+        "heading": "Seleziona un utente"
+    }
+}
