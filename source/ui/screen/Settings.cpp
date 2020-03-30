@@ -151,6 +151,23 @@ namespace Screen {
         this->popuplist->setTextColour(this->app->theme()->text());
     }
 
+    void Settings::setupLangOverlay() {
+        this->preparePopupList("settings.launch.language"_lang);
+
+        // Add an entry for each language
+        Language l = this->app->config()->gLang();
+        this->popuplist->addEntry("settings.launch.default"_lang, [this](){
+            this->app->config()->setGLang(Language::Default);
+            this->optionLang->setValue("settings.launch.default"_lang);
+        }, l == Language::Default);
+        this->popuplist->addEntry("English", [this](){
+            this->app->config()->setGLang(Language::English);
+            this->optionLang->setValue("English");
+        }, l == Language::English);
+
+        this->app->addOverlay(this->popuplist);
+    }
+
     void Settings::setupScreenOverlay() {
         this->preparePopupList("settings.launch.screen"_lang);
 
@@ -380,6 +397,27 @@ namespace Screen {
         this->optionView->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionView);
         lc = new Aether::ListComment("settings.launch.viewHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        // LANGUAGE
+        switch (this->app->config()->gLang()) {
+            case Language::Default:
+                str = "settings.launch.default"_lang;
+                break;
+
+            case Language::English:
+                str = "English";
+                break;
+        }
+        this->optionLang = new Aether::ListOption("settings.launch.language"_lang, str, [this](){
+            this->setupLangOverlay();
+        });
+        this->optionLang->setHintColour(this->app->theme()->text());
+        this->optionLang->setValueColour(this->app->theme()->accent());
+        this->optionLang->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionLang);
+        lc = new Aether::ListComment("settings.launch.languageHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 

@@ -2,6 +2,7 @@
 #include <fstream>
 #include "JSON.hpp"
 #include "Lang.hpp"
+#include "NX.hpp"
 #include <sstream>
 
 namespace Utils::Lang {
@@ -19,6 +20,19 @@ namespace Utils::Lang {
         j = nlohmann::json::parse(in);
 
         return true;
+    }
+
+    bool setLanguage(Language l) {
+        std::string path = "";
+        switch (Utils::NX::getSystemLanguage()) {
+            case Default:
+            case English:
+            default:
+                path = "romfs:/lang/en.json";
+                break;
+        }
+
+        return setFile(path);
     }
 
     std::string string(std::string key) {

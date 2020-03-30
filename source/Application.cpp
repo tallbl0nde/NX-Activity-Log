@@ -11,7 +11,7 @@ namespace Main {
         this->config_->readConfig();
 
         // Set language
-        if (!Utils::Lang::setFile("romfs:/lang/en.json")) {
+        if (!Utils::Lang::setLanguage(this->config_->gLang())) {
             this->display->exit();
         }
 

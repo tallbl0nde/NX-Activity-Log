@@ -195,7 +195,10 @@
     "settings": {
         "about": "Thanks for using my app! I hope it's been useful! :)",
         "launch": {
+            "default": "Default",
             "heading": "Launch Options",
+            "language": "Language",
+            "languageHint": "The language to use for app. Default will match your system language if a translation is available.",
             "screen": "Default Screen",
             "screenHint": "The screen to show on launch/after selecting a user.",
             "sort": "Default Sort Method",
@@ -231,7 +234,8 @@
             },
             "replaceHint": "Replace the User Page with this app. Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS."
         },
-        "support": "You can support me on Ko-fi:"
+        "support": "You can support me on Ko-fi:",
+        "translations": "Thank you to the following people for their help in translating the app:"
     },
     "userSelect": {
         "heading": "Select a User"

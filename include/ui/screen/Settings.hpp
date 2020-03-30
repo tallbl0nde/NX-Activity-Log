@@ -22,6 +22,7 @@ namespace Screen {
             Aether::Menu * menu;
 
             // Pointers to options so the value can be updated
+            Aether::ListOption * optionLang;
             Aether::ListOption * optionScreen;
             Aether::ListOption * optionSort;
             Aether::ListOption * optionTheme;
@@ -41,6 +42,7 @@ namespace Screen {
 
             // Set elements and highlight one in overlay
             void preparePopupList(std::string);
+            void setupLangOverlay();
             void setupScreenOverlay();
             void setupSortOverlay();
             void setupThemeOverlay();

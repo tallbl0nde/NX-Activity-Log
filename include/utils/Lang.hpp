@@ -2,11 +2,15 @@
 #define UTILS_LANG_HPP
 
 #include <string>
+#include "Types.hpp"
 
 namespace Utils::Lang {
     // Set the .json file used for reading strings
     // Returns true on success
     bool setFile(std::string);
+
+    // Set the language
+    bool setLanguage(Language);
 
     // Returns the string matching the given key
     // Returns "?" if no matching key was found

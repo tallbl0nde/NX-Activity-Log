@@ -20,7 +20,14 @@ namespace Main {
         // Read (or create) file
         this->ini = simpleIniParser::Ini::parseOrCreateFile("/config/NX-Activity-Log/config.ini");
         simpleIniParser::IniSection * sec = ini->findOrCreateSection("general");
-        simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("showGraphValues", "true");
+        simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("language", "Default");
+        if (option->value == "English") {
+            this->gLang_ = English;
+        } else {
+            this->gLang_ = Default;
+        }
+
+        sec->findOrCreateFirstOption("showGraphValues", "true");
         if (option->value == "false") {
             this->gGraph_ = false;
         } else {
@@ -49,7 +56,7 @@ namespace Main {
         } else {
             this->lScreen_ = ScreenID::RecentActivity;
         }
-        
+
         option = sec->findOrCreateFirstOption("sort", "LastPlayed");
         if (option->value == "AlphaAsc") {
             this->lSort_ = AlphaAsc;
@@ -91,7 +98,14 @@ namespace Main {
         }
 
         // Write file
-        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("showGraphValues");
+        simpleIniParser::IniOption * option = ini->findSection("general")->findFirstOption("language");
+        if (this->gLang_ == Default) {
+            option->value = "Default";
+        } else if (this->gLang_ == English) {
+            option->value = "English";
+        }
+
+        option = ini->findSection("general")->findFirstOption("showGraphValues");
         if (this->gGraph_ == true) {
             option->value = "true";
         } else if (this->gGraph_ == false) {
@@ -165,6 +179,10 @@ namespace Main {
         return this->gIs24H_;
     }
 
+    Language Config::gLang() {
+        return this->gLang_;
+    }
+
     ThemeType Config::gTheme() {
         return this->gTheme_;
     }
@@ -192,6 +210,11 @@ namespace Main {
 
     void Config::setGIs24H(bool b) {
         this->gIs24H_ = b;
+        this->writeConfig();
+    }
+
+    void Config::setGLang(Language l) {
+        this->gLang_ = l;
         this->writeConfig();
     }
 
