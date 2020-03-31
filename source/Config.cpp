@@ -27,6 +27,8 @@ namespace Main {
             this->gLang_ = French;
         } else if (option->value == "German") {
             this->gLang_ = German;
+        } else if (option->value == "Italian") {
+            this->gLang_ = Italian;
         } else {
             this->gLang_ = Default;
         }
@@ -111,6 +113,8 @@ namespace Main {
             option->value = "French";
         } else if (this->gLang_ == German) {
             option->value = "German";
+        } else if (this->gLang_ == Italian) {
+            option->value = "Italian";
         }
 
         option = ini->findSection("general")->findFirstOption("showGraphValues");

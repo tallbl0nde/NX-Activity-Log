@@ -54,6 +54,10 @@ namespace Utils::NX {
                 lang = German;
                 break;
 
+            case SetLanguage_IT:
+                lang = Italian;
+                break;
+
             default:
                 lang = Default;
                 break;

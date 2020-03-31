@@ -8,7 +8,8 @@ enum Language {
     Default,        // Match system language
     English,
     French,
-    German
+    German,
+    Italian,
 };
 
 // Enumeration for screens (allows for easy switching)

@@ -150,7 +150,7 @@
             "hrs": "Attività di gioco: $[h] ore",
             "hrs1min": "Attività di gioco: $[h] ore e un minuto",
             "1hr1min": "Attività di gioco: un'ora e un minuto",
-            "1hr1mins": "Attività di gioco: un'ora e $[m] minuti",
+            "1hrMins": "Attività di gioco: un'ora e $[m] minuti",
             "hrsMins": "Attività di gioco: $[h] ore e $[m] minuti"
         },
         "view": {

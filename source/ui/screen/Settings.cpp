@@ -172,6 +172,10 @@ namespace Screen {
             this->app->config()->setGLang(Language::German);
             this->optionLang->setValue("Deutsch");
         }, l == Language::German);
+        this->popuplist->addEntry("Italiano", [this](){
+            this->app->config()->setGLang(Language::Italian);
+            this->optionLang->setValue("Italiano");
+        }, l == Language::Italian);
 
         this->app->addOverlay(this->popuplist);
     }
@@ -425,6 +429,10 @@ namespace Screen {
             case Language::German:
                 str = "Deutsch";
                 break;
+
+            case Language::Italian:
+                str = "Italiano";
+                break;
         }
         this->optionLang = new Aether::ListOption("settings.launch.language"_lang, str, [this](){
             this->setupLangOverlay();
@@ -539,7 +547,7 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION
-        lc = new Aether::ListComment("settings.translations"_lang + "\nAyk\nxRock");
+        lc = new Aether::ListComment("settings.translations"_lang + "\nAyk\nReinzanini\nxRock");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\n" + "settings.about"_lang + "\n\n" + "settings.support"_lang + "\nhttps://ko-fi.com/tallbl0nde");
