@@ -46,6 +46,14 @@ namespace Utils::NX {
                 lang = English;
                 break;
 
+            case SetLanguage_FR:
+                lang = French;
+                break;
+
+            case SetLanguage_DE:
+                lang = German;
+                break;
+
             default:
                 lang = Default;
                 break;

@@ -150,7 +150,7 @@
             "hrs": "Total Playtime: $[h] hours",
             "hrs1min": "Total Playtime: $[h] hours and 1 minute",
             "1hr1min": "Total Playtime: 1 hour and 1 minute",
-            "1hr1mins": "Total Playtime: 1 hour and $[m] minutes",
+            "1hrMins": "Total Playtime: 1 hour and $[m] minutes",
             "hrsMins": "Total Playtime: $[h] hours and $[m] minutes"
         },
         "view": {

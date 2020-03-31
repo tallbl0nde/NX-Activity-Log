@@ -23,6 +23,10 @@ namespace Main {
         simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("language", "Default");
         if (option->value == "English") {
             this->gLang_ = English;
+        } else if (option->value == "French") {
+            this->gLang_ = French;
+        } else if (option->value == "German") {
+            this->gLang_ = German;
         } else {
             this->gLang_ = Default;
         }
@@ -103,6 +107,10 @@ namespace Main {
             option->value = "Default";
         } else if (this->gLang_ == English) {
             option->value = "English";
+        } else if (this->gLang_ == French) {
+            option->value = "French";
+        } else if (this->gLang_ == German) {
+            option->value = "German";
         }
 
         option = ini->findSection("general")->findFirstOption("showGraphValues");

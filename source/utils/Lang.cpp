@@ -24,11 +24,22 @@ namespace Utils::Lang {
 
     bool setLanguage(Language l) {
         std::string path = "";
-        switch (Utils::NX::getSystemLanguage()) {
+        if (l == Default) {
+            l = Utils::NX::getSystemLanguage();
+        }
+
+        switch (l) {
             case Default:
             case English:
-            default:
                 path = "romfs:/lang/en.json";
+                break;
+
+            case French:
+                path = "romfs:/lang/fr.json";
+                break;
+
+            case German:
+                path = "romfs:/lang/de.json";
                 break;
         }
 

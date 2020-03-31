@@ -164,6 +164,14 @@ namespace Screen {
             this->app->config()->setGLang(Language::English);
             this->optionLang->setValue("English");
         }, l == Language::English);
+        this->popuplist->addEntry("Français", [this](){
+            this->app->config()->setGLang(Language::French);
+            this->optionLang->setValue("Français");
+        }, l == Language::French);
+        this->popuplist->addEntry("Deutsch", [this](){
+            this->app->config()->setGLang(Language::German);
+            this->optionLang->setValue("Deutsch");
+        }, l == Language::German);
 
         this->app->addOverlay(this->popuplist);
     }
@@ -409,6 +417,14 @@ namespace Screen {
             case Language::English:
                 str = "English";
                 break;
+
+            case Language::French:
+                str = "Français";
+                break;
+
+            case Language::German:
+                str = "Deutsch";
+                break;
         }
         this->optionLang = new Aether::ListOption("settings.launch.language"_lang, str, [this](){
             this->setupLangOverlay();
@@ -523,6 +539,9 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION
+        lc = new Aether::ListComment("settings.translations"_lang + "\nAyk\nxRock");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
         lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\n" + "settings.about"_lang + "\n\n" + "settings.support"_lang + "\nhttps://ko-fi.com/tallbl0nde");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);

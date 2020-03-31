@@ -6,7 +6,9 @@
 // App language
 enum Language {
     Default,        // Match system language
-    English
+    English,
+    French,
+    German
 };
 
 // Enumeration for screens (allows for easy switching)
