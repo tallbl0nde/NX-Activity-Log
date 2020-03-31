@@ -77,6 +77,7 @@ I'd like to thank:
 
 * AtlasNX for [SimpleIniParser](https://github.com/AtlasNX/SimpleIniParser)
   * Used to read/write the config file
+* nlohmann for his [JSON library](https://github.com/nlohmann/json)
 * Switchbrew for [nx-hbloader](https://github.com/switchbrew/nx-hbloader)
   * Adapted to override User Page with this app
 * Anyone else involved with the development of homebrew tools and reverse engineering of the Switch!

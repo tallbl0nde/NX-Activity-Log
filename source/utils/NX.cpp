@@ -31,6 +31,41 @@ namespace Utils::NX {
         return ThemeType::Dark;
     }
 
+    Language getSystemLanguage() {
+        SetLanguage sl;
+        u64 l;
+        setInitialize();
+        setGetSystemLanguage(&l);
+        setMakeLanguage(l, &sl);
+        setExit();
+
+        Language lang;
+        switch (sl) {
+            case SetLanguage_ENGB:
+            case SetLanguage_ENUS:
+                lang = English;
+                break;
+
+            case SetLanguage_FR:
+                lang = French;
+                break;
+
+            case SetLanguage_DE:
+                lang = German;
+                break;
+
+            case SetLanguage_IT:
+                lang = Italian;
+                break;
+
+            default:
+                lang = Default;
+                break;
+        }
+
+        return lang;
+    }
+
     ::NX::User * getUserPageUser() {
         ::NX::User * u = nullptr;
 

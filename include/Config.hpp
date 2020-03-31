@@ -13,6 +13,7 @@ namespace Main {
 
             bool gGraph_;
             bool gIs24H_;
+            Language gLang_;
             ThemeType gTheme_;
             bool hDeleted_;
             ScreenID lScreen_;
@@ -33,6 +34,7 @@ namespace Main {
             // Getters + setters for all settings
             bool gGraph();
             bool gIs24H();
+            Language gLang();
             ThemeType gTheme();
             bool hDeleted();
             ScreenID lScreen();
@@ -41,6 +43,7 @@ namespace Main {
 
             void setGGraph(bool);
             void setGIs24H(bool);
+            void setGLang(Language);
             void setGTheme(ThemeType);
             void setHDeleted(bool);
             void setLScreen(ScreenID);

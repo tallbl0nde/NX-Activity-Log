@@ -1,4 +1,5 @@
 #include <filesystem>
+#include "Lang.hpp"
 #include "Settings.hpp"
 #include "Utils.hpp"
 
@@ -17,9 +18,9 @@ namespace Screen {
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
+        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
         if (!(this->app->isUserPage())) {
-            c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+            c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
         }
         c->setColour(this->app->theme()->text());
         this->addElement(c);
@@ -84,10 +85,10 @@ namespace Screen {
             if (!(std::filesystem::exists("/switch/NX-Activity-Log/NX-Activity-Log.nro"))) {
                 // Create text and add to overlay
                 Aether::Element * body = new Aether::Element(0, 0, 770, 230);
-                Aether::Text * heading = new Aether::Text(50, 40, "An error occurred:", 24);
+                Aether::Text * heading = new Aether::Text(50, 40, "settings.other.replaceBox.error"_lang, 24);
                 heading->setColour(this->app->theme()->text());
                 body->addElement(heading);
-                Aether::TextBlock * message = new Aether::TextBlock(50, 90, "This application's .nro was not found at the expected location:\n/switch/NX-Activity-Log/NX-Activity-Log.nro\n\nThis feature requires the .nro be present at this location.\nPlease move/rename any files + folders and try again.", 20, body->w() - 100);
+                Aether::TextBlock * message = new Aether::TextBlock(50, 90, "settings.other.replaceBox.errorMsg1"_lang + "\n/switch/NX-Activity-Log/NX-Activity-Log.nro\n\n" + "settings.other.replaceBox.errorMsg2"_lang + "\n" + "settings.other.replaceBox.errorMsg3"_lang, 20, body->w() - 100);
                 message->setColour(this->app->theme()->mutedText());
                 body->addElement(message);
                 this->msgbox->setBody(body);
@@ -118,19 +119,19 @@ namespace Screen {
         // Create message box based on result (success)
         if (atms || rei || sx) {
             Aether::Element * body = new Aether::Element(0, 0, 770, 250);
-            Aether::Text * heading = new Aether::Text(50, 40, "Installation Successful!", 24);
+            Aether::Text * heading = new Aether::Text(50, 40, "settings.other.replaceBox.success"_lang, 24);
             heading->setColour(this->app->theme()->text());
             body->addElement(heading);
-            std::string str = std::string(atms ? "Atmosphere  " : "") + std::string(rei ? "ReiNX  " : "") + std::string(sx ? "SX OS" : "");
-            Aether::TextBlock * message = new Aether::TextBlock(50, 90, "The following CFWs were detected and have this feature enabled:\n" + str + "\n\nNote: This feature does not use a sysmodule, if you encounter any errors either disable this feature in the app or delete\n<cfw contents folder>/0100000000001013/exefs.nsp", 20, body->w() - 100);
+            std::string str = std::string(atms ? "common.atmosphere"_lang + "  " : "") + std::string(rei ? "common.reinx"_lang + "  " : "") + std::string(sx ? "common.sxos"_lang : "");
+            Aether::TextBlock * message = new Aether::TextBlock(50, 90, "settings.other.replaceBox.successMsg1"_lang + "\n" + str + "\n\n" + "settings.other.replaceBox.successMsg2"_lang + "\n" + "settings.other.replaceBox.successMsg3"_lang, 20, body->w() - 100);
             message->setColour(this->app->theme()->mutedText());
             body->addElement(message);
             this->msgbox->setBody(body);
             this->msgbox->setBodySize(body->w(), body->h());
             this->app->addOverlay(this->msgbox);
-            this->optionPage->setValue("Enabled");
+            this->optionPage->setValue("common.enabled"_lang);
         } else {
-            this->optionPage->setValue("Disabled");
+            this->optionPage->setValue("common.disabled"_lang);
         }
     }
 
@@ -141,6 +142,8 @@ namespace Screen {
         }
 
         this->popuplist = new Aether::PopupList(s);
+        this->popuplist->setBackLabel("common.buttonHint.back"_lang);
+        this->popuplist->setOKLabel("common.buttonHint.ok"_lang);
         this->popuplist->setBackgroundColour(this->app->theme()->altBG());
         this->popuplist->setHighlightColour(this->app->theme()->accent());
         this->popuplist->setLineColour(this->app->theme()->fg());
@@ -148,76 +151,105 @@ namespace Screen {
         this->popuplist->setTextColour(this->app->theme()->text());
     }
 
+    void Settings::setupLangOverlay() {
+        this->preparePopupList("settings.launch.language"_lang);
+
+        // Add an entry for each language
+        Language l = this->app->config()->gLang();
+        this->popuplist->addEntry("settings.launch.default"_lang, [this](){
+            this->app->config()->setGLang(Language::Default);
+            this->optionLang->setValue("settings.launch.default"_lang);
+        }, l == Language::Default);
+        this->popuplist->addEntry("English", [this](){
+            this->app->config()->setGLang(Language::English);
+            this->optionLang->setValue("English");
+        }, l == Language::English);
+        this->popuplist->addEntry("Français", [this](){
+            this->app->config()->setGLang(Language::French);
+            this->optionLang->setValue("Français");
+        }, l == Language::French);
+        this->popuplist->addEntry("Deutsch", [this](){
+            this->app->config()->setGLang(Language::German);
+            this->optionLang->setValue("Deutsch");
+        }, l == Language::German);
+        this->popuplist->addEntry("Italiano", [this](){
+            this->app->config()->setGLang(Language::Italian);
+            this->optionLang->setValue("Italiano");
+        }, l == Language::Italian);
+
+        this->app->addOverlay(this->popuplist);
+    }
+
     void Settings::setupScreenOverlay() {
-        this->preparePopupList("Default Screen");
+        this->preparePopupList("settings.launch.screen"_lang);
 
         // Add an entry for each sort method
         ScreenID s = this->app->config()->lScreen();
-        this->popuplist->addEntry("Recent Activity", [this](){
+        this->popuplist->addEntry("common.screen.recentActivity"_lang, [this](){
             this->app->config()->setLScreen(ScreenID::RecentActivity);
-            this->optionScreen->setValue("Recent Activity");
+            this->optionScreen->setValue("common.screen.recentActivity"_lang);
         }, s == ScreenID::RecentActivity);
-        this->popuplist->addEntry("All Activity", [this](){
+        this->popuplist->addEntry("common.screen.allActivity"_lang, [this](){
             this->app->config()->setLScreen(ScreenID::AllActivity);
-            this->optionScreen->setValue("All Activity");
+            this->optionScreen->setValue("common.screen.allActivity"_lang);
         }, s == ScreenID::AllActivity);
 
         this->app->addOverlay(this->popuplist);
     }
 
     void Settings::setupSortOverlay() {
-        this->preparePopupList("Default Sort Method");
+        this->preparePopupList("settings.launch.sort"_lang);
 
         // Add an entry for each sort method
         SortType t = this->app->config()->lSort();
-        this->popuplist->addEntry("By Name", [this](){
+        this->popuplist->addEntry("common.sort.name"_lang, [this](){
             this->app->config()->setLSort(SortType::AlphaAsc);
-            this->optionSort->setValue("By Name");
+            this->optionSort->setValue("common.sort.name"_lang);
         }, t == SortType::AlphaAsc);
-        this->popuplist->addEntry("By First Playtime", [this](){
+        this->popuplist->addEntry("common.sort.firstPlayed"_lang, [this](){
             this->app->config()->setLSort(SortType::FirstPlayed);
-            this->optionSort->setValue("By First Playtime");
+            this->optionSort->setValue("common.sort.firstPlayed"_lang);
         }, t == SortType::FirstPlayed);
-        this->popuplist->addEntry("By Most Recently Played", [this](){
+        this->popuplist->addEntry("common.sort.recentlyPlayed"_lang, [this](){
             this->app->config()->setLSort(SortType::LastPlayed);
-            this->optionSort->setValue("By Most Recently Played");
+            this->optionSort->setValue("common.sort.recentlyPlayed"_lang);
         }, t == SortType::LastPlayed);
-        this->popuplist->addEntry("By Most Playtime", [this](){
+        this->popuplist->addEntry("common.sort.mostPlaytime"_lang, [this](){
             this->app->config()->setLSort(SortType::HoursAsc);
-            this->optionSort->setValue("By Most Playtime");
+            this->optionSort->setValue("common.sort.mostPlaytime"_lang);
         }, t == SortType::HoursAsc);
-        this->popuplist->addEntry("By Least Playtime", [this](){
+        this->popuplist->addEntry("common.sort.leastPlaytime"_lang, [this](){
             this->app->config()->setLSort(SortType::HoursDec);
-            this->optionSort->setValue("By Least Playtime");
+            this->optionSort->setValue("common.sort.leastPlaytime"_lang);
         }, t == SortType::HoursDec);
-        this->popuplist->addEntry("By Most Launched", [this](){
+        this->popuplist->addEntry("common.sort.mostLaunched"_lang, [this](){
             this->app->config()->setLSort(SortType::LaunchAsc);
-            this->optionSort->setValue("By Most Launched");
+            this->optionSort->setValue("common.sort.mostLaunched"_lang);
         }, t == SortType::LaunchAsc);
-        this->popuplist->addEntry("By Least Launched", [this](){
+        this->popuplist->addEntry("common.sort.leastLaunched"_lang, [this](){
             this->app->config()->setLSort(SortType::LaunchDec);
-            this->optionSort->setValue("By Least Launched");
+            this->optionSort->setValue("common.sort.leastLaunched"_lang);
         }, t == SortType::LaunchDec);
 
         this->app->addOverlay(this->popuplist);
     }
 
     void Settings::setupThemeOverlay() {
-        this->preparePopupList("Application Theme");
+        this->preparePopupList("settings.launch.theme.heading"_lang);
 
         // Add an entry for each sort method
         ThemeType t = this->app->config()->gTheme();
-        this->popuplist->addEntry("Auto", [this](){
+        this->popuplist->addEntry("settings.launch.theme.auto"_lang, [this](){
             this->app->config()->setGTheme(ThemeType::Auto);
-            this->optionTheme->setValue("Auto");
+            this->optionTheme->setValue("settings.launch.theme.auto"_lang);
         }, t == ThemeType::Auto);
-        this->popuplist->addEntry("Basic Black", [this](){
+        this->popuplist->addEntry("settings.launch.theme.dark"_lang, [this](){
             this->app->config()->setGTheme(ThemeType::Dark);
-            this->optionTheme->setValue("Basic Black");
+            this->optionTheme->setValue("settings.launch.theme.dark"_lang);
         }, t == ThemeType::Dark);
-        this->popuplist->addEntry("Basic White", [this](){
+        this->popuplist->addEntry("settings.launch.theme.light"_lang, [this](){
             this->app->config()->setGTheme(ThemeType::Light);
-            this->optionTheme->setValue("Basic White");
+            this->optionTheme->setValue("settings.launch.theme.light"_lang);
         }, t == ThemeType::Light);
         // this->popuplist->addEntry("Custom", [this](){
             // this->app->config()->setGTheme(ThemeType::Custom);
@@ -228,21 +260,21 @@ namespace Screen {
     }
 
     void Settings::setupViewOverlay() {
-        this->preparePopupList("Default View Type");
+        this->preparePopupList("settings.launch.view"_lang);
 
         // Add an entry for each sort method
         ViewPeriod v = this->app->config()->lView();
-        this->popuplist->addEntry("By Day", [this](){
+        this->popuplist->addEntry("common.view.day"_lang, [this](){
             this->app->config()->setLView(ViewPeriod::Day);
-            this->optionView->setValue("By Day");
+            this->optionView->setValue("common.view.day"_lang);
         }, v == ViewPeriod::Day);
-        this->popuplist->addEntry("By Month", [this](){
+        this->popuplist->addEntry("common.view.month"_lang, [this](){
             this->app->config()->setLView(ViewPeriod::Month);
-            this->optionView->setValue("By Month");
+            this->optionView->setValue("common.view.month"_lang);
         }, v == ViewPeriod::Month);
-        this->popuplist->addEntry("By Year", [this](){
+        this->popuplist->addEntry("common.view.year"_lang, [this](){
             this->app->config()->setLView(ViewPeriod::Year);
-            this->optionView->setValue("By Year");
+            this->optionView->setValue("common.view.year"_lang);
         }, v == ViewPeriod::Year);
 
         this->app->addOverlay(this->popuplist);
@@ -250,7 +282,7 @@ namespace Screen {
 
     void Settings::onLoad() {
         // Create heading using user's name
-        this->heading = new Aether::Text(150, 45, this->app->activeUser()->username() + "'s Activity", 28);
+        this->heading = new Aether::Text(150, 45, Utils::formatHeading(this->app->activeUser()->username()), 28);
         this->heading->setY(this->heading->y() - this->heading->h()/2);
         this->heading->setColour(this->app->theme()->text());
         this->addElement(this->heading);
@@ -262,14 +294,14 @@ namespace Screen {
 
         // Create side menu
         this->menu = new Aether::Menu(30, 88, 388, 559);
-        this->menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+        this->menu->addElement(new Aether::MenuOption("common.screen.recentActivity"_lang, this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(ScreenID::RecentActivity);
         }));
-        this->menu->addElement(new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+        this->menu->addElement(new Aether::MenuOption("common.screen.allActivity"_lang, this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(ScreenID::AllActivity);
         }));
         this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
-        Aether::MenuOption * opt = new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
+        Aether::MenuOption * opt = new Aether::MenuOption("common.screen.settings"_lang, this->app->theme()->accent(), this->app->theme()->text(), nullptr);
         this->menu->addElement(opt);
         this->menu->setActiveOption(opt);
         this->menu->setFocussed(opt);
@@ -281,7 +313,7 @@ namespace Screen {
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
         // ===== LAUNCH OPTIONS =====
-        Aether::ListHeading * lh = new Aether::ListHeading("Launch Options");
+        Aether::ListHeading * lh = new Aether::ListHeading("settings.launch.heading"_lang);
         lh->setRectColour(this->app->theme()->mutedLine());
         lh->setTextColour(this->app->theme()->text());
         this->list->addElement(lh);
@@ -292,127 +324,160 @@ namespace Screen {
         std::string str = "";
         switch (this->app->config()->lScreen()) {
             case ScreenID::RecentActivity:
-                str = "Recent Activity";
+                str = "common.screen.recentActivity"_lang;
                 break;
 
             case ScreenID::AllActivity:
-                str = "All Activity";
+                str = "common.screen.allActivity"_lang;
                 break;
 
             default:
                 // Never called but I don't like compiler warnings
                 break;
         }
-        this->optionScreen = new Aether::ListOption("Default Screen", str, [this]() {
+        this->optionScreen = new Aether::ListOption("settings.launch.screen"_lang, str, [this]() {
             this->setupScreenOverlay();
         });
         this->optionScreen->setHintColour(this->app->theme()->text());
         this->optionScreen->setValueColour(this->app->theme()->accent());
         this->optionScreen->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionScreen);
-        Aether::ListComment * lc = new Aether::ListComment("The screen to show on launch/after selecting a user.");
+        Aether::ListComment * lc = new Aether::ListComment("settings.launch.screenHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // DEFAULT SORT METHOD
         switch (this->app->config()->lSort()) {
             case SortType::AlphaAsc:
-                str = "By Name";
+                str = "common.sort.name"_lang;
                 break;
 
             case SortType::HoursAsc:
-                str = "By Most Playtime";
+                str = "common.sort.mostPlaytime"_lang;
                 break;
 
             case SortType::HoursDec:
-                str = "By Least Playtime";
+                str = "common.sort.leastPlaytime"_lang;
                 break;
 
             case SortType::LaunchAsc:
-                str = "By Most Launched";
+                str = "common.sort.mostLaunched"_lang;
                 break;
 
             case SortType::LaunchDec:
-                str = "By Least Launched";
+                str = "common.sort.leastLaunched"_lang;
                 break;
 
             case SortType::FirstPlayed:
-                str = "By First Playtime";
+                str = "common.sort.firstPlaytime"_lang;
                 break;
 
             case SortType::LastPlayed:
-                str = "By Most Recently Played";
+                str = "common.sort.recentlyPlayed"_lang;
                 break;
         }
-        this->optionSort = new Aether::ListOption("Default Sort Method", str, [this](){
+        this->optionSort = new Aether::ListOption("settings.launch.sort"_lang, str, [this](){
             this->setupSortOverlay();
         });
         this->optionSort->setHintColour(this->app->theme()->text());
         this->optionSort->setValueColour(this->app->theme()->accent());
         this->optionSort->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionSort);
-        lc = new Aether::ListComment("The sort method for 'All Activity' to use on launch.");
+        lc = new Aether::ListComment("settings.launch.sortHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
-        
+
         // VIEW
         switch (this->app->config()->lView()) {
             case ViewPeriod::Day:
-                str = "By Day";
+                str = "common.view.day"_lang;
                 break;
 
             case ViewPeriod::Month:
-                str = "By Month";
+                str = "common.view.month"_lang;
                 break;
 
             case ViewPeriod::Year:
-                str = "By Year";
+                str = "common.view.year"_lang;
                 break;
         }
-        this->optionView = new Aether::ListOption("Default View Type", str, [this](){
+        this->optionView = new Aether::ListOption("settings.launch.view"_lang, str, [this](){
             this->setupViewOverlay();
         });
         this->optionView->setHintColour(this->app->theme()->text());
         this->optionView->setValueColour(this->app->theme()->accent());
         this->optionView->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionView);
-        lc = new Aether::ListComment("The period of activity to view on launch.");
+        lc = new Aether::ListComment("settings.launch.viewHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        // LANGUAGE
+        switch (this->app->config()->gLang()) {
+            case Language::Default:
+                str = "settings.launch.default"_lang;
+                break;
+
+            case Language::English:
+                str = "English";
+                break;
+
+            case Language::French:
+                str = "Français";
+                break;
+
+            case Language::German:
+                str = "Deutsch";
+                break;
+
+            case Language::Italian:
+                str = "Italiano";
+                break;
+        }
+        this->optionLang = new Aether::ListOption("settings.launch.language"_lang, str, [this](){
+            this->setupLangOverlay();
+        });
+        this->optionLang->setHintColour(this->app->theme()->text());
+        this->optionLang->setValueColour(this->app->theme()->accent());
+        this->optionLang->setLineColour(this->app->theme()->mutedLine());
+        this->list->addElement(this->optionLang);
+        lc = new Aether::ListComment("settings.launch.languageHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // THEME
         switch (this->app->config()->gTheme()) {
             case Auto:
-                str = "Auto";
+                str = "settings.launch.theme.auto"_lang;
                 break;
 
             case Custom:
-                str = "Custom";
+                str = "settings.launch.theme.custom"_lang;
                 break;
 
             case Dark:
-                str = "Basic Black";
+                str = "settings.launch.theme.dark"_lang;
                 break;
 
             case Light:
-                str = "Basic White";
+                str = "settings.launch.theme.light"_lang;
                 break;
         }
-        this->optionTheme = new Aether::ListOption("Theme", str, [this](){
+        this->optionTheme = new Aether::ListOption("settings.launch.theme.heading"_lang, str, [this](){
             this->setupThemeOverlay();
         });
         this->optionTheme->setHintColour(this->app->theme()->text());
         this->optionTheme->setValueColour(this->app->theme()->accent());
         this->optionTheme->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionTheme);
-        lc = new Aether::ListComment("The theme to use for the application. Auto chooses black/white based on your Switch settings. Note: This currently requires the app to be restarted to take effect.");
+        lc = new Aether::ListComment("settings.launch.themeHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         this->list->addElement(new Aether::ListSeparator());
 
         // ===== OTHERS =====
-        lh = new Aether::ListHeading("Other Options");
+        lh = new Aether::ListHeading("settings.other.heading"_lang);
         lh->setRectColour(this->app->theme()->mutedLine());
         lh->setTextColour(this->app->theme()->text());
         this->list->addElement(lh);
@@ -420,40 +485,40 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator(20));
 
         // GRAPH
-        this->optionGraph = new Aether::ListOption("Graph Bar Labels", (this->app->config()->gGraph() ? "On" : "Off"), [this](){
+        this->optionGraph = new Aether::ListOption("settings.other.graph"_lang, (this->app->config()->gGraph() ? "common.on"_lang : "common.off"_lang), [this](){
             this->app->config()->setGGraph(!this->app->config()->gGraph());
-            this->optionGraph->setValue((this->app->config()->gGraph() ? "On" : "Off"));
+            this->optionGraph->setValue((this->app->config()->gGraph() ? "common.on"_lang : "common.off"_lang));
             this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         });
         this->optionGraph->setHintColour(this->app->theme()->text());
         this->optionGraph->setValueColour((this->app->config()->gGraph() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         this->optionGraph->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionGraph);
-        lc = new Aether::ListComment("Toggles the small numbers visible above each bar on graphs.");
+        lc = new Aether::ListComment("settings.other.graphHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // HIDE DELETED
-        str = (this->app->config()->hDeleted() ? "Yes" : "No");
-        this->optionDeleted = new Aether::ListOption("Hide Deleted Games", str, [this](){
+        str = (this->app->config()->hDeleted() ? "common.yes"_lang : "common.no"_lang);
+        this->optionDeleted = new Aether::ListOption("settings.other.hideDeleted"_lang, str, [this](){
             this->app->config()->setHDeleted(!this->app->config()->hDeleted());
-            this->optionDeleted->setValue((this->app->config()->hDeleted() ? "Yes" : "No"));
+            this->optionDeleted->setValue((this->app->config()->hDeleted() ? "common.yes"_lang : "common.no"_lang));
             this->optionDeleted->setValueColour((this->app->config()->hDeleted() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         });
         this->optionDeleted->setHintColour(this->app->theme()->text());
         this->optionDeleted->setValueColour((this->app->config()->hDeleted() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         this->optionDeleted->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionDeleted);
-        lc = new Aether::ListComment("Excludes deleted games from 'All Activity'.");
+        lc = new Aether::ListComment("settings.other.hideDeletedHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // REPLACE USER PAGE
-        str = "Disabled";
+        str = "common.disabled"_lang;
         if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp") || std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp") || std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
-            str = "Enabled";
+            str = "common.enabled"_lang;
         }
-        this->optionPage = new Aether::ListOption("Replace User Page", str, [this](){
+        this->optionPage = new Aether::ListOption("settings.other.replace"_lang, str, [this](){
             this->installForwarder();
         });
         this->optionPage->setHintColour(this->app->theme()->text());
@@ -461,28 +526,31 @@ namespace Screen {
         this->optionPage->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionPage);
 
-        lc = new Aether::ListComment("Replace the User Page with this app. Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS.");
+        lc = new Aether::ListComment("settings.other.replaceHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         // 24H
-        this->option24H = new Aether::ListOption("Use 24 Hour Time", (this->app->config()->gIs24H() ? "On" : "Off"), [this](){
+        this->option24H = new Aether::ListOption("settings.other.24H"_lang, (this->app->config()->gIs24H() ? "common.on"_lang : "common.off"_lang), [this](){
             this->app->config()->setGIs24H(!this->app->config()->gIs24H());
-            this->option24H->setValue((this->app->config()->gIs24H() ? "On" : "Off"));
+            this->option24H->setValue((this->app->config()->gIs24H() ? "common.on"_lang : "common.off"_lang));
             this->option24H->setValueColour((this->app->config()->gIs24H() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         });
         this->option24H->setHintColour(this->app->theme()->text());
         this->option24H->setValueColour((this->app->config()->gIs24H() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         this->option24H->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->option24H);
-        lc = new Aether::ListComment("Use 24 hour time instead of 12 hour where applicable.");
+        lc = new Aether::ListComment("settings.other.24HHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION
-        lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\nThanks for using my app! I hope it's been useful! :)\n\nYou can support me on Ko-fi:\nhttps://ko-fi.com/tallbl0nde");
+        lc = new Aether::ListComment("settings.translations"_lang + "\nAyk\nReinzanini\nxRock");
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+        lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\n" + "settings.about"_lang + "\n\n" + "settings.support"_lang + "\nhttps://ko-fi.com/tallbl0nde");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
@@ -490,7 +558,7 @@ namespace Screen {
 
         // Create base message box
         this->msgbox = new Aether::MessageBox();
-        this->msgbox->addTopButton("OK", [this](){
+        this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this](){
             this->msgbox->close(true);
         });
         this->msgbox->setLineColour(this->app->theme()->mutedLine());

@@ -2,6 +2,7 @@
 #define UTILS_NX_HPP
 
 #include "Title.hpp"
+#include "Types.hpp"
 #include "User.hpp"
 #include <vector>
 
@@ -15,6 +16,9 @@ namespace Utils::NX {
 
     // Returns NX::User* if launched via User Page, nullptr otherwise
     ::NX::User * getUserPageUser();
+
+    // Returns Language matching system language, or default if no language found
+    Language getSystemLanguage();
 
     // Returns vector containing users on the console
     std::vector<::NX::User *> getUserObjects();

@@ -8,8 +8,30 @@ namespace Utils {
     // Copy file from source path to dest path
     void copyFile(std::string, std::string);
 
+    // Format given hour (0 - 23) in 12 hour format
+    std::string format12H(unsigned short);
+
+    // Format heading (takes username)
+    std::string formatHeading(std::string);
+
     // Add commas to provided number
     std::string formatNumberComma(unsigned int);
+
+    // Format the given timestamp as 'last played' string
+    std::string lastPlayedToString(unsigned int);
+
+    // Format the given number of launches into a string
+    std::string launchesToString(unsigned int);
+    std::string launchesToPlayedString(unsigned int);
+
+    // Format the given playtime (in seconds) into hours and minutes
+    std::string playtimeToString(unsigned int);
+
+    // Format the given playtime (in seconds) into 'played for' string
+    std::string playtimeToPlayedForString(unsigned int);
+
+    // Format the given playtime (in seconds) into 'total playtime' string
+    std::string playtimeToTotalPlaytimeString(unsigned int);
 
     // Merges two vectors into one (for sorting)
     // Vector to merge into, two vectors to merge

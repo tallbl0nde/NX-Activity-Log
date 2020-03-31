@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include "Lang.hpp"
 
 namespace Main {
     Application::Application() {
@@ -8,6 +9,11 @@ namespace Main {
         // Create config object and read in values
         this->config_ = new Config();
         this->config_->readConfig();
+
+        // Set language
+        if (!Utils::Lang::setLanguage(this->config_->gLang())) {
+            this->display->exit();
+        }
 
         this->playdata_ = new NX::PlayData();
         this->theme_ = new Theme(this->config_->gTheme());
@@ -58,7 +64,9 @@ namespace Main {
 
         // Create overlays
         this->dtpicker = nullptr;
-        this->periodpicker = new Aether::PopupList("View Activity");
+        this->periodpicker = new Aether::PopupList("common.view.heading"_lang);
+        this->periodpicker->setBackLabel("common.buttonHint.back"_lang);
+        this->periodpicker->setOKLabel("common.buttonHint.ok"_lang);
         this->periodpicker->setBackgroundColour(this->theme_->altBG());
         this->periodpicker->setTextColour(this->theme_->text());
         this->periodpicker->setLineColour(this->theme_->fg());
@@ -183,17 +191,22 @@ namespace Main {
         }
         switch (this->viewType) {
             case ViewPeriod::Day:
-                this->dtpicker = new Aether::DateTime("View Date", this->tm, Aether::DTFlag::Date);
+                this->dtpicker = new Aether::DateTime("common.datePanel.headingDate"_lang, this->tm, Aether::DTFlag::Date);
                 break;
 
             case ViewPeriod::Month:
-                this->dtpicker = new Aether::DateTime("View Month", this->tm, Aether::DTFlag::Month | Aether::DTFlag::Year);
+                this->dtpicker = new Aether::DateTime("common.datePanel.headingMonth"_lang, this->tm, Aether::DTFlag::Month | Aether::DTFlag::Year);
                 break;
 
             case ViewPeriod::Year:
-                this->dtpicker = new Aether::DateTime("View Year", this->tm, Aether::DTFlag::Year);
+                this->dtpicker = new Aether::DateTime("common.datePanel.headingYear"_lang, this->tm, Aether::DTFlag::Year);
                 break;
         }
+        this->dtpicker->setDayHint("common.datePanel.day"_lang);
+        this->dtpicker->setMonthHint("common.datePanel.month"_lang);
+        this->dtpicker->setYearHint("common.datePanel.year"_lang);
+        this->dtpicker->setBackLabel("common.buttonHint.back"_lang);
+        this->dtpicker->setOKLabel("common.buttonHint.ok"_lang);
         this->dtpicker->setAllColours(this->theme_->altBG(), this->theme_->accent(), this->theme_->mutedText(), this->theme_->mutedText(), this->theme_->text());
         this->addOverlay(this->dtpicker);
     }
@@ -201,20 +214,20 @@ namespace Main {
     void Application::createPeriodPicker() {
         this->periodpicker->close(false);
         this->periodpicker->removeEntries();
-        this->periodpicker->addEntry("By Day", [this](){
+        this->periodpicker->addEntry("common.view.day"_lang, [this](){
             if (this->viewType != ViewPeriod::Day) {
                 this->viewType = ViewPeriod::Day;
                 this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Day);
-        this->periodpicker->addEntry("By Month", [this](){
+        this->periodpicker->addEntry("common.view.month"_lang, [this](){
             if (this->viewType != ViewPeriod::Month) {
                 this->tm.tm_mday = 1;
                 this->viewType = ViewPeriod::Month;
                 this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Month);
-        this->periodpicker->addEntry("By Year", [this](){
+        this->periodpicker->addEntry("common.view.year"_lang, [this](){
             if (this->viewType != ViewPeriod::Year) {
                 this->tm.tm_mon = 0;
                 this->tm.tm_mday = 1;

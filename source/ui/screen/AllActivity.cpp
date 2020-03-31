@@ -1,4 +1,6 @@
 #include "AllActivity.hpp"
+#include "Lang.hpp"
+#include "Utils.hpp"
 
 namespace Screen {
     AllActivity::AllActivity(Main::Application * a) {
@@ -15,16 +17,18 @@ namespace Screen {
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
+        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
         if (!(this->app->isUserPage())) {
-            c->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
+            c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
         }
-        c->addItem(new Aether::ControlItem(Aether::Button::X, "Sort"));
+        c->addItem(new Aether::ControlItem(Aether::Button::X, "common.buttonHint.sort"_lang));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
 
         // Create sort overlay
-        this->sortOverlay = new Aether::PopupList("Sort Titles");
+        this->sortOverlay = new Aether::PopupList("common.sort.heading"_lang);
+        this->sortOverlay->setBackLabel("common.buttonHint.back"_lang);
+        this->sortOverlay->setOKLabel("common.buttonHint.ok"_lang);
         this->sortOverlay->setBackgroundColour(this->app->theme()->altBG());
         this->sortOverlay->setHighlightColour(this->app->theme()->accent());
         this->sortOverlay->setLineColour(this->app->theme()->fg());
@@ -61,25 +65,25 @@ namespace Screen {
 
         // Add entries and highlight current sort
         SortType t = this->list->sort();
-        this->sortOverlay->addEntry("By Name", [this](){
+        this->sortOverlay->addEntry("common.sort.name"_lang, [this](){
             this->list->setSort(SortType::AlphaAsc);
         }, t == SortType::AlphaAsc);
-        this->sortOverlay->addEntry("By First Playtime", [this](){
+        this->sortOverlay->addEntry("common.sort.firstPlayed"_lang, [this](){
             this->list->setSort(SortType::FirstPlayed);
         }, t == SortType::FirstPlayed);
-        this->sortOverlay->addEntry("By Most Recently Played", [this](){
+        this->sortOverlay->addEntry("common.sort.recentlyPlayed"_lang, [this](){
             this->list->setSort(SortType::LastPlayed);
         }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("By Most Playtime", [this](){
+        this->sortOverlay->addEntry("common.sort.mostPlaytime"_lang, [this](){
             this->list->setSort(SortType::HoursAsc);
         }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("By Least Playtime", [this](){
+        this->sortOverlay->addEntry("common.sort.leastPlaytime"_lang, [this](){
             this->list->setSort(SortType::HoursDec);
         }, t == SortType::HoursDec);
-        this->sortOverlay->addEntry("By Most Launched", [this](){
+        this->sortOverlay->addEntry("common.sort.mostLaunched"_lang, [this](){
             this->list->setSort(SortType::LaunchAsc);
         }, t == SortType::LaunchAsc);
-        this->sortOverlay->addEntry("By Least Launched", [this](){
+        this->sortOverlay->addEntry("common.sort.leastLaunched"_lang, [this](){
             this->list->setSort(SortType::LaunchDec);
         }, t == SortType::LaunchDec);
 
@@ -91,7 +95,7 @@ namespace Screen {
 
     void AllActivity::onLoad() {
         // Create heading using user's name
-        this->heading = new Aether::Text(150, 45, this->app->activeUser()->username() + "'s Activity", 28);
+        this->heading = new Aether::Text(150, 45, Utils::formatHeading(this->app->activeUser()->username()), 28);
         this->heading->setY(this->heading->y() - this->heading->h()/2);
         this->heading->setColour(this->app->theme()->text());
         this->addElement(this->heading);
@@ -103,14 +107,14 @@ namespace Screen {
 
         // Create side menu
         this->menu = new Aether::Menu(30, 88, 388, 559);
-        this->menu->addElement(new Aether::MenuOption("Recent Activity", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+        this->menu->addElement(new Aether::MenuOption("common.screen.recentActivity"_lang, this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(ScreenID::RecentActivity);
         }));
-        Aether::MenuOption * opt = new Aether::MenuOption("All Activity", this->app->theme()->accent(), this->app->theme()->text(), nullptr);
+        Aether::MenuOption * opt = new Aether::MenuOption("common.screen.allActivity"_lang, this->app->theme()->accent(), this->app->theme()->text(), nullptr);
         this->menu->addElement(opt);
         this->menu->setActiveOption(opt);
         this->menu->addElement(new Aether::MenuSeparator(this->app->theme()->mutedLine()));
-        this->menu->addElement(new Aether::MenuOption("Settings", this->app->theme()->accent(), this->app->theme()->text(), [this](){
+        this->menu->addElement(new Aether::MenuOption("common.screen.settings"_lang, this->app->theme()->accent(), this->app->theme()->text(), [this](){
             this->app->setScreen(ScreenID::Settings);
         }));
         this->menu->setFocussed(opt);
@@ -152,13 +156,9 @@ namespace Screen {
             CustomElm::ListActivity * la = new CustomElm::ListActivity();
             la->setImage(new Aether::Image(0, 0, t[i]->imgPtr(), t[i]->imgSize(), 2, 2));
             la->setTitle(t[i]->name());
-            std::string str = "Played for " + Utils::Time::playtimeToString(ps->playtime, " and ");
-            la->setPlaytime(str);
-            str = Utils::Time::lastPlayedTimestampToString(pdmPlayTimestampToPosix(ps->lastPlayed));
-            la->setLeftMuted(str);
-            str = "Played " + std::to_string(ps->launches);
-            (ps->launches == 1) ? str += " time" : str += " times";
-            la->setRightMuted(str);
+            la->setPlaytime(Utils::playtimeToPlayedForString(ps->playtime));
+            la->setLeftMuted(Utils::lastPlayedToString(pdmPlayTimestampToPosix(ps->lastPlayed)));
+            la->setRightMuted(Utils::launchesToPlayedString(ps->launches));
             la->setCallback([this, i](){
                 this->app->setActiveTitle(i);
                 this->app->pushScreen();
@@ -176,8 +176,7 @@ namespace Screen {
         this->addElement(this->list);
 
         // Render total hours string
-        std::string txt = "Total Playtime: " + Utils::Time::playtimeToString(totalSecs, " and ");
-        this->hours = new Aether::Text(1215, 44, txt, 20);
+        this->hours = new Aether::Text(1215, 44, Utils::playtimeToTotalPlaytimeString(totalSecs), 20);
         this->hours->setXY(this->hours->x() - this->hours->w(), this->hours->y() - this->hours->h()/2);
         this->hours->setColour(this->app->theme()->mutedText());
         this->addElement(this->hours);

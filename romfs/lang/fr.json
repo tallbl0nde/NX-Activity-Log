@@ -1,0 +1,243 @@
+{
+    "allActivity": {
+        "sort": {
+            "firstPlayed": "Trier par: Premier lancement",
+            "leastLaunched": "Trier par: Moins lancé",
+            "leastPlaytime": "Trier par: Moins joué",
+            "mostLaunched": "Trier par: Plus lancé",
+            "mostPlaytime": "Trier par: Plus joué",
+            "name": "Trier par: Nom",
+            "recentlyPlayed": "Trier par: Joué récemment"
+        }
+    },
+    "common": {
+        "12H": "$[h]$[s]",
+        "activityFor": {
+            "day": "Activité du $[d] $[m]",
+            "dayYear": "Activité le $[m] $[d] $[y]",
+            "month": "Activité en $[m] $[y]",
+            "year": "Activité en $[y]"
+        },
+        "AM": "AM",
+        "am": "am",
+        "atmosphere": "Atmosphère",
+        "buttonHint": {
+            "back": "Retour",
+            "date": "Choisir la date",
+            "exit": "Quitter",
+            "ok": "OK",
+            "sort": "Trier",
+            "view": "Changer de vue"
+        },
+        "close": "Fermer",
+        "dateFormat": "$[d] $[m]",
+        "dateFormatYear": "$[d] $[m], $[y]",
+        "dateSuffix": {
+            "nd": "",
+            "rd": "",
+            "st": "",
+            "th": ""
+        },
+        "datePanel": {
+            "headingDate": "Voir la date",
+            "headingMonth": "Voir le mois",
+            "headingYear": "Voir l'année",
+            "day": "Jour",
+            "month": "Mois",
+            "year": "Année"
+        },
+        "disabled": "Désactivé",
+        "enabled": "Activé",
+        "heading": "Activité de $[name]",
+        "lastPlayed": {
+            "future": "Joué dans le futur",
+            "secs": "Joué il y'a quelques secondes",
+            "1min": "Joué il y'a 1 minute",
+            "mins": "Joué il y'a $[m] minutes",
+            "1hr": "Joué il y'a 1 heure",
+            "hrs": "Joué il y'a $[h] heures",
+            "1day": "Joué il y'a 1 jour",
+            "days": "Joué il y'a $[d] jours",
+            "date": "Joué le $[d] $[m]",
+            "dateYear": "Joué le $[d] $[m] $[y]"
+        },
+        "month": {
+            "jan": "Janvier",
+            "feb": "Février",
+            "mar": "Mars",
+            "apr": "Avril",
+            "may": "Mai",
+            "jun": "Juin",
+            "jul": "Juillet",
+            "aug": "Août",
+            "sep": "Septembre",
+            "oct": "Octobre",
+            "nov": "Novembre",
+            "dec": "Décembre",
+            "short": {
+                "jan": "Janv.",
+                "feb": "Févr.",
+                "mar": "Mars",
+                "apr": "Avr.",
+                "may": "Mai",
+                "jun": "Juin",
+                "jul": "Juill.",
+                "aug": "Août",
+                "sep": "Sept.",
+                "oct": "Oct.",
+                "nov": "Nov.",
+                "dec": "Déc."
+            }
+        },
+        "off": "Off",
+        "on": "On",
+        "no": "Non",
+        "noActivity": "Pas d'activité de jeu enregistrée pendant cette période.",
+        "playedFor" : {
+            "0min": "Joué moins d'une minute",
+            "1min": "Joué 1 minute",
+            "mins": "Joué $[m] minutes",
+            "1hr": "Joué 1 heure",
+            "hrs": "Joué $[h] heures",
+            "hrs1min": "Joué $[h] heures et 1 minute",
+            "1hr1min": "Joué 1 heure et 1 minute",
+            "1hrMins": "Joué 1 heure et $[m] minutes",
+            "hrsMins": "Joué $[h] heures et $[m] minutes"
+        },
+        "playtime": {
+            "0sec": "0 seconde",
+            "0min": "0 minute",
+            "1min": "1 minute",
+            "mins": "$[m] minutes",
+            "1hr": "1 heure",
+            "hrs": "$[h] heures",
+            "hrs1min": "$[h] heures et 1 minute",
+            "1hr1min": "1 heure et 1 minute",
+            "1hrMins": "1 heure et $[m] minutes",
+            "hrsMins": "$[h] heures et $[m] minutes"
+        },
+        "playtimeHours": "Temps de jeu (en heures)",
+        "playtimeMinutes": "Temps de jeu (en minutes)",
+        "PM": "PM",
+        "pm": "pm",
+        "reinx": "ReiNX",
+        "screen": {
+            "allActivity": "Toute l'activité",
+            "recentActivity": "Activité récente",
+            "settings": "Options"
+        },
+        "sort": {
+            "firstPlayed": "Par date de premier lancement",
+            "heading": "Trier les titres",
+            "leastLaunched": "Par nombre de lancements (décroissant)",
+            "leastPlaytime": "Par temps de jeu (croissant)",
+            "mostLaunched": "Par nombre de lancements (croissant)",
+            "mostPlaytime": "Par temps de jeu (décroissant)",
+            "name": "Par nom",
+            "recentlyPlayed": "Joué récemment"
+        },
+        "sxos": "SX OS",
+        "timesPlayed": {
+            "multiple": "Joué $[t] fois",
+            "once": "Joué 1 fois"
+        },
+      "totalPlaytime": {
+        "heading": "Temps de jeu total :",
+        "0min": "Temps de jeu total : 0 minute",
+        "1min": "Temps de jeu total : 1 minute",
+        "mins": "Temps de jeu total : $[m] minutes",
+        "1hr": "Temps de jeu total : 1 heure",
+        "hrs": "Temps de jeu total : $[h] heures",
+        "hrs1min": "Temps de jeu total : $[h] heures et 1 minute",
+        "1hr1min": "Temps de jeu total : 1 heure et 1 minute",
+        "1hrMins": "Temps de jeu total : 1 heure et $[m] minutes",
+        "hrsMins": "Temps de jeu total : $[h] heures et $[m] minutes"
+      },
+        "view": {
+            "day": "Par jour",
+            "heading": "Voir l'activité",
+            "month": "Par mois",
+            "year": "Par année"
+        },
+        "yes": "Oui"
+    },
+    "details": {
+        "allTime": "Activité totale",
+        "avgPlaytime": "Temps de jeu moyen",
+        "break": {
+            "appClosed": "Application fermée",
+            "appLaunched": "Application lancée",
+            "appResumed": "Application réouverte",
+            "appSuspended": "Application suspendue",
+            "heading": "Détails de la session de jeu",
+            "length": "Durée de la session de jeu",
+            "playtime": "Temps de jeu"
+        },
+        "firstPlayed": "Premier lancement",
+        "lastPlayed": "Dernier lancement",
+        "playSessions": "Sessions de jeu",
+        "playtime": "Temps de jeu",
+        "popup": {
+            "heading": "Une session de jeu représente le temps entre le moment ou le jeu a été lancé et le moment ou le jeu a été fermé",
+            "msg1": "L'heure du lancement, l'heure de fermeture, le temps de jeu et le pourcentage du temps de jeu par rapport au temps de jeu total sont affichés.",
+            "msg2": "Sélectionnez une session pour avoir des informations plus détaillées.",
+            "msg3": "N.B.: Les sessions avec une astérisque commencent avant et/ou finissent après la date choisie. Leur temps de jeu a été ajusté pour correspondre à la date choisie, mais les informations détaillées montreront la durée totale de la session."
+        },
+        "timesPlayed": {
+            "heading": "Nombre de lancements",
+            "multiple": "$[t] lancements",
+            "once": "1 fois"
+        }
+    },
+    "recentActivity": {
+        "titleHeading": "Titres joués"
+    },
+    "settings": {
+        "about": "Merci d'utiliser mon appli ! J'espère qu'elle vous aura été utile ! :)",
+        "launch": {
+            "default": "Défaut",
+            "heading": "Options de lancement",
+            "language": "Langage",
+            "languageHint": "Le langage à utiliser sur l'appli. Le langage par défaut sera celui du système si une traduction est disponible.",
+            "screen": "Écran par défaut",
+            "screenHint": "L'écran à afficher après avoir lancé l'app ou choisi un utilisateur.",
+            "sort": "Tri par défaut",
+            "sortHint": "La méthode de tri à utiliser pour l'écran 'Toute l'activité'.",
+            "view": "Vue par défaut",
+            "viewHint": "La période à voir au lancement.",
+            "theme": {
+                "auto": "Auto",
+                "dark": "Sombre",
+                "heading": "Thème",
+                "light": "Clair"
+            },
+            "themeHint": "Le thème à utiliser pour l'application. L'option 'Auto' choisit le thème correspondant au système de la Switch. N.B. : Le changement de thème nécessite un redémarrage de l'application."
+        },
+        "other": {
+            "24H": "Utiliser le format 24H",
+            "24HHint": "Utiliser le format 24H au lieu de celui de 12H quand c'est possible.",
+            "heading": "Autres options",
+            "hideDeleted": "Cacher les jeux supprimés",
+            "hideDeletedHint": "N'affiche pas les jeux supprimés dans 'Toute l'activité'.",
+            "graph": "Label des barres du graphique",
+            "graphHint": "Active les petits nombres visibles au-dessus de chaque barre sur les graphiques.",
+            "replace": "Remplacer la page utilisateur",
+            "replaceBox": {
+                "error": "Une erreur est survenue:",
+                "errorMsg1": "Le .nro de l'application n'a pas été trouvé dans l'emplacement attendu :",
+                "errorMsg2": "Cette option nécessite que le .nro soit présent à cet emplacement.",
+                "errorMsg3": "Renommez ou déplacez les fichiers / dossiers correctement et réessayez.",
+                "success": "Installation réussie",
+                "successMsg1": "Les CFWs suivant ont été détecté et ont cette option activée :",
+                "successMsg2": "N.B.: Cette fonctionnalité n'utilise pas de sysmodule, si vous rencontrez une erreur avec cette fonctionnalité, désactivez cette option ou supprimez",
+                "successMsg3": "<dossier contents/titles du cfw>/0100000000001013/exefs.nsp"
+            },
+            "replaceHint": "Remplace la page utilisateur par cette application. Nécessite LayeredFS et Atmosphere 0.10.0+, ReiNX, ou SXOS."
+        },
+        "support": "Vous pouvez me supporter sur Ko-fi:",
+        "translations": "Merci aux personnes suivantes pour leur aide dans la traduction de l'app :"
+    },
+    "userSelect": {
+        "heading": "Choisir un utilisateur"
+    }
+}

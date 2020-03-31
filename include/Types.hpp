@@ -3,6 +3,15 @@
 
 #include <switch.h>
 
+// App language
+enum Language {
+    Default,        // Match system language
+    English,
+    French,
+    German,
+    Italian,
+};
+
 // Enumeration for screens (allows for easy switching)
 enum ScreenID {
     UserSelect,
