@@ -67,7 +67,7 @@ LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/SimpleIniParser $(CURDIR)/Aether
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/libs/SimpleIniParser $(CURDIR)/libs/Aether
 
 #---------------------------------------------------------------------------------
 # This is all wizardry to me also
@@ -111,14 +111,13 @@ export NROFLAGS += --icon=$(APP_ICON) --nacp=$(CURDIR)/$(TARGET).nacp --romfsdir
 all: $(BUILD)
 
 $(BUILD):
-ifeq ($(wildcard $(CURDIR)/SimpleIniParser/LICENSE),)
+ifeq ($(wildcard $(CURDIR)/libs/Aether/LICENSE),)
 	@$(error "Please run 'git submodule update --init' before running 'make'")
 endif
 	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile
-	@$(MAKE) -C $(CURDIR)/Aether -f $(CURDIR)/Aether/Makefile
+	@$(MAKE) -C $(CURDIR)/libs/SimpleIniParser -f $(CURDIR)/libs/SimpleIniParser/Makefile
+	@$(MAKE) -C $(CURDIR)/libs/Aether -f $(CURDIR)/libs/Aether/Makefile
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile
-	@mkdir -p $(ROMFS)
 	@cp $(FDIR)/$(FFILE) $(ROMFS)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
@@ -128,8 +127,8 @@ endif
 clean:
 	@echo Cleaning ALL build files...
 	@rm -rf $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf $(OUTDIR) $(ROMFS)/$(FFILE)
-	@$(MAKE) -C $(CURDIR)/SimpleIniParser -f $(CURDIR)/SimpleIniParser/Makefile clean
-	@$(MAKE) -C $(CURDIR)/Aether -f $(CURDIR)/Aether/Makefile clean
+	@$(MAKE) -C $(CURDIR)/libs/SimpleIniParser -f $(CURDIR)/libs/SimpleIniParser/Makefile clean
+	@$(MAKE) -C $(CURDIR)/libs/Aether -f $(CURDIR)/libs/Aether/Makefile clean
 	@$(MAKE) -C $(CURDIR)/$(FDIR) -f $(CURDIR)/$(FDIR)/Makefile clean
 	@echo Done!
 #---------------------------------------------------------------------------------
