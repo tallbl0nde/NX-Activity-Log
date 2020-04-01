@@ -74,21 +74,37 @@ namespace Main {
         this->periodpicker->setListLineColour(this->theme_->mutedLine());
 
         // Setup screens
-        this->scAllActivity = new Screen::AllActivity(this);
-        this->scDetails = new Screen::Details(this);
-        this->scRecentActivity = new Screen::RecentActivity(this);
-        this->scSettings = new Screen::Settings(this);
+        this->createScreens();
+        this->reinitScreens_ = false;
 
         if (this->isUserPage_) {
             // Skip UserSelect screen if launched via user page
             this->setScreen(this->config_->lScreen());
         } else {
-            // No need for user select if user page
-            this->scUserSelect = new Screen::UserSelect(this, this->users);
             // Start with UserSelect screen
             this->display->setFadeIn();
             this->setScreen(ScreenID::UserSelect);
         }
+    }
+
+    void Application::reinitScreens() {
+        this->reinitScreens_ = true;
+    }
+
+    void Application::createScreens() {
+        this->scAllActivity = new Screen::AllActivity(this);
+        this->scDetails = new Screen::Details(this);
+        this->scRecentActivity = new Screen::RecentActivity(this);
+        this->scSettings = new Screen::Settings(this);
+        this->scUserSelect = new Screen::UserSelect(this, this->users);
+    }
+
+    void Application::deleteScreens() {
+        delete this->scAllActivity;
+        delete this->scDetails;
+        delete this->scRecentActivity;
+        delete this->scSettings;
+        delete this->scUserSelect;
     }
 
     void Application::setHoldDelay(int i) {
@@ -103,22 +119,27 @@ namespace Main {
         switch (s) {
             case AllActivity:
                 this->display->setScreen(this->scAllActivity);
+                this->screen = AllActivity;
                 break;
 
             case Details:
                 this->display->setScreen(this->scDetails);
+                this->screen = Details;
                 break;
 
             case RecentActivity:
                 this->display->setScreen(this->scRecentActivity);
+                this->screen = RecentActivity;
                 break;
 
             case Settings:
                 this->display->setScreen(this->scSettings);
+                this->screen = Settings;
                 break;
 
             case UserSelect:
                 this->display->setScreen(this->scUserSelect);
+                this->screen = UserSelect;
                 break;
         }
     }
@@ -298,6 +319,18 @@ namespace Main {
                 this->timeChanged_ = true;
                 this->tmCopy = this->tm;
             }
+
+            // Check if screens should be recreated
+            if (this->reinitScreens_) {
+                this->reinitScreens_ = false;
+                this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
+                this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
+                this->display->setHighlightAnimation(this->theme_->highlightFunc());
+                this->deleteScreens();
+                this->createScreens();
+                this->display->dropScreen();
+                this->setScreen(this->screen);
+            }
         }
     }
 
@@ -330,11 +363,7 @@ namespace Main {
         delete this->periodpicker;
 
         // Delete screens
-        delete this->scAllActivity;
-        delete this->scDetails;
-        delete this->scRecentActivity;
-        delete this->scSettings;
-        delete this->scUserSelect;
+        this->deleteScreens();
 
         // Cleanup Aether
         delete this->display;

@@ -84,15 +84,17 @@ namespace Screen {
             // First check if .nro is in correct location
             if (!(std::filesystem::exists("/switch/NX-Activity-Log/NX-Activity-Log.nro"))) {
                 // Create text and add to overlay
-                Aether::Element * body = new Aether::Element(0, 0, 770, 230);
-                Aether::Text * heading = new Aether::Text(50, 40, "settings.other.replaceBox.error"_lang, 24);
-                heading->setColour(this->app->theme()->text());
-                body->addElement(heading);
-                Aether::TextBlock * message = new Aether::TextBlock(50, 90, "settings.other.replaceBox.errorMsg1"_lang + "\n/switch/NX-Activity-Log/NX-Activity-Log.nro\n\n" + "settings.other.replaceBox.errorMsg2"_lang + "\n" + "settings.other.replaceBox.errorMsg3"_lang, 20, body->w() - 100);
-                message->setColour(this->app->theme()->mutedText());
-                body->addElement(message);
+                int bw, bh;
+                this->msgbox->getBodySize(&bw, &bh);
+                Aether::Element * body = new Aether::Element(0, 0, bw, bh);
+                Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "settings.other.replaceBox.error"_lang, 24, bw - 100);
+                tb->setColour(this->app->theme()->text());
+                body->addElement(tb);
+                tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "settings.other.replaceBox.errorMsg1"_lang + "\n/switch/NX-Activity-Log/NX-Activity-Log.nro\n\n" + "settings.other.replaceBox.errorMsg2"_lang + "\n" + "settings.other.replaceBox.errorMsg3"_lang, 20, body->w() - 100);
+                tb->setColour(this->app->theme()->mutedText());
+                body->addElement(tb);
+                this->msgbox->setBodySize(bw, tb->y() + tb->h() + 40);
                 this->msgbox->setBody(body);
-                this->msgbox->setBodySize(body->w(), body->h());
                 this->app->addOverlay(this->msgbox);
                 return;
             }
@@ -118,16 +120,18 @@ namespace Screen {
 
         // Create message box based on result (success)
         if (atms || rei || sx) {
-            Aether::Element * body = new Aether::Element(0, 0, 770, 250);
-            Aether::Text * heading = new Aether::Text(50, 40, "settings.other.replaceBox.success"_lang, 24);
-            heading->setColour(this->app->theme()->text());
-            body->addElement(heading);
+            int bw, bh;
+            this->msgbox->getBodySize(&bw, &bh);
+            Aether::Element * body = new Aether::Element(0, 0, bw, bh);
+            Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "settings.other.replaceBox.success"_lang, 24, bw - 100);
+            tb->setColour(this->app->theme()->text());
+            body->addElement(tb);
             std::string str = std::string(atms ? "common.atmosphere"_lang + "  " : "") + std::string(rei ? "common.reinx"_lang + "  " : "") + std::string(sx ? "common.sxos"_lang : "");
-            Aether::TextBlock * message = new Aether::TextBlock(50, 90, "settings.other.replaceBox.successMsg1"_lang + "\n" + str + "\n\n" + "settings.other.replaceBox.successMsg2"_lang + "\n" + "settings.other.replaceBox.successMsg3"_lang, 20, body->w() - 100);
-            message->setColour(this->app->theme()->mutedText());
-            body->addElement(message);
+            tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "settings.other.replaceBox.successMsg1"_lang + "\n" + str + "\n\n" + "settings.other.replaceBox.successMsg2"_lang + "\n" + "settings.other.replaceBox.successMsg3"_lang, 20, bw - 100);
+            tb->setColour(this->app->theme()->mutedText());
+            body->addElement(tb);
+            this->msgbox->setBodySize(bw, tb->y() + tb->h() + 40);
             this->msgbox->setBody(body);
-            this->msgbox->setBodySize(body->w(), body->h());
             this->app->addOverlay(this->msgbox);
             this->optionPage->setValue("common.enabled"_lang);
         } else {
@@ -156,25 +160,40 @@ namespace Screen {
 
         // Add an entry for each language
         Language l = this->app->config()->gLang();
-        this->popuplist->addEntry("settings.launch.default"_lang, [this](){
-            this->app->config()->setGLang(Language::Default);
-            this->optionLang->setValue("settings.launch.default"_lang);
+        this->popuplist->addEntry("settings.launch.default"_lang, [this, l](){
+            if (l != Language::Default) {
+                this->app->config()->setGLang(Language::Default);
+                Utils::Lang::setLanguage(Language::Default);
+                this->app->reinitScreens();
+            }
         }, l == Language::Default);
-        this->popuplist->addEntry("English", [this](){
-            this->app->config()->setGLang(Language::English);
-            this->optionLang->setValue("English");
+        this->popuplist->addEntry("English", [this, l](){
+            if (l != Language::English) {
+                this->app->config()->setGLang(Language::English);
+                Utils::Lang::setLanguage(Language::English);
+                this->app->reinitScreens();
+            }
         }, l == Language::English);
-        this->popuplist->addEntry("Français", [this](){
-            this->app->config()->setGLang(Language::French);
-            this->optionLang->setValue("Français");
+        this->popuplist->addEntry("Français", [this, l](){
+            if (l != Language::French) {
+                this->app->config()->setGLang(Language::French);
+                Utils::Lang::setLanguage(Language::French);
+                this->app->reinitScreens();
+            }
         }, l == Language::French);
-        this->popuplist->addEntry("Deutsch", [this](){
-            this->app->config()->setGLang(Language::German);
-            this->optionLang->setValue("Deutsch");
+        this->popuplist->addEntry("Deutsch", [this, l](){
+            if (l != Language::German) {
+                this->app->config()->setGLang(Language::German);
+                Utils::Lang::setLanguage(Language::German);
+                this->app->reinitScreens();
+            }
         }, l == Language::German);
-        this->popuplist->addEntry("Italiano", [this](){
-            this->app->config()->setGLang(Language::Italian);
-            this->optionLang->setValue("Italiano");
+        this->popuplist->addEntry("Italiano", [this, l](){
+            if (l != Language::Italian) {
+                this->app->config()->setGLang(Language::Italian);
+                Utils::Lang::setLanguage(Language::Italian);
+                this->app->reinitScreens();
+            }
         }, l == Language::Italian);
 
         this->app->addOverlay(this->popuplist);
@@ -239,17 +258,26 @@ namespace Screen {
 
         // Add an entry for each sort method
         ThemeType t = this->app->config()->gTheme();
-        this->popuplist->addEntry("settings.launch.theme.auto"_lang, [this](){
-            this->app->config()->setGTheme(ThemeType::Auto);
-            this->optionTheme->setValue("settings.launch.theme.auto"_lang);
+        this->popuplist->addEntry("settings.launch.theme.auto"_lang, [this, t](){
+            if (t != ThemeType::Auto) {
+                this->app->config()->setGTheme(ThemeType::Auto);
+                this->app->theme()->setTheme(ThemeType::Auto);
+                this->app->reinitScreens();
+            }
         }, t == ThemeType::Auto);
-        this->popuplist->addEntry("settings.launch.theme.dark"_lang, [this](){
-            this->app->config()->setGTheme(ThemeType::Dark);
-            this->optionTheme->setValue("settings.launch.theme.dark"_lang);
+        this->popuplist->addEntry("settings.launch.theme.dark"_lang, [this, t](){
+            if (t != ThemeType::Dark) {
+                this->app->config()->setGTheme(ThemeType::Dark);
+                this->app->theme()->setTheme(ThemeType::Dark);
+                this->app->reinitScreens();
+            }
         }, t == ThemeType::Dark);
-        this->popuplist->addEntry("settings.launch.theme.light"_lang, [this](){
-            this->app->config()->setGTheme(ThemeType::Light);
-            this->optionTheme->setValue("settings.launch.theme.light"_lang);
+        this->popuplist->addEntry("settings.launch.theme.light"_lang, [this, t](){
+            if (t != ThemeType::Light) {
+                this->app->config()->setGTheme(ThemeType::Light);
+                this->app->theme()->setTheme(ThemeType::Light);
+                this->app->reinitScreens();
+            }
         }, t == ThemeType::Light);
         // this->popuplist->addEntry("Custom", [this](){
             // this->app->config()->setGTheme(ThemeType::Custom);

@@ -211,7 +211,7 @@
                 "heading": "Theme",
                 "light": "Basic White"
             },
-            "themeHint": "The theme to use for the application. Auto chooses black/white based on your Switch settings. Note: This currently requires the app to be restarted to take effect."
+            "themeHint": "The theme to use for the application. Auto chooses black/white based on your Switch settings."
         },
         "other": {
             "24H": "Use 24 Hour Time",

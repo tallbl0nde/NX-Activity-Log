@@ -211,7 +211,7 @@
                 "heading": "Design",
                 "light": "Weiß"
             },
-            "themeHint": "Design / Theme, das für diese App benutzt wird. 'Automatisch' wählt das aktuelle Design deiner Switch aus. Beachte: Die App muss neu gestartet werden um die Einstellungen zu speichern."
+            "themeHint": "Design / Theme, das für diese App benutzt wird. 'Automatisch' wählt das aktuelle Design deiner Switch aus."
         },
         "other": {
             "24H": "24-Stunden Format benutzen",

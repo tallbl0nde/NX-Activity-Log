@@ -211,7 +211,7 @@
                 "heading": "Tema",
                 "light": "Bianco base"
             },
-            "themeHint": "Tema per l'applicazione. Automatico sceglie tra bianco e nero in base alle impostazioni della tua Switch. Nota: Questo attualmente richiede che l'applicazione venga riavviata per prendere effetto."
+            "themeHint": "Tema per l'applicazione. Automatico sceglie tra bianco e nero in base alle impostazioni della tua Switch."
         },
         "other": {
             "24H": "Usa sistema orario a 24 ore",

@@ -211,7 +211,7 @@
                 "heading": "Thème",
                 "light": "Clair"
             },
-            "themeHint": "Le thème à utiliser pour l'application. L'option 'Auto' choisit le thème correspondant au système de la Switch. N.B. : Le changement de thème nécessite un redémarrage de l'application."
+            "themeHint": "Le thème à utiliser pour l'application. L'option 'Auto' choisit le thème correspondant au système de la Switch."
         },
         "other": {
             "24H": "Utiliser le format 24H",

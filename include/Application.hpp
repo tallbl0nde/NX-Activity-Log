@@ -37,6 +37,16 @@ namespace Main {
             Screen::Settings * scSettings;
             Screen::UserSelect * scUserSelect;
 
+            // ID of current screen
+            ScreenID screen;
+            // Set true by reinitScreens() in order to recreate screens
+            // before next loop
+            bool reinitScreens_;
+            // Create screens
+            void createScreens();
+            // Delete screens
+            void deleteScreens();
+
             // Config object allows interfacing with config file
             Config * config_;
             // PlayData object used for all play stats
@@ -73,6 +83,9 @@ namespace Main {
         public:
             // Constructor inits Aether, screens + other objects
             Application();
+
+            // Destroys and recreates screens (effectively a restart without restarting in terms of UI?)
+            void reinitScreens();
 
             // Wrapper for display function
             void setHoldDelay(int);
