@@ -340,6 +340,15 @@ namespace Screen {
         this->list->setCatchup(11);
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
+        // ===== UPDATE =====
+        Aether::ListButton * lb = new Aether::ListButton("settings.checkUpdates"_lang, [this]() {
+            this->app->pushScreen();
+            this->app->setScreen(ScreenID::Update);
+        });
+        lb->setLineColour(this->app->theme()->mutedLine());
+        lb->setTextColour(this->app->theme()->text());
+        this->list->addElement(lb);
+
         // ===== LAUNCH OPTIONS =====
         Aether::ListHeading * lh = new Aether::ListHeading("settings.launch.heading"_lang);
         lh->setRectColour(this->app->theme()->mutedLine());

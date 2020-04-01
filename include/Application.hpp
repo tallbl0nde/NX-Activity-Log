@@ -11,6 +11,7 @@
 #include "Details.hpp"
 #include "RecentActivity.hpp"
 #include "Settings.hpp"
+#include "Update.hpp"
 #include "UserSelect.hpp"
 
 // I should really fix this cyclic dependency /shrug
@@ -19,6 +20,7 @@ namespace Screen {
     class Details;
     class RecentActivity;
     class Settings;
+    class Update;
     class UserSelect;
 };
 
@@ -35,6 +37,7 @@ namespace Main {
             Screen::Details * scDetails;
             Screen::RecentActivity * scRecentActivity;
             Screen::Settings * scSettings;
+            Screen::Update * scUpdate;
             Screen::UserSelect * scUserSelect;
 
             // ID of current screen

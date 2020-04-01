@@ -1,7 +1,6 @@
 #ifndef TITLE_HPP
 #define TITLE_HPP
 
-#include <string>
 #include "Types.hpp"
 
 namespace NX {

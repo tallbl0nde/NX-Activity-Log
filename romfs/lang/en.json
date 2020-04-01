@@ -194,6 +194,7 @@
     },
     "settings": {
         "about": "Thanks for using my app! I hope it's been useful! :)",
+        "checkUpdates": "Check for Updates",
         "launch": {
             "default": "Default",
             "heading": "Launch Options",
@@ -236,6 +237,19 @@
         },
         "support": "You can support me on Ko-fi:",
         "translations": "Thank you to the following people for their help in translating the app:"
+    },
+    "update": {
+        "cancel": "Cancel",
+        "error": {
+            "heading": "Unable to check for an update!",
+            "tip": "Check your internet connection and/or try again later."
+        },
+        "heading": "Update Application",
+        "newAvailable": "Version $[v] is available!",
+        "update": "Update",
+        "upToDate": "Your app is up to date!",
+        "version": "Version $[v]",
+        "waiting": "Checking GitHub for updates..."
     },
     "userSelect": {
         "heading": "Select a User"

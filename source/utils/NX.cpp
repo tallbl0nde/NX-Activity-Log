@@ -185,6 +185,7 @@ namespace Utils::NX {
         pdmqryInitialize();
         romfsInit();
         setsysInitialize();
+        socketInitializeDefault();
     }
 
     void stopServices() {
@@ -193,5 +194,6 @@ namespace Utils::NX {
         pdmqryExit();
         romfsExit();
         setsysExit();
+        socketExit();
     }
 };

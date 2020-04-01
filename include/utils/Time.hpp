@@ -2,7 +2,6 @@
 #define UTILS_TIME_HPP
 
 #include <ctime>
-#include <string>
 #include "Types.hpp"
 
 // Bunch of helper functions for time_t and tm structs

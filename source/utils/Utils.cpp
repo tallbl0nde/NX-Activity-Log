@@ -39,6 +39,10 @@ namespace Utils {
         return s;
     }
 
+    std::string insertVersionInString(std::string str, std::string ver) {
+        return std::regex_replace(str, std::regex("\\$\\[v]"), ver);
+    }
+
     std::string lastPlayedToString(unsigned int t) {
         struct tm now = Utils::Time::getTmForCurrentTime();
         struct tm ts = Utils::Time::getTm(t);

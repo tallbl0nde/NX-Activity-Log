@@ -17,6 +17,9 @@ namespace Utils {
     // Add commas to provided number
     std::string formatNumberComma(unsigned int);
 
+    // Insert given version into string (replacing $[v]) (string, ver)
+    std::string insertVersionInString(std::string, std::string);
+
     // Format the given timestamp as 'last played' string
     std::string lastPlayedToString(unsigned int);
 

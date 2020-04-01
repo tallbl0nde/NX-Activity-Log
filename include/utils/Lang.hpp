@@ -1,7 +1,6 @@
 #ifndef UTILS_LANG_HPP
 #define UTILS_LANG_HPP
 
-#include <string>
 #include "Types.hpp"
 
 namespace Utils::Lang {

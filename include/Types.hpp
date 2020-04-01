@@ -1,6 +1,7 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
+#include <string>
 #include <switch.h>
 
 // App language
@@ -18,7 +19,8 @@ enum ScreenID {
     AllActivity,
     RecentActivity,
     Settings,
-    Details
+    Details,
+    Update
 };
 
 // Enumerations for sorting methods
@@ -38,6 +40,12 @@ enum ThemeType {
     Dark,
     Custom
 };
+
+typedef struct UpdateData {
+    bool success;           // Set true if the query was successful
+    std::string version;    // Version of latest release (vX.X.X)
+    std::string changelog;  // Changelog (with markdown syntax)
+} UpdateData;
 
 // Period to view recent stats for
 enum class ViewPeriod {

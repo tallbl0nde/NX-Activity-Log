@@ -1,10 +1,12 @@
 #include "Application.hpp"
+#include "Curl.hpp"
 #include "Lang.hpp"
 
 namespace Main {
     Application::Application() {
         // Start all required services
         Utils::NX::startServices();
+        Utils::Curl::init();
 
         // Create config object and read in values
         this->config_ = new Config();
@@ -60,7 +62,7 @@ namespace Main {
         this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
         this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
         this->display->setHighlightAnimation(this->theme_->highlightFunc());
-        // this->display->setShowFPS(true);
+        this->display->setShowFPS(true);
 
         // Create overlays
         this->dtpicker = nullptr;
@@ -96,6 +98,7 @@ namespace Main {
         this->scDetails = new Screen::Details(this);
         this->scRecentActivity = new Screen::RecentActivity(this);
         this->scSettings = new Screen::Settings(this);
+        this->scUpdate = new Screen::Update(this);
         this->scUserSelect = new Screen::UserSelect(this, this->users);
     }
 
@@ -104,6 +107,7 @@ namespace Main {
         delete this->scDetails;
         delete this->scRecentActivity;
         delete this->scSettings;
+        delete this->scUpdate;
         delete this->scUserSelect;
     }
 
@@ -135,6 +139,11 @@ namespace Main {
             case Settings:
                 this->display->setScreen(this->scSettings);
                 this->screen = Settings;
+                break;
+
+            case Update:
+                this->display->setScreen(this->scUpdate);
+                this->screen = Update;
                 break;
 
             case UserSelect:
@@ -362,13 +371,12 @@ namespace Main {
         }
         delete this->periodpicker;
 
-        // Delete screens
-        this->deleteScreens();
-
         // Cleanup Aether
+        this->deleteScreens();
         delete this->display;
 
         // Stop all services
+        Utils::Curl::exit();
         Utils::NX::stopServices();
     }
 };
