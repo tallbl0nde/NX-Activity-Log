@@ -2,7 +2,6 @@
 #include "Curl.hpp"
 #include "JSON.hpp"
 #include <sstream>
-#include <iostream>
 
 #define RELEASE_URL "https://api.github.com/repos/tallbl0nde/NX-Activity-Log/releases/latest"
 #define TIMEOUT 1000L

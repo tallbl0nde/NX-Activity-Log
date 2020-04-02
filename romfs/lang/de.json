@@ -13,8 +13,8 @@
     "common": {
         "12H": "$[h]$[s]",
         "activityFor": {
-            "day": "Aktivität für $[d].$[m].",
-            "dayYear": "Aktivität für $[d].$[m].$[y]",
+            "day": "Aktivität für den $[d].$[m].",
+            "dayYear": "Aktivität für den $[d].$[m].$[y]",
             "month": "Aktivität für $[m].$[y]",
             "year": "Aktivität für $[y]"
         },
@@ -190,14 +190,14 @@
         }
     },
     "recentActivity": {
-        "titleHeading": "Spiele gespielt"
+        "titleHeading": "gespielte Spiele"
     },
     "settings": {
         "about": "Danke, dass du meine App benutzt, ich hoffe ich konnte dir helfen :)",
         "launch": {
             "default": "Standard",
             "heading": "Startoptionen",
-            "language": "Sprache - language",
+            "language": "Sprache",
             "languageHint": "Spracheinstellung dieser App.",
             "screen": "Standardfenster",
             "screenHint": "Das Fenster, das angezeigt wird wenn die App gestartet oder ein Nutzer ausgewählt wird.",
