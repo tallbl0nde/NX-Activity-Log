@@ -235,7 +235,7 @@
             "replaceHint": "Ersetzt die Profilseite auf dem Switch Homescreen mit dieser App. Erfordert LayeredFS und entweder Atmosphere 0.10.0+, ReiNX oder SXOS."
         },
         "support": "Unterstütze mich auf Ko-fi:",
-        "translations": "Thank you to the following people for their help in translating the app: Ayk"
+        "translations": "Thank you to the following people for their help in translating the app:"
     },
     "userSelect": {
         "heading": "Nutzer auswählen"

@@ -11,6 +11,7 @@ enum Language {
     French,
     German,
     Italian,
+    Portugese
 };
 
 // Enumeration for screens (allows for easy switching)

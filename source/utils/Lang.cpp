@@ -45,6 +45,10 @@ namespace Utils::Lang {
             case Italian:
                 path = "romfs:/lang/it.json";
                 break;
+
+            case Portugese:
+                path = "romfs:/lang/pt-BR.json";
+                break;
         }
 
         return setFile(path);

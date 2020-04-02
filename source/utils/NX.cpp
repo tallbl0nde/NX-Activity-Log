@@ -58,6 +58,9 @@ namespace Utils::NX {
                 lang = Italian;
                 break;
 
+            case SetLanguage_PT:
+                lang = Portugese;
+
             default:
                 lang = Default;
                 break;
