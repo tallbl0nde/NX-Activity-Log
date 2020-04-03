@@ -202,6 +202,13 @@ namespace Screen {
                 this->app->reinitScreens();
             }
         }, l == Language::Portugese);
+        this->popuplist->addEntry("Pусский", [this, l](){
+            if (l != Language::Russian) {
+                this->app->config()->setGLang(Language::Russian);
+                Utils::Lang::setLanguage(Language::Russian);
+                this->app->reinitScreens();
+            }
+        }, l == Language::Russian);
 
         this->app->addOverlay(this->popuplist);
     }
@@ -481,6 +488,10 @@ namespace Screen {
             case Language::Portugese:
                 str = "Português";
                 break;
+
+            case Language::Russian:
+                str = "Pусский";
+                break;
         }
         this->optionLang = new Aether::ListOption("settings.launch.language"_lang, str, [this](){
             this->setupLangOverlay();
@@ -595,7 +606,7 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION
-        lc = new Aether::ListComment("settings.translations"_lang + "\nAyk\nevertonstz\nReinzanini\nxRock");
+        lc = new Aether::ListComment("settings.translations"_lang + "\nFrench: xRock\nGerman: Ayk\nItalian: reinzanini\nPortugese: evertonstz\nRussian: Sookie69");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\n" + "settings.about"_lang + "\n\n" + "settings.support"_lang + "\nhttps://ko-fi.com/tallbl0nde");

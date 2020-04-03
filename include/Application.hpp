@@ -4,6 +4,7 @@
 #include "Config.hpp"
 #include "NX.hpp"
 #include "PlayData.hpp"
+#include <stack>
 #include "Theme.hpp"
 #include "Time.hpp"
 
@@ -49,6 +50,8 @@ namespace Main {
             void createScreens();
             // Delete screens
             void deleteScreens();
+            // Stack of ScreenIDs matching pushed screens
+            std::stack<ScreenID> screenStack;
 
             // Config object allows interfacing with config file
             Config * config_;

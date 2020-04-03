@@ -60,6 +60,11 @@ namespace Utils::NX {
 
             case SetLanguage_PT:
                 lang = Portugese;
+                break;
+
+            case SetLanguage_RU:
+                lang = Russian;
+                break;
 
             default:
                 lang = Default;

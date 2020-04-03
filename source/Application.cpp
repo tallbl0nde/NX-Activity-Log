@@ -155,10 +155,15 @@ namespace Main {
 
     void Application::pushScreen() {
         this->display->pushScreen();
+        this->screenStack.push(this->screen);
     }
 
     void Application::popScreen() {
         this->display->popScreen();
+        if (!this->screenStack.empty()) {
+            this->screen = this->screenStack.top();
+            this->screenStack.pop();
+        }
     }
 
     void Application::decreaseDate() {
