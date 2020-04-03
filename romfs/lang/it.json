@@ -127,7 +127,7 @@
             "settings": "Impostazioni utente"
         },
         "sort": {
-            "firstPlayed": "Giocati prima",
+            "firstPlayed": "Giocati meno di recente",
             "heading": "Ordina i software",
             "leastLaunched": "Giocati meno volte",
             "leastPlaytime": "Giocati meno a lungo",
@@ -194,11 +194,12 @@
     },
     "settings": {
         "about": "Grazie per usare la mia applicazione! Spero ti sia utile! :)",
+        "checkUpdates": "Controlla aggiornamenti",
         "launch": {
             "default": "Predefinito",
             "heading": "Opzioni di lancio",
             "language": "Lingua",
-            "languageHint": "Lingua per l'applicazione. Predefinito sceglierà la tua lingua di sistema se una traduzione è disponibile.",
+            "languageHint": "Lingua per l'applicazione. Predefinito userà la tua lingua di sistema se disponibile.",
             "screen": "Schermata predefinita",
             "screenHint": "Schermata di lancio.",
             "sort": "Ordine predefinito",
@@ -235,7 +236,20 @@
             "replaceHint": "Sostituisci la Pagina utente con questa applicazione. Richiede LayeredFS e Atmosphere 0.10.0+, ReiNX o SXOS."
         },
         "support": "Mi puoi supportare su Ko-fi:",
-        "translations": "Un grazie a queste persone per il loro aiuto nel tradurre l'applicazione:"
+        "translations": "Un grazie alle seguenti persone per il loro aiuto nelle varie traduzioni l'applicazione:"
+    },
+    "update": {
+        "cancel": "Cancella",
+        "error": {
+            "heading": "Si è verificato un errore!",
+            "tip": "Controlla la tua connessione internet o riprova più tardi."
+        },
+        "heading": "Aggiornamento dell'applicazione",
+        "newAvailable": "È disponibile la versione $[v]!",
+        "update": "Aggiorna",
+        "upToDate": "La tua applicazione è già all'ultima versione!",
+        "version": "Versione $[v]",
+        "waiting": "Comunicando con GitHub per aggiornamenti..."
     },
     "userSelect": {
         "heading": "Seleziona un utente"
