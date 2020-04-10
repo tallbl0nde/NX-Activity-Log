@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include "Curl.hpp"
 #include "Lang.hpp"
+#include "UpdateUtils.hpp"
 #include "Utils.hpp"
 
 namespace Main {
@@ -20,6 +21,10 @@ namespace Main {
 
         this->playdata_ = new NX::PlayData();
         this->theme_ = new Theme(this->config_->gTheme());
+
+        // Start update thread
+        this->hasUpdate_ = false;
+        this->updateThread = std::async(std::launch::async, &Application::checkForUpdate, this);
 
         // Check if launched via user page and if so only use the chosen user
         NX::User * u = Utils::NX::getUserPageUser();
@@ -63,7 +68,7 @@ namespace Main {
         this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
         this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
         this->display->setHighlightAnimation(this->theme_->highlightFunc());
-        this->display->setShowFPS(true);
+        // this->display->setShowFPS(true);
 
         // Create overlays
         this->dtpicker = nullptr;
@@ -88,6 +93,14 @@ namespace Main {
             this->display->setFadeIn();
             this->setScreen(ScreenID::UserSelect);
         }
+    }
+
+    void Application::checkForUpdate() {
+        if (Utils::Update::needsCheck()) {
+            Utils::Update::check();
+        }
+
+        this->hasUpdate_ = Utils::Update::available();
     }
 
     void Application::reinitScreens() {
@@ -293,6 +306,10 @@ namespace Main {
         return this->theme_;
     }
 
+    bool Application::hasUpdate() {
+        return this->hasUpdate_;
+    }
+
     struct tm Application::time() {
         return this->tm;
     }
@@ -393,6 +410,6 @@ namespace Main {
         Utils::NX::stopServices();
 
         // Install update if present
-        Utils::installUpdate();
+        Utils::Update::install();
     }
 };

@@ -1,7 +1,9 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
+#include <atomic>
 #include "Config.hpp"
+#include <future>
 #include "NX.hpp"
 #include "PlayData.hpp"
 #include <stack>
@@ -59,6 +61,13 @@ namespace Main {
             NX::PlayData * playdata_;
             // Stores current theme colours
             Theme * theme_;
+
+            // Set true when an update is available
+            std::atomic<bool> hasUpdate_;
+            // Future for update check thread
+            std::future<void> updateThread;
+            // Function to check for update
+            void checkForUpdate();
 
             // Time to view recent activity, etc...
             struct tm tm;
@@ -121,6 +130,9 @@ namespace Main {
             NX::PlayData * playdata();
             // Returns theme object
             Theme * theme();
+
+            // True if an update is available
+            bool hasUpdate();
 
             // Returns copy of tm struct (can only be set by this class)
             struct tm time();

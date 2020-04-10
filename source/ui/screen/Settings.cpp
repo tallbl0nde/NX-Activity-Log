@@ -629,6 +629,14 @@ namespace Screen {
         this->msgbox->setRectangleColour(this->app->theme()->altBG());
         this->msgbox->setTextColour(this->app->theme()->accent());
 
+        // Show update icon if needbe
+        this->updateElm =nullptr;
+        if (this->app->hasUpdate()) {
+            this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
+            this->updateElm->setColour(this->app->theme()->text());
+            this->addElement(this->updateElm);
+        }
+
         this->popuplist = nullptr;
     }
 
@@ -637,6 +645,7 @@ namespace Screen {
         this->removeElement(this->image);
         this->removeElement(this->list);
         this->removeElement(this->menu);
+        this->removeElement(this->updateElm);
         delete this->msgbox;
         delete this->popuplist;
     }

@@ -1,6 +1,6 @@
-#include "Curl.hpp"
 #include "Lang.hpp"
 #include "Update.hpp"
+#include "UpdateUtils.hpp"
 #include "Utils.hpp"
 
 namespace Screen {
@@ -74,7 +74,7 @@ namespace Screen {
 
         // Start a new thread for download
         this->threadDone = false;
-        this->updateThread = std::async(std::launch::async, Utils::downloadUpdate, this->nroURL, [this](long long int dl, long long int total) {
+        this->updateThread = std::async(std::launch::async, Utils::Update::download, this->nroURL, [this](long long int dl, long long int total) {
             this->progressCallback(dl, total);
         });
     }
@@ -262,7 +262,7 @@ namespace Screen {
         // Start update thread
         this->isDownloading = false;
         this->threadDone = false;
-        this->data = std::async(std::launch::async, Utils::checkForUpdate);
+        this->data = std::async(std::launch::async, Utils::Update::check);
     }
 
     void Update::onUnload() {

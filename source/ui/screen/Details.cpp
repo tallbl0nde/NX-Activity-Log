@@ -687,6 +687,14 @@ namespace Screen {
         this->addElement(this->lastplayed);
         delete ps;
 
+        // Show update icon if needbe
+        this->updateElm =nullptr;
+        if (this->app->hasUpdate()) {
+            this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
+            this->updateElm->setColour(this->app->theme()->text());
+            this->addElement(this->updateElm);
+        }
+
         // Create blank messagebox
         this->msgbox = new Aether::MessageBox();
         this->msgbox->addTopButton("common.close"_lang, [this](){
@@ -716,6 +724,7 @@ namespace Screen {
         this->removeElement(this->title);
         this->removeElement(this->userimage);
         this->removeElement(this->username);
+        this->removeElement(this->updateElm);
         delete this->msgbox;
         delete this->panel;
     }

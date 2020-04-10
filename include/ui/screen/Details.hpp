@@ -48,6 +48,7 @@ namespace Screen {
             Aether::ListHeadingHelp * playHeading;
             Aether::Text * noStats;
             Aether::Text * title;
+            Aether::Image * updateElm;
             Aether::Image * userimage;
             Aether::Text * username;
 

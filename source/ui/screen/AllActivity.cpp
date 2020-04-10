@@ -180,6 +180,13 @@ namespace Screen {
         this->hours->setXY(this->hours->x() - this->hours->w(), this->hours->y() - this->hours->h()/2);
         this->hours->setColour(this->app->theme()->mutedText());
         this->addElement(this->hours);
+        // Show update icon if needbe
+        this->updateElm =nullptr;
+        if (this->app->hasUpdate()) {
+            this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
+            this->updateElm->setColour(this->app->theme()->text());
+            this->addElement(this->updateElm);
+        }
     }
 
     void AllActivity::onUnload() {
@@ -188,6 +195,7 @@ namespace Screen {
         this->removeElement(this->image);
         this->removeElement(this->list);
         this->removeElement(this->menu);
+        this->removeElement(this->updateElm);
     }
 
     AllActivity::~AllActivity() {

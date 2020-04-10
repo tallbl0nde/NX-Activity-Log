@@ -1,5 +1,5 @@
-#ifndef UTILS_UPDATE_HPP
-#define UTILS_UPDATE_HPP
+#ifndef UTILS_CURL_HPP
+#define UTILS_CURL_HPP
 
 #include <functional>
 #include <string>

@@ -40,6 +40,7 @@ namespace Screen {
             Aether::List * list;
             Aether::Menu * menu;
             Aether::Text * noStats;
+            Aether::Image * updateElm;
 
         public:
             // Passed main application object

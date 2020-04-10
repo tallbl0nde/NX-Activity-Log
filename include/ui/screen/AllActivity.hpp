@@ -22,6 +22,7 @@ namespace Screen {
             Aether::Image * image;
             CustomElm::SortedList * list;
             Aether::Menu * menu;
+            Aether::Image * updateElm;
 
             // Choose sort overlay
             Aether::PopupList * sortOverlay;

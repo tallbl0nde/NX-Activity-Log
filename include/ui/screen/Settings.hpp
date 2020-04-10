@@ -20,6 +20,7 @@ namespace Screen {
             Aether::Image * image;
             Aether::List * list;
             Aether::Menu * menu;
+            Aether::Image * updateElm;
 
             // Pointers to options so the value can be updated
             Aether::ListOption * optionLang;

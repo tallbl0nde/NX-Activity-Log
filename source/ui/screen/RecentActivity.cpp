@@ -438,6 +438,14 @@ namespace Screen {
 
         this->addElement(this->list);
 
+        // Show update icon if needbe
+        this->updateElm =nullptr;
+        if (this->app->hasUpdate()) {
+            this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
+            this->updateElm->setColour(this->app->theme()->text());
+            this->addElement(this->updateElm);
+        }
+
         // Get play sessions
         this->updateActivity();
     }
@@ -448,5 +456,6 @@ namespace Screen {
         this->removeElement(this->image);
         this->removeElement(this->list);
         this->removeElement(this->menu);
+        this->removeElement(this->updateElm);
     }
 };

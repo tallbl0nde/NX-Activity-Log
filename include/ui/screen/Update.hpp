@@ -2,8 +2,6 @@
 #define SCREEN_UPDATE_HPP
 
 #include "Application.hpp"
-#include <atomic>
-#include <future>
 
 // Forward declaration due to circular dependency
 namespace Main {

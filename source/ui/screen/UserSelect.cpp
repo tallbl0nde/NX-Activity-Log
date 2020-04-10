@@ -51,10 +51,19 @@ namespace Screen {
             this->list->addElement(l);
         }
         this->setFocussed(this->list);
+
+        // Show update icon if needbe
+        this->updateElm =nullptr;
+        if (this->app->hasUpdate()) {
+            this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
+            this->updateElm->setColour(this->app->theme()->text());
+            this->addElement(this->updateElm);
+        }
     }
 
     void UserSelect::onUnload() {
         // Remove + delete elements within list
+        this->removeElement(this->updateElm);
         this->removeElement(this->list);
     }
 };
