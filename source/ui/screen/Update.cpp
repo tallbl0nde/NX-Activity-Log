@@ -21,6 +21,7 @@ namespace Screen {
         this->controls = new Aether::Controls();
         this->controls->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
         this->controls->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
+        this->controls->setColour(this->app->theme()->text());
         this->addElement(this->controls);
 
         // Exit only once thread is done
@@ -28,6 +29,53 @@ namespace Screen {
             if (this->threadDone) {
                 this->app->popScreen();
             }
+        });
+    }
+
+    void Update::createMsgbox() {
+        delete this->msgbox;
+        this->msgbox = new Aether::MessageBox();
+        this->msgbox->setRectangleColour(this->app->theme()->altBG());
+        this->msgbox->setLineColour(Aether::Colour{255, 255, 255, 0});
+        // Prevent closing the overlay
+        this->msgbox->onButtonPress(Aether::Button::B, nullptr);
+    }
+
+    void Update::progressCallback(long long int dl, long long int total) {
+        // Only show progress if the file is downloading and not other comms! (size must be greater than 50 kB)
+        if (total <= 50000) {
+            return;
+        }
+        this->downloaded = 100 * ((double)dl/(double)total);
+    }
+
+    void Update::showDownloadProgress() {
+        this->isDownloading = true;
+        this->downloaded = 0.0;
+
+        // Show progress bar in overlay
+        this->createMsgbox();
+        Aether::Element * body = new Aether::Element(0, 0, 560, 210);
+        Aether::Text * heading = new Aether::Text(50, 35, "update.download.dl"_lang, 24);
+        heading->setColour(this->app->theme()->text());
+        body->addElement(heading);
+        this->pbar = new Aether::RoundProgressBar(50, heading->y() + heading->h() + 25, 400, 12);
+        this->pbar->setBackgroundColour(this->app->theme()->mutedLine());
+        this->pbar->setForegroundColour(this->app->theme()->accent());
+        body->addElement(this->pbar);
+        this->ptext = new Aether::Text(pbar->x() + pbar->w() + 25, 0, "0%", 18);
+        this->ptext->setColour(this->app->theme()->text());
+        this->ptext->setY(this->pbar->y() + (this->pbar->h() - this->ptext->h())/2);
+        body->addElement(this->ptext);
+        body->setH(this->pbar->y() + this->pbar->h() + 35);
+        this->msgbox->setBodySize(body->w(), body->h());
+        this->msgbox->setBody(body);
+        this->app->addOverlay(this->msgbox);
+
+        // Start a new thread for download
+        this->threadDone = false;
+        this->updateThread = std::async(std::launch::async, Utils::downloadUpdate, this->nroURL, [this](long long int dl, long long int total) {
+            this->progressCallback(dl, total);
         });
     }
 
@@ -54,7 +102,7 @@ namespace Screen {
 
                 // Update button
                 Aether::BorderButton * bb = new Aether::BorderButton(915, 270, 260, 80, 3, "update.update"_lang, 24, [this]() {
-                    // Update stuff here!
+                    this->showDownloadProgress();
                 });
                 bb->setBorderColour(this->app->theme()->text());
                 bb->setTextColour(this->app->theme()->text());
@@ -85,6 +133,8 @@ namespace Screen {
                 Aether::Element * e = new Aether::Element(0, 0, 0, 10);
                 l->addElement(e);
                 this->el->addElement(l);
+
+                this->nroURL = data.url;
             }
         } else {
             // Show error message
@@ -104,25 +154,97 @@ namespace Screen {
         this->addElement(this->el);
     }
 
+    void Update::showError() {
+        this->createMsgbox();
+        int bw, bh;
+        this->msgbox->getBodySize(&bw, &bh);
+        Aether::Element * e = new Aether::Element(0, 0, 700, bh);
+        Aether::TextBlock * t = new Aether::TextBlock(50, 40, "update.download.error"_lang, 24, e->w() - 80);
+        t->setColour(this->app->theme()->text());
+        e->addElement(t);
+        t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.error.tip"_lang, 20, e->w() - 80);
+        t->setColour(this->app->theme()->mutedText());
+        e->addElement(t);
+        e->setH(t->y() + t->h() + 40);
+        this->msgbox->setBodySize(e->w(), e->h());
+        this->msgbox->setBody(e);
+    }
+
+    void Update::showSuccess() {
+        this->createMsgbox();
+        int bw, bh;
+        this->msgbox->getBodySize(&bw, &bh);
+        Aether::Element * e = new Aether::Element(0, 0, 700, bh);
+        Aether::TextBlock * t = new Aether::TextBlock(50, 40, "update.download.success"_lang, 24, e->w() - 80);
+        t->setColour(this->app->theme()->text());
+        e->addElement(t);
+        if (this->app->isUserPage()) {
+            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHint"_lang, 20, e->w() - 80);
+        } else {
+            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHintPage"_lang, 20, e->w() - 80);
+        }
+        t->setColour(this->app->theme()->mutedText());
+        e->addElement(t);
+        e->setH(t->y() + t->h() + 40);
+        this->msgbox->setBodySize(e->w(), e->h());
+        this->msgbox->setBody(e);
+    }
+
     void Update::update(uint32_t dt) {
         if (!this->threadDone) {
-            if (this->data.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                this->threadDone = true;
-                this->msgbox->close(true);
-                this->controls->setColour(this->app->theme()->text());
-                this->showElements();
+            if (this->isDownloading) {
+                // Download thread
+                if (this->updateThread.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                    this->msgbox->close(true);
+                    this->threadDone = true;
+                } else {
+                    // Update progress
+                    this->pbar->setValue(this->downloaded);
+                    this->ptext->setString(Utils::truncateToDecimalPlace(std::to_string(Utils::roundToDecimalPlace(this->downloaded, 0)), 0) + "%");
+                }
+            } else {
+                // Check thread
+                if (this->data.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                    this->threadDone = true;
+                    this->msgbox->close(true);
+                    this->showElements();
+                }
+            }
+        } else {
+            if (this->isDownloading && this->msgbox->shouldClose()) {
+                bool b = this->updateThread.get();
+                if (b) {
+                    // No errors - show success message
+                    this->showSuccess();
+                } else {
+                    // Error occurred - show error message
+                    this->showError();
+                }
+                // Enable close button
+                int bw, bh;
+                this->msgbox->getBodySize(&bw, &bh);
+                this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this, b]() {
+                    if (b) {
+                        this->app->exit();
+                    } else {
+                        this->msgbox->close(true);
+                    }
+                    this->isDownloading = false;
+                });
+                this->msgbox->setBodySize(bw, bh);
+                this->msgbox->setLineColour(this->app->theme()->mutedLine());
+                this->msgbox->setTextColour(this->app->theme()->accent());
+                this->app->addOverlay(this->msgbox);
             }
         }
     }
 
     void Update::onLoad() {
-        this->controls->setColour(this->app->theme()->mutedText());
         this->el = new Aether::Container(0, 87, 1280, 558);
 
         // "Checking updates" overlay
-        this->msgbox = new Aether::MessageBox();
-        this->msgbox->setRectangleColour(this->app->theme()->altBG());
-        this->msgbox->setLineColour(Aether::Colour{255, 255, 255, 0});
+        this->msgbox = nullptr;
+        this->createMsgbox();
         int bw, bh;
         msgbox->getBodySize(&bw, &bh);
         Aether::Element * body = new Aether::Element(0, 0, bw, bh);
@@ -136,12 +258,11 @@ namespace Screen {
         this->msgbox->setBodySize(bw, t->y() + t->h() + 40);
         this->msgbox->setBody(body);
         this->app->addOverlay(this->msgbox);
-        // Prevent closing the overlay
-        this->msgbox->onButtonPress(Aether::Button::B, nullptr);
 
         // Start update thread
+        this->isDownloading = false;
         this->threadDone = false;
-        this->data = std::async(std::launch::async, Utils::Curl::getLatestMetadata);
+        this->data = std::async(std::launch::async, Utils::checkForUpdate);
     }
 
     void Update::onUnload() {

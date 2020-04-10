@@ -1,12 +1,21 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <functional>
 #include <string>
+#include "Types.hpp"
 #include <vector>
 
 namespace Utils {
+    // Query GitHub for latest release
+    UpdateData checkForUpdate();
+
     // Copy file from source path to dest path
     void copyFile(std::string, std::string);
+
+    // Download latest release to /switch/NX-Activity-Log/tmp.nro
+    // Accepts url to release, callback function for progress and return whether successful
+    bool downloadUpdate(std::string, std::function<void(long long int, long long int)>);
 
     // Format given hour (0 - 23) in 12 hour format
     std::string format12H(unsigned short);
@@ -19,6 +28,9 @@ namespace Utils {
 
     // Insert given version into string (replacing $[v]) (string, ver)
     std::string insertVersionInString(std::string, std::string);
+
+    // Install (move) update nro (does nothing if .nro not present)
+    void installUpdate();
 
     // Format the given timestamp as 'last played' string
     std::string lastPlayedToString(unsigned int);

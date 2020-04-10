@@ -194,7 +194,6 @@
     },
     "settings": {
         "about": "Thanks for using my app! I hope it's been useful! :)",
-        "checkUpdates": "Check for Updates",
         "launch": {
             "default": "Default",
             "heading": "Launch Options",
@@ -236,10 +235,19 @@
             "replaceHint": "Replace the User Page with this app. Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS."
         },
         "support": "You can support me on Ko-fi:",
-        "translations": "Thank you to the following people for their help in translating the app:"
+        "translations": "Thank you to the following people for their help in translating the app:",
+        "update": "Check for Updates",
+        "updateHint": "Note: You may experience problems if you're using 90DNS. If this is the case simply try again."
     },
     "update": {
         "cancel": "Cancel",
+        "download": {
+            "dl": "Downloading...",
+            "error": "Unable to download file",
+            "success": "Update downloaded!",
+            "successHint": "The app will now update and close.",
+            "successHintPage": "The app will now update and restart."
+        },
         "error": {
             "heading": "Unable to check for an update!",
             "tip": "Check your internet connection and/or try again later."

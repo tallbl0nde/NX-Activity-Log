@@ -1,11 +1,43 @@
-#include <cmath>
+#include "Curl.hpp"
+#include <filesystem>
 #include <fstream>
+#include "JSON.hpp"
 #include "Lang.hpp"
 #include <regex>
 #include "Utils.hpp"
 #include "Time.hpp"
 
+// URL to query release data
+#define GITHUB_API_URL "https://api.github.com/repos/tallbl0nde/NX-Activity-Log/releases/latest"
+// Path of downloaded .nro
+#define TMP_DONE_PATH "/switch/NX-Activity-Log/update.nro"
+// Path of downloading .nro (not finished)
+#define TMP_PATH "/switch/NX-Activity-Log/tmp.nro"
+
 namespace Utils {
+    UpdateData checkForUpdate() {
+        UpdateData d;
+        d.success = false;
+        std::string data = Utils::Curl::downloadToString(GITHUB_API_URL);
+        if (data.length() > 0) {
+            nlohmann::json j = nlohmann::json::parse(data);
+            if (j["tag_name"] != nullptr && j["body"] != nullptr) {
+                d.version = j["tag_name"].get<std::string>();
+                d.changelog = j["body"].get<std::string>();
+                if (j["assets"] != nullptr) {
+                    if (j["assets"][0] != nullptr) {
+                        if (j["assets"][0]["browser_download_url"] != nullptr) {
+                            d.url = j["assets"][0]["browser_download_url"].get<std::string>();
+                            d.success = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return d;
+    }
+
     void copyFile(std::string src, std::string dest) {
         std::ifstream srcF(src, std::ios::binary);
         std::ofstream destF(dest, std::ios::binary);
@@ -15,6 +47,25 @@ namespace Utils {
         srcF.close();
         destF.flush();
         destF.close();
+    }
+
+    bool downloadUpdate(std::string url, std::function<void(long long int, long long int)> func) {
+        // Create folders if necessary
+        if (!std::filesystem::exists("/switch/NX-Activity-Log/")) {
+            std::filesystem::create_directory("/switch");
+            std::filesystem::create_directory("/switch/NX-Activity-Log");
+        }
+
+        bool b = Utils::Curl::downloadToFile(url, TMP_PATH, func);
+        if (!b) {
+            // If failed remove file
+            std::filesystem::remove(TMP_PATH);
+        } else {
+            // If it succeeded rename
+            std::filesystem::rename(TMP_PATH, TMP_DONE_PATH);
+        }
+
+        return b;
     }
 
     std::string format12H(unsigned short h) {
@@ -37,6 +88,13 @@ namespace Utils {
             return s.substr(0, s.length() - 3) + "," + s.substr(s.length() - 3, 3);
         }
         return s;
+    }
+
+    void installUpdate() {
+        if (std::filesystem::exists(TMP_DONE_PATH)) {
+            std::filesystem::remove("/switch/NX-Activity-Log/NX-Activity-Log.nro");
+            std::filesystem::rename(TMP_DONE_PATH, "/switch/NX-Activity-Log/NX-Activity-Log.nro");
+        }
     }
 
     std::string insertVersionInString(std::string str, std::string ver) {

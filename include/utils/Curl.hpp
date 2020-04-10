@@ -1,17 +1,19 @@
 #ifndef UTILS_UPDATE_HPP
 #define UTILS_UPDATE_HPP
 
-#include "Types.hpp"
+#include <functional>
+#include <string>
 
 namespace Utils::Curl {
     void init();
     void exit();
 
-    // Fetch update metadata (version, changelog)
-    UpdateData getLatestMetadata();
+    // Download file from URL and write to file (returns true on success)
+    // (URL, path, progress function(bytes received, total bytes))
+    bool downloadToFile(std::string, std::string, std::function<void(long long int, long long int)>);
 
-    // Actually download .nro
-
+    // Return response from URL as string (empty on error)
+    std::string downloadToString(std::string);
 };
 
 #endif

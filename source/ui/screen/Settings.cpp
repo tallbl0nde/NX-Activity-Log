@@ -355,13 +355,18 @@ namespace Screen {
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
         // ===== UPDATE =====
-        Aether::ListButton * lb = new Aether::ListButton("settings.checkUpdates"_lang, [this]() {
+        Aether::ListButton * lb = new Aether::ListButton("settings.update"_lang, [this]() {
             this->app->pushScreen();
             this->app->setScreen(ScreenID::Update);
         });
         lb->setLineColour(this->app->theme()->mutedLine());
         lb->setTextColour(this->app->theme()->text());
         this->list->addElement(lb);
+        Aether::ListComment * lc = new Aether::ListComment("settings.updateHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        this->list->addElement(new Aether::ListSeparator());
 
         // ===== LAUNCH OPTIONS =====
         Aether::ListHeading * lh = new Aether::ListHeading("settings.launch.heading"_lang);
@@ -393,7 +398,7 @@ namespace Screen {
         this->optionScreen->setValueColour(this->app->theme()->accent());
         this->optionScreen->setLineColour(this->app->theme()->mutedLine());
         this->list->addElement(this->optionScreen);
-        Aether::ListComment * lc = new Aether::ListComment("settings.launch.screenHint"_lang);
+        lc = new Aether::ListComment("settings.launch.screenHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 

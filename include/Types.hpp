@@ -44,9 +44,10 @@ enum ThemeType {
 };
 
 typedef struct UpdateData {
-    bool success;           // Set true if the query was successful
-    std::string version;    // Version of latest release (vX.X.X)
     std::string changelog;  // Changelog (with markdown syntax)
+    bool success;           // Set true if the query was successful
+    std::string url;        // URL of .nro file to download
+    std::string version;    // Version of latest release (vX.X.X)
 } UpdateData;
 
 // Period to view recent stats for

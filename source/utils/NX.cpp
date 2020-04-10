@@ -194,6 +194,10 @@ namespace Utils::NX {
         romfsInit();
         setsysInitialize();
         socketInitializeDefault();
+
+        #if _NXLINK_
+            nxlinkStdio();
+        #endif
     }
 
     void stopServices() {

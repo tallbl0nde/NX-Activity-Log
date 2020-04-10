@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include "Curl.hpp"
 #include "Lang.hpp"
+#include "Utils.hpp"
 
 namespace Main {
     Application::Application() {
@@ -99,7 +100,11 @@ namespace Main {
         this->scRecentActivity = new Screen::RecentActivity(this);
         this->scSettings = new Screen::Settings(this);
         this->scUpdate = new Screen::Update(this);
-        this->scUserSelect = new Screen::UserSelect(this, this->users);
+
+        // These screens aren't used on the user page so no point wasting memory
+        if (!this->isUserPage_) {
+            this->scUserSelect = new Screen::UserSelect(this, this->users);
+        }
     }
 
     void Application::deleteScreens() {
@@ -108,7 +113,10 @@ namespace Main {
         delete this->scRecentActivity;
         delete this->scSettings;
         delete this->scUpdate;
-        delete this->scUserSelect;
+
+        if (!this->isUserPage_) {
+            delete this->scUserSelect;
+        }
     }
 
     void Application::setHoldDelay(int i) {
@@ -383,5 +391,8 @@ namespace Main {
         // Stop all services
         Utils::Curl::exit();
         Utils::NX::stopServices();
+
+        // Install update if present
+        Utils::installUpdate();
     }
 };
