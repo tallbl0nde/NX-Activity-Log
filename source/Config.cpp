@@ -102,6 +102,14 @@ namespace Main {
         } else {
             this->hDeleted_ = false;
         }
+
+        sec = ini->findOrCreateSection("theme");
+        option = sec->findOrCreateFirstOption("image", "false");
+        if (option->value == "true") {
+            this->tImage_ = true;
+        } else {
+            this->tImage_ = false;
+        }
     }
 
     void Config::writeConfig() {
@@ -192,6 +200,13 @@ namespace Main {
             option->value = "Day";
         }
 
+        option = ini->findSection("theme")->findFirstOption("image");
+        if (this->tImage_ == true) {
+            option->value = "true";
+        } else if (this->tImage_ == false) {
+            option->value = "false";
+        }
+
         ini->writeToFile("/config/NX-Activity-Log/config.ini");
     }
 
@@ -225,6 +240,10 @@ namespace Main {
 
     ViewPeriod Config::lView() {
         return this->lView_;
+    }
+
+    bool Config::tImage() {
+        return this->tImage_;
     }
 
     void Config::setGGraph(bool b) {
@@ -264,6 +283,11 @@ namespace Main {
 
     void Config::setLView(ViewPeriod v) {
         this->lView_ = v;
+        this->writeConfig();
+    }
+
+    void Config::setTImage(bool b) {
+        this->tImage_ = b;
         this->writeConfig();
     }
 };

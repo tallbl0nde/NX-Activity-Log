@@ -133,6 +133,8 @@ namespace Main {
             NX::PlayData * playdata();
             // Returns theme object
             Theme * theme();
+            // (Re)set the display theme variables for highlight/select/etc... using values in theme object
+            void setDisplayTheme();
 
             // True if an update is available
             bool hasUpdate();

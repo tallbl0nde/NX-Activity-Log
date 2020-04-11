@@ -4,6 +4,9 @@
 #include "UpdateUtils.hpp"
 #include "Utils.hpp"
 
+// Path to background image
+#define BACKGROUND_IMAGE "/config/NX-Activity-Log/background.png"
+
 namespace Main {
     Application::Application() {
         // Start all required services
@@ -65,9 +68,6 @@ namespace Main {
 
         // Create Aether instance
         this->display = new Aether::Display();
-        this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
-        this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
-        this->display->setHighlightAnimation(this->theme_->highlightFunc());
         // this->display->setShowFPS(true);
 
         // Create overlays
@@ -75,13 +75,9 @@ namespace Main {
         this->periodpicker = new Aether::PopupList("common.view.heading"_lang);
         this->periodpicker->setBackLabel("common.buttonHint.back"_lang);
         this->periodpicker->setOKLabel("common.buttonHint.ok"_lang);
-        this->periodpicker->setBackgroundColour(this->theme_->altBG());
-        this->periodpicker->setTextColour(this->theme_->text());
-        this->periodpicker->setLineColour(this->theme_->fg());
-        this->periodpicker->setHighlightColour(this->theme_->accent());
-        this->periodpicker->setListLineColour(this->theme_->mutedLine());
 
         // Setup screens
+        this->setDisplayTheme();
         this->createScreens();
         this->reinitScreens_ = false;
 
@@ -91,6 +87,7 @@ namespace Main {
         } else {
             // Start with UserSelect screen
             this->display->setFadeIn();
+            this->display->setFadeOut();
             this->setScreen(ScreenID::UserSelect);
         }
     }
@@ -313,6 +310,25 @@ namespace Main {
         return this->theme_;
     }
 
+    void Application::setDisplayTheme() {
+        this->periodpicker->setBackgroundColour(this->theme_->altBG());
+        this->periodpicker->setTextColour(this->theme_->text());
+        this->periodpicker->setLineColour(this->theme_->fg());
+        this->periodpicker->setHighlightColour(this->theme_->accent());
+        this->periodpicker->setListLineColour(this->theme_->mutedLine());
+        this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
+        this->display->setHighlightAnimation(this->theme_->highlightFunc());
+        if (this->config_->tImage() && this->config_->gTheme() == Custom) {
+            if (this->display->setBackgroundImage(BACKGROUND_IMAGE)) {
+                return;
+            } else {
+                // Turn off background image
+                this->config_->setTImage(false);
+            }
+        }
+        this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
+    }
+
     bool Application::hasUpdate() {
         return this->hasUpdate_;
     }
@@ -369,10 +385,8 @@ namespace Main {
             // Check if screens should be recreated
             if (this->reinitScreens_) {
                 this->reinitScreens_ = false;
-                this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
-                this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
-                this->display->setHighlightAnimation(this->theme_->highlightFunc());
                 this->deleteScreens();
+                this->setDisplayTheme();
                 this->createScreens();
                 this->display->dropScreen();
                 this->setScreen(this->screen);

@@ -19,6 +19,7 @@ namespace Main {
             ScreenID lScreen_;
             SortType lSort_;
             ViewPeriod lView_;
+            bool tImage_;
 
         public:
             // Sets ini to nullptr
@@ -40,6 +41,7 @@ namespace Main {
             ScreenID lScreen();
             SortType lSort();
             ViewPeriod lView();
+            bool tImage();
 
             void setGGraph(bool);
             void setGIs24H(bool);
@@ -49,6 +51,7 @@ namespace Main {
             void setLScreen(ScreenID);
             void setLSort(SortType);
             void setLView(ViewPeriod);
+            void setTImage(bool);
     };
 };
 

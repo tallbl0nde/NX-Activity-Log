@@ -33,9 +33,9 @@ namespace Screen {
 
     void CustomTheme::recolourElements() {
         this->controls->setColour(this->app->theme()->text());
-        this->optionImage->setLineColour(this->app->theme()->mutedLine());
         this->optionImage->setHintColour(this->app->theme()->text());
-        // set value colour based on yes/no
+        this->optionImage->setLineColour(this->app->theme()->mutedLine());
+        this->optionImage->setValueColour((this->app->config()->tImage() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
         this->imageHint->setTextColour(this->app->theme()->mutedText());
         this->colourAccent->setLineColour(this->app->theme()->mutedLine());
         this->colourAccent->setTextColour(this->app->theme()->text());
@@ -70,18 +70,26 @@ namespace Screen {
         this->colourMutedText->setLineColour(this->app->theme()->mutedLine());
         this->colourMutedText->setTextColour(this->app->theme()->text());
         this->colourMutedText->setColour(this->app->theme()->mutedText());
-
-        // Also set app colours (and make sure to unset!)
+        this->app->setDisplayTheme();
     }
 
     void CustomTheme::onLoad() {
         // Create list
-        this->list = new Aether::List(200, 88, 880, 558);
+        this->list = new Aether::List(200, 88, 880, 559);
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
         // Image button
-        this->optionImage = new Aether::ListOption("customTheme.image"_lang, "??", [this](){
-            // Toggle image here
+        this->optionImage = new Aether::ListOption("customTheme.image"_lang, (this->app->config()->tImage() ? "Yes" : "No"), [this](){
+            bool b = !(this->app->config()->tImage());
+            this->app->config()->setTImage(b);
+            if (b) {
+                this->optionImage->setValue("Yes");
+                this->optionImage->setValueColour(this->app->theme()->accent());
+            } else {
+                this->optionImage->setValue("No");
+                this->optionImage->setValueColour(this->app->theme()->mutedText());
+            }
+            this->app->setDisplayTheme();
         });
         this->list->addElement(this->optionImage);
         this->imageHint = new Aether::ListComment("customTheme.imageHint"_lang);

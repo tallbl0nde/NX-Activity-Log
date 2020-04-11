@@ -171,7 +171,7 @@
         "highlight2": "Highlight Animation 2",
         "highlightBG": "Highlight Background",
         "image": "Use Background Image",
-        "imageHint": "Set the image located at /config/NX-Activity-Log/background.png as the application's background.",
+        "imageHint": "Set the image located at /config/NX-Activity-Log/background.png as the application's background. If the image is not 1280x720 it will be resized to fit.",
         "line": "Line",
         "mutedLine": "Dim Line",
         "mutedText": "Dim Text",
