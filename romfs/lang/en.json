@@ -166,6 +166,13 @@
         "altBackground": "Background Panel",
         "apply": "Apply",
         "background": "Background",
+        "picker": {
+            "alpha": "Alpha",
+            "blue": "Blue",
+            "green": "Green",
+            "red": "Red",
+            "tip": "Tip: Hold ZL/ZR to change values faster!"
+        },
         "heading": "Customize Theme",
         "highlight1": "Highlight Animation 1",
         "highlight2": "Highlight Animation 2",

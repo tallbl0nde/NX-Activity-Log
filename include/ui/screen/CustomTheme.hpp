@@ -2,8 +2,8 @@
 #define SCREEN_CUSTOMTHEME_HPP
 
 #include "Application.hpp"
+#include "ColourPicker.hpp"
 #include "ListColour.hpp"
-
 
 // Forward declaration due to circular dependency
 namespace Main {
@@ -19,6 +19,9 @@ namespace Screen {
             Aether::Image * updateElm;
 
             // Need pointers to every element in order to update colours
+            Aether::Text * heading;
+            Aether::Rectangle * topR;
+            Aether::Rectangle * bottomR;
             Aether::Controls * controls;
             Aether::List * list;
 
@@ -39,6 +42,11 @@ namespace Screen {
 
             CustomElm::ListColour * colourText;
             CustomElm::ListColour * colourMutedText;
+
+            // Colour picker
+            CustomOvl::ColourPicker * picker;
+            // Setup picker (title, colour, callback)
+            void setupPicker(std::string, Aether::Colour, std::function<void(Aether::Colour)>);
 
             // Recolour everything
             void recolourElements();
