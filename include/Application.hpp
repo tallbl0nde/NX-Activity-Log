@@ -11,6 +11,7 @@
 #include "Time.hpp"
 
 #include "AllActivity.hpp"
+#include "CustomTheme.hpp"
 #include "Details.hpp"
 #include "RecentActivity.hpp"
 #include "Settings.hpp"
@@ -20,6 +21,7 @@
 // I should really fix this cyclic dependency /shrug
 namespace Screen {
     class AllActivity;
+    class CustomTheme;
     class Details;
     class RecentActivity;
     class Settings;
@@ -37,6 +39,7 @@ namespace Main {
 
             // Screens of the app
             Screen::AllActivity * scAllActivity;
+            Screen::CustomTheme * scCustomTheme;
             Screen::Details * scDetails;
             Screen::RecentActivity * scRecentActivity;
             Screen::Settings * scSettings;

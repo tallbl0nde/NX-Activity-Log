@@ -52,7 +52,9 @@ namespace Main {
         }
 
         option = sec->findOrCreateFirstOption("theme", "Auto");
-        if (option->value == "Light") {
+        if (option->value == "Custom") {
+            this->gTheme_ = Custom;
+        } else if (option->value == "Light") {
             this->gTheme_ = Light;
         } else if (option->value == "Dark") {
             this->gTheme_ = Dark;
@@ -146,6 +148,8 @@ namespace Main {
             option->value = "Dark";
         } else if (this->gTheme_ == Auto) {
             option->value = "Auto";
+        } else if (this->gTheme_ == Custom) {
+            option->value = "Custom";
         }
 
         option = ini->findSection("hidden")->findFirstOption("deleted");

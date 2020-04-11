@@ -161,6 +161,23 @@
         },
         "yes": "Yes"
     },
+    "customTheme": {
+        "accent": "Accent",
+        "altBackground": "Background Panel",
+        "apply": "Apply",
+        "background": "Background",
+        "heading": "Customize Theme",
+        "highlight1": "Highlight Animation 1",
+        "highlight2": "Highlight Animation 2",
+        "highlightBG": "Highlight Background",
+        "image": "Use Background Image",
+        "imageHint": "Set the image located at /config/NX-Activity-Log/background.png as the application's background.",
+        "line": "Line",
+        "mutedLine": "Dim Line",
+        "mutedText": "Dim Text",
+        "selected": "Selected",
+        "text": "Text"
+    },
     "details": {
         "allTime": "All Time Activity",
         "avgPlaytime": "Average Playtime",
@@ -207,11 +224,13 @@
             "viewHint": "The period of activity to view on launch.",
             "theme": {
                 "auto": "Auto",
+                "custom": "Custom",
                 "dark": "Basic Black",
                 "heading": "Theme",
                 "light": "Basic White"
             },
-            "themeHint": "The theme to use for the application. Auto chooses black/white based on your Switch settings."
+            "themeEdit": "Customize Theme",
+            "themeHint": "The theme to use for the application. Auto chooses black/white based on your Switch settings. Select Custom to set a background image and adjust colours."
         },
         "other": {
             "24H": "Use 24 Hour Time",

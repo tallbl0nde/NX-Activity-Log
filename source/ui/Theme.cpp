@@ -82,7 +82,16 @@ void Theme::setThemeAuto() {
 }
 
 void Theme::setThemeCustom() {
-
+    this->accent_ = Aether::Theme::Light.accent;
+    this->altBG_ = Aether::Theme::Light.altBG;
+    this->bg_ = Aether::Theme::Light.bg;
+    this->fg_ = Aether::Theme::Light.fg;
+    this->highlightFunc_ = Aether::Theme::Light.highlightFunc;
+    this->highlightBG_ = Aether::Theme::Light.highlightBG;
+    this->mutedLine_ = Aether::Theme::Light.mutedLine;
+    this->mutedText_ = Aether::Theme::Light.mutedText;
+    this->selected_ = Aether::Theme::Light.selected;
+    this->text_ = Aether::Theme::Light.text;
 }
 
 void Theme::setThemeDark() {

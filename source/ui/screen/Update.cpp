@@ -179,9 +179,9 @@ namespace Screen {
         t->setColour(this->app->theme()->text());
         e->addElement(t);
         if (this->app->isUserPage()) {
-            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHint"_lang, 20, e->w() - 80);
-        } else {
             t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHintPage"_lang, 20, e->w() - 80);
+        } else {
+            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHint"_lang, 20, e->w() - 80);
         }
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);

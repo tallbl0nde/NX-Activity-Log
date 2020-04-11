@@ -293,10 +293,13 @@ namespace Screen {
                 this->app->reinitScreens();
             }
         }, t == ThemeType::Light);
-        // this->popuplist->addEntry("Custom", [this](){
-            // this->app->config()->setGTheme(ThemeType::Custom);
-            // this->optionTheme->setValue("Custom");
-        // }, t == ThemeType::Custom);
+        this->popuplist->addEntry("settings.launch.theme.custom"_lang, [this, t](){
+            if (t != ThemeType::Custom) {
+                this->app->config()->setGTheme(ThemeType::Custom);
+                this->app->theme()->setTheme(ThemeType::Custom);
+                this->app->reinitScreens();
+            }
+        }, t == ThemeType::Custom);
 
         this->app->addOverlay(this->popuplist);
     }
@@ -537,6 +540,17 @@ namespace Screen {
         lc = new Aether::ListComment("settings.launch.themeHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
+
+        // Add edit button if custom theme selected
+        if (this->app->config()->gTheme() == ThemeType::Custom) {
+            lb = new Aether::ListButton("settings.launch.themeEdit"_lang, [this]() {
+                this->app->pushScreen();
+                this->app->setScreen(ScreenID::CustomTheme);
+            });
+            lb->setLineColour(this->app->theme()->mutedLine());
+            lb->setTextColour(this->app->theme()->text());
+            this->list->addElement(lb);
+        }
 
         this->list->addElement(new Aether::ListSeparator());
 

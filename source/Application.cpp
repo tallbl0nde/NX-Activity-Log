@@ -109,6 +109,7 @@ namespace Main {
 
     void Application::createScreens() {
         this->scAllActivity = new Screen::AllActivity(this);
+        this->scCustomTheme = new Screen::CustomTheme(this);
         this->scDetails = new Screen::Details(this);
         this->scRecentActivity = new Screen::RecentActivity(this);
         this->scSettings = new Screen::Settings(this);
@@ -122,6 +123,7 @@ namespace Main {
 
     void Application::deleteScreens() {
         delete this->scAllActivity;
+        delete this->scCustomTheme;
         delete this->scDetails;
         delete this->scRecentActivity;
         delete this->scSettings;
@@ -145,6 +147,11 @@ namespace Main {
             case AllActivity:
                 this->display->setScreen(this->scAllActivity);
                 this->screen = AllActivity;
+                break;
+
+            case CustomTheme:
+                this->display->setScreen(this->scCustomTheme);
+                this->screen = CustomTheme;
                 break;
 
             case Details:

@@ -22,7 +22,8 @@ enum ScreenID {
     RecentActivity,
     Settings,
     Details,
-    Update
+    Update,
+    CustomTheme
 };
 
 // Enumerations for sorting methods
