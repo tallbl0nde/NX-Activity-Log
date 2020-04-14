@@ -43,6 +43,11 @@ namespace Screen {
             CustomElm::ListColour * colourText;
             CustomElm::ListColour * colourMutedText;
 
+            // Copy theme on load (highlight1/2 aren't in Theme_T)
+            Aether::Theme_T oldTheme;
+            Aether::Colour oldHighlight1;
+            Aether::Colour oldHighlight2;
+
             // Colour picker
             CustomOvl::ColourPicker * picker;
             // Setup picker (title, colour, callback)
