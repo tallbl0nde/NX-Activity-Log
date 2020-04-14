@@ -1,7 +1,6 @@
 #ifndef SCREEN_ALLACTIVITY_HPP
 #define SCREEN_ALLACTIVITY_HPP
 
-#include "Application.hpp"
 #include "SortedList.hpp"
 
 // Forward declaration due to circular dependency

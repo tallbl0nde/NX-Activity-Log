@@ -1,3 +1,4 @@
+#include "Application.hpp"
 #include "Details.hpp"
 #include "Lang.hpp"
 #include "ListSession.hpp"

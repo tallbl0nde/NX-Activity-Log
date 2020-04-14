@@ -10,15 +10,6 @@
 #include "Theme.hpp"
 #include "Time.hpp"
 
-#include "AllActivity.hpp"
-#include "CustomTheme.hpp"
-#include "Details.hpp"
-#include "RecentActivity.hpp"
-#include "Settings.hpp"
-#include "Update.hpp"
-#include "UserSelect.hpp"
-
-// I should really fix this cyclic dependency /shrug
 namespace Screen {
     class AllActivity;
     class CustomTheme;

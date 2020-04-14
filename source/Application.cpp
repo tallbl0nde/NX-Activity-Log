@@ -4,6 +4,14 @@
 #include "UpdateUtils.hpp"
 #include "Utils.hpp"
 
+#include "AllActivity.hpp"
+#include "CustomTheme.hpp"
+#include "Details.hpp"
+#include "RecentActivity.hpp"
+#include "Settings.hpp"
+#include "Update.hpp"
+#include "UserSelect.hpp"
+
 // Path to background image
 #define BACKGROUND_IMAGE "/config/NX-Activity-Log/background.png"
 

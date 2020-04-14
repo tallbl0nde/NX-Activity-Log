@@ -1,7 +1,6 @@
 #ifndef SCREEN_RECENTACTIVITY_HPP
 #define SCREEN_RECENTACTIVITY_HPP
 
-#include "Application.hpp"
 #include "Graph.hpp"
 #include "SortedList.hpp"
 

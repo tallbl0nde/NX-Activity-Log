@@ -1,3 +1,4 @@
+#include "Application.hpp"
 #include "Lang.hpp"
 #include "RecentActivity.hpp"
 #include "Utils.hpp"

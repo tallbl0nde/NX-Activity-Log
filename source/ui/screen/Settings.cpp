@@ -1,3 +1,4 @@
+#include "Application.hpp"
 #include <filesystem>
 #include "Lang.hpp"
 #include "Settings.hpp"

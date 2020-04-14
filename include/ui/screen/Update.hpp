@@ -1,8 +1,6 @@
 #ifndef SCREEN_UPDATE_HPP
 #define SCREEN_UPDATE_HPP
 
-#include "Application.hpp"
-
 // Forward declaration due to circular dependency
 namespace Main {
     class Application;

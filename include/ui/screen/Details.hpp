@@ -1,7 +1,6 @@
 #ifndef SCREEN_DETAILS_HPP
 #define SCREEN_DETAILS_HPP
 
-#include "Application.hpp"
 #include "Graph.hpp"
 #include "PlaySession.hpp"
 

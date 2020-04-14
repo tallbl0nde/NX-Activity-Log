@@ -1,7 +1,6 @@
 #ifndef SCREEN_USERSELECT_HPP
 #define SCREEN_USERSELECT_HPP
 
-#include "Application.hpp"
 #include "User.hpp"
 
 // Forward declaration due to circular dependency

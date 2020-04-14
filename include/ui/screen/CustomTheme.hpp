@@ -1,7 +1,6 @@
 #ifndef SCREEN_CUSTOMTHEME_HPP
 #define SCREEN_CUSTOMTHEME_HPP
 
-#include "Application.hpp"
 #include "ColourPicker.hpp"
 #include "ListColour.hpp"
 

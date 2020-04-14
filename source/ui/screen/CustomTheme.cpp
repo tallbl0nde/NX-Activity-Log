@@ -1,3 +1,4 @@
+#include "Application.hpp"
 #include "CustomTheme.hpp"
 #include "Lang.hpp"
 #include "ThemePresets.hpp"
@@ -174,14 +175,14 @@ namespace Screen {
         this->list->addElement(this->optionPreset);
 
         // Image button
-        this->optionImage = new Aether::ListOption("customTheme.image"_lang, (this->app->config()->tImage() ? "Yes" : "No"), [this](){
+        this->optionImage = new Aether::ListOption("customTheme.image"_lang, (this->app->config()->tImage() ? "common.yes"_lang : "common.no"_lang), [this](){
             bool b = !(this->app->config()->tImage());
             this->app->config()->setTImage(b);
             if (b) {
-                this->optionImage->setValue("Yes");
+                this->optionImage->setValue("common.yes"_lang);
                 this->optionImage->setValueColour(this->app->theme()->accent());
             } else {
-                this->optionImage->setValue("No");
+                this->optionImage->setValue("common.no"_lang);
                 this->optionImage->setValueColour(this->app->theme()->mutedText());
             }
             this->app->setDisplayTheme();

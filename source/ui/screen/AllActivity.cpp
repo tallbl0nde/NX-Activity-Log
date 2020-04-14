@@ -1,4 +1,5 @@
 #include "AllActivity.hpp"
+#include "Application.hpp"
 #include "Lang.hpp"
 #include "Utils.hpp"
 
