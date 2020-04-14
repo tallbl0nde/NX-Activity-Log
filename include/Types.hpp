@@ -1,6 +1,7 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
+#include "Aether.hpp"
 #include <string>
 #include <switch.h>
 
@@ -44,7 +45,22 @@ enum ThemeType {
     Custom
 };
 
-typedef struct UpdateData {
+// Variables (colours) forming a theme
+typedef struct {
+    Aether::Colour accent;
+    Aether::Colour altBG;
+    Aether::Colour bg;
+    Aether::Colour fg;
+    Aether::Colour highlight1;
+    Aether::Colour highlight2;
+    Aether::Colour highlightBG;
+    Aether::Colour mutedLine;
+    Aether::Colour mutedText;
+    Aether::Colour selected;
+    Aether::Colour text;
+} ThemeSet;
+
+typedef struct {
     std::string changelog;  // Changelog (with markdown syntax)
     bool success;           // Set true if the query was successful
     std::string url;        // URL of .nro file to download

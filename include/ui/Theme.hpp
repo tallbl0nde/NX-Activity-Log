@@ -9,19 +9,8 @@ class Theme {
         // Type of theme
         ThemeType type;
 
-        // Theme variables (same name as Aether)
-        Aether::Colour accent_;
-        Aether::Colour altBG_;
-        Aether::Colour bg_;
-        Aether::Colour fg_;
-        std::function<Aether::Colour(uint32_t)> highlightFunc_;
-        Aether::Colour highlight1_;
-        Aether::Colour highlight2_;
-        Aether::Colour highlightBG_;
-        Aether::Colour mutedLine_;
-        Aether::Colour mutedText_;
-        Aether::Colour selected_;
-        Aether::Colour text_;
+        // Theme colours
+        ThemeSet theme;
 
         // Functions to set colours based on type
         void setThemeAuto();
@@ -29,18 +18,16 @@ class Theme {
         void setThemeDark();
         void setThemeLight();
 
-        void setHighlightFunc();
-
     public:
         // Constructor takes type and sets colours
         Theme(ThemeType);
 
-        // Return private variables
+        // Return colours
         Aether::Colour accent();
         Aether::Colour altBG();
         Aether::Colour bg();
         Aether::Colour fg();
-        std::function<Aether::Colour(uint32_t)> highlightFunc();
+        std::function<Aether::Colour(uint32_t)> highlightFunc();    // Actually constructs function when called
         Aether::Colour highlight1();
         Aether::Colour highlight2();
         Aether::Colour highlightBG();
@@ -49,7 +36,7 @@ class Theme {
         Aether::Colour selected();
         Aether::Colour text();
 
-        // Set private variables (only works if custom)
+        // Set private variables (only works if type is custom)
         void setAccent(Aether::Colour);
         void setAltBG(Aether::Colour);
         void setBg(Aether::Colour);
