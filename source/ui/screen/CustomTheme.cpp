@@ -1,5 +1,6 @@
 #include "CustomTheme.hpp"
 #include "Lang.hpp"
+#include "ThemePresets.hpp"
 
 namespace Screen {
     CustomTheme::CustomTheme(Main::Application * a) {
@@ -60,12 +61,49 @@ namespace Screen {
         this->app->addOverlay(this->picker);
     }
 
+    void CustomTheme::createPresetList() {
+        this->presetList = new Aether::PopupList("customTheme.preset"_lang);
+        this->presetList->setBackLabel("common.buttonHint.back"_lang);
+        this->presetList->setOKLabel("common.buttonHint.ok"_lang);
+        // Basic Black
+        this->presetList->addEntry("settings.launch.theme.dark"_lang, [this]() {
+            this->app->theme()->setAccent(ThemePreset::Dark.accent);
+            this->app->theme()->setAltBG(ThemePreset::Dark.altBG);
+            this->app->theme()->setBg(ThemePreset::Dark.bg);
+            this->app->theme()->setFg(ThemePreset::Dark.fg);
+            this->app->theme()->setHighlight1(ThemePreset::Dark.highlight1);
+            this->app->theme()->setHighlight2(ThemePreset::Dark.highlight2);
+            this->app->theme()->setHighlightBG(ThemePreset::Dark.highlightBG);
+            this->app->theme()->setMutedLine(ThemePreset::Dark.mutedLine);
+            this->app->theme()->setMutedText(ThemePreset::Dark.mutedText);
+            this->app->theme()->setSelected(ThemePreset::Dark.selected);
+            this->app->theme()->setText(ThemePreset::Dark.text);
+            this->recolourElements();
+        });
+        // Basic White
+        this->presetList->addEntry("settings.launch.theme.light"_lang, [this]() {
+            this->app->theme()->setAccent(ThemePreset::Light.accent);
+            this->app->theme()->setAltBG(ThemePreset::Light.altBG);
+            this->app->theme()->setBg(ThemePreset::Light.bg);
+            this->app->theme()->setFg(ThemePreset::Light.fg);
+            this->app->theme()->setHighlight1(ThemePreset::Light.highlight1);
+            this->app->theme()->setHighlight2(ThemePreset::Light.highlight2);
+            this->app->theme()->setHighlightBG(ThemePreset::Light.highlightBG);
+            this->app->theme()->setMutedLine(ThemePreset::Light.mutedLine);
+            this->app->theme()->setMutedText(ThemePreset::Light.mutedText);
+            this->app->theme()->setSelected(ThemePreset::Light.selected);
+            this->app->theme()->setText(ThemePreset::Light.text);
+            this->recolourElements();
+        });
+    }
+
     void CustomTheme::recolourElements() {
-        // Save colours
         this->topR->setColour(this->app->theme()->fg());
         this->bottomR->setColour(this->app->theme()->fg());
         this->heading->setColour(this->app->theme()->text());
         this->controls->setColour(this->app->theme()->text());
+        this->optionPreset->setLineColour(this->app->theme()->mutedLine());
+        this->optionPreset->setTextColour(this->app->theme()->text());
         this->optionImage->setHintColour(this->app->theme()->text());
         this->optionImage->setLineColour(this->app->theme()->mutedLine());
         this->optionImage->setValueColour((this->app->config()->tImage() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
@@ -104,6 +142,10 @@ namespace Screen {
         this->colourMutedText->setTextColour(this->app->theme()->text());
         this->colourMutedText->setColour(this->app->theme()->mutedText());
         this->app->setDisplayTheme();
+        if (this->updateElm != nullptr) {
+            this->updateElm->setColour(this->app->theme()->text());
+        }
+        this->presetList->setAllColours(this->app->theme()->altBG(), this->app->theme()->accent(), this->app->theme()->fg(), this->app->theme()->mutedLine(), this->app->theme()->text());
     }
 
     void CustomTheme::onLoad() {
@@ -123,6 +165,13 @@ namespace Screen {
         // Create list
         this->list = new Aether::List(200, 88, 880, 559);
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
+
+        // Choose from preset
+        this->optionPreset = new Aether::ListButton("customTheme.preset"_lang, [this]() {
+            this->presetList->close(false);
+            this->app->addOverlay(this->presetList);
+        });
+        this->list->addElement(this->optionPreset);
 
         // Image button
         this->optionImage = new Aether::ListOption("customTheme.image"_lang, (this->app->config()->tImage() ? "Yes" : "No"), [this](){
@@ -147,6 +196,7 @@ namespace Screen {
             this->setupPicker("customTheme.accent"_lang, this->app->theme()->accent(), [this](Aether::Colour c){
                 this->colourAccent->setColour(c);
                 this->app->theme()->setAccent(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourAccent);
@@ -157,6 +207,7 @@ namespace Screen {
             this->setupPicker("customTheme.altBackground"_lang, this->app->theme()->altBG(), [this](Aether::Colour c){
                 this->colourAltBG->setColour(c);
                 this->app->theme()->setAltBG(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourAltBG);
@@ -164,6 +215,7 @@ namespace Screen {
             this->setupPicker("customTheme.background"_lang, this->app->theme()->bg(), [this](Aether::Colour c){
                 this->colourBackground->setColour(c);
                 this->app->theme()->setBg(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourBackground);
@@ -174,6 +226,7 @@ namespace Screen {
             this->setupPicker("customTheme.highlight1"_lang, this->app->theme()->highlight1(), [this](Aether::Colour c){
                 this->colourHighlight1->setColour(c);
                 this->app->theme()->setHighlight1(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourHighlight1);
@@ -181,6 +234,7 @@ namespace Screen {
             this->setupPicker("customTheme.highlight2"_lang, this->app->theme()->highlight2(), [this](Aether::Colour c){
                 this->colourHighlight2->setColour(c);
                 this->app->theme()->setHighlight2(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourHighlight2);
@@ -188,6 +242,7 @@ namespace Screen {
             this->setupPicker("customTheme.highlightBG"_lang, this->app->theme()->highlightBG(), [this](Aether::Colour c){
                 this->colourHighlighted->setColour(c);
                 this->app->theme()->setHighlightBG(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourHighlighted);
@@ -195,6 +250,7 @@ namespace Screen {
             this->setupPicker("customTheme.selected"_lang, this->app->theme()->selected(), [this](Aether::Colour c){
                 this->colourSelected->setColour(c);
                 this->app->theme()->setSelected(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourSelected);
@@ -205,6 +261,7 @@ namespace Screen {
             this->setupPicker("customTheme.mutedLine"_lang, this->app->theme()->mutedLine(), [this](Aether::Colour c){
                 this->colourMutedLine->setColour(c);
                 this->app->theme()->setMutedLine(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourMutedLine);
@@ -212,6 +269,7 @@ namespace Screen {
             this->setupPicker("customTheme.line"_lang, this->app->theme()->fg(), [this](Aether::Colour c){
                 this->colourLine->setColour(c);
                 this->app->theme()->setFg(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourLine);
@@ -222,6 +280,7 @@ namespace Screen {
             this->setupPicker("customTheme.mutedText"_lang, this->app->theme()->mutedText(), [this](Aether::Colour c){
                 this->colourMutedText->setColour(c);
                 this->app->theme()->setMutedText(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourMutedText);
@@ -229,28 +288,31 @@ namespace Screen {
             this->setupPicker("customTheme.text"_lang, this->app->theme()->text(), [this](Aether::Colour c){
                 this->colourText->setColour(c);
                 this->app->theme()->setText(c);
+                this->recolourElements();
             });
         });
         this->list->addElement(this->colourText);
 
-        // Set colours!
         this->addElement(this->list);
-        this->recolourElements();
 
         // Show update icon if needbe
         this->updateElm = nullptr;
         if (this->app->hasUpdate()) {
             this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
-            this->updateElm->setColour(this->app->theme()->text());
             this->addElement(this->updateElm);
         }
 
+        this->createPresetList();
         this->picker = nullptr;
+
+        // Set colours!
+        this->recolourElements();
     }
 
     void CustomTheme::onUnload() {
         this->removeElement(this->list);
         this->removeElement(this->updateElm);
         delete this->picker;
+        delete this->presetList;
     }
 };

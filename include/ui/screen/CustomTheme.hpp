@@ -25,6 +25,8 @@ namespace Screen {
             Aether::Controls * controls;
             Aether::List * list;
 
+            Aether::ListButton * optionPreset;
+
             Aether::ListOption * optionImage;
             Aether::ListComment * imageHint;
             CustomElm::ListColour * colourAccent;
@@ -52,6 +54,11 @@ namespace Screen {
             CustomOvl::ColourPicker * picker;
             // Setup picker (title, colour, callback)
             void setupPicker(std::string, Aether::Colour, std::function<void(Aether::Colour)>);
+
+            // Popup of presets
+            Aether::PopupList * presetList;
+            // Fill list with presets and callbacks
+            void createPresetList();
 
             // Recolour everything
             void recolourElements();

@@ -182,6 +182,7 @@
         "line": "Line",
         "mutedLine": "Dim Line",
         "mutedText": "Dim Text",
+        "preset": "Load from Preset",
         "selected": "Selected",
         "text": "Text"
     },
