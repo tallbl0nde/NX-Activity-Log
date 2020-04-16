@@ -5,8 +5,9 @@
 #include "Utils.hpp"
 
 namespace Screen {
-    Settings::Settings(Main::Application * a) {
+    Settings::Settings(Main::Application * a, ScreenCreate sc) {
         this->app = a;
+        this->createReason = sc;
 
         // Create "static" elements
         Aether::Rectangle * r = new Aether::Rectangle(400, 88, 850, 559);
@@ -167,7 +168,7 @@ namespace Screen {
                 if (lang != l) {
                     this->app->config()->setGLang(l);
                     Utils::Lang::setLanguage(l);
-                    this->app->reinitScreens();
+                    this->app->reinitScreens(ScreenCreate::Language);
                 }
             }, lang == l);
         }
@@ -220,7 +221,7 @@ namespace Screen {
                 if (theme != t) {
                     this->app->config()->setGTheme(t);
                     this->app->theme()->setTheme(t);
-                    this->app->reinitScreens();
+                    this->app->reinitScreens(ScreenCreate::Theme);
                 }
             }, theme == t);
         }
@@ -320,20 +321,20 @@ namespace Screen {
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
-        lb = new Aether::ListButton("settings.appearance.themeEdit"_lang, [this]() {
+        this->optionThemeEdit = new Aether::ListButton("settings.appearance.themeEdit"_lang, [this]() {
             this->app->pushScreen();
             this->app->setScreen(ScreenID::CustomTheme);
         });
-        lb->setLineColour(this->app->theme()->mutedLine());
+        this->optionThemeEdit->setLineColour(this->app->theme()->mutedLine());
         // Customize button only enabled if theme is set to custom
         if (this->app->config()->gTheme() == ThemeType::Custom) {
-            lb->setTextColour(this->app->theme()->text());
+            this->optionThemeEdit->setTextColour(this->app->theme()->text());
         } else {
-            lb->setTextColour(this->app->theme()->mutedText());
-            lb->setSelectable(false);
-            lb->setTouchable(false);
+            this->optionThemeEdit->setTextColour(this->app->theme()->mutedText());
+            this->optionThemeEdit->setSelectable(false);
+            this->optionThemeEdit->setTouchable(false);
         }
-        this->list->addElement(lb);
+        this->list->addElement(this->optionThemeEdit);
 
         this->list->addElement(new Aether::ListSeparator());
 
@@ -491,6 +492,20 @@ namespace Screen {
         }
 
         this->popuplist = nullptr;
+
+        // Activate appropriate item if necessary
+        if (this->createReason == ScreenCreate::Language) {
+            this->setFocussed(this->list);
+            this->list->setFocussed(this->optionLang);
+        } else if (this->createReason == ScreenCreate::Theme) {
+            this->setFocussed(this->list);
+            this->list->setFocussed(this->optionTheme);
+        } else if (this->createReason == ScreenCreate::ThemeEdit) {
+            this->setFocussed(this->list);
+            this->list->setFocussed(this->optionThemeEdit);
+        }
+
+        this->createReason = ScreenCreate::Normal;
     }
 
     void Settings::onUnload() {

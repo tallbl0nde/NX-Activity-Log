@@ -12,6 +12,8 @@ namespace Screen {
         private:
             // Pointer to main app object for config
             Main::Application * app;
+            // Type of creation
+            ScreenCreate createReason;
 
             // Pointers to elements
             Aether::Text * heading;
@@ -25,6 +27,7 @@ namespace Screen {
             Aether::ListOption * optionScreen;
             Aether::ListOption * optionSort;
             Aether::ListOption * optionTheme;
+            Aether::ListButton * optionThemeEdit;
             Aether::ListOption * optionView;
 
             Aether::ListOption * option24H;
@@ -49,7 +52,7 @@ namespace Screen {
 
         public:
             // Passed main application object
-            Settings(Main::Application *);
+            Settings(Main::Application *, ScreenCreate);
 
             // Prepare user-specific elements
             void onLoad();

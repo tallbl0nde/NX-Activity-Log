@@ -19,6 +19,14 @@ enum Language {
 // Return string matching language
 std::string toString(Language);
 
+// Type of screen creation
+enum class ScreenCreate {
+    Normal,     // No specific reason
+    Language,   // Language was changed
+    Theme,      // Theme was changed
+    ThemeEdit   // Theme was customized
+};
+
 // Enumeration for screens (allows for easy switching)
 enum ScreenID {
     UserSelect,

@@ -39,6 +39,8 @@ namespace Main {
 
             // ID of current screen
             ScreenID screen;
+            // Reason for screen creation (set to Normal after reinit)
+            ScreenCreate createReason;
             // Set true by reinitScreens() in order to recreate screens
             // before next loop
             bool reinitScreens_;
@@ -94,7 +96,7 @@ namespace Main {
             Application();
 
             // Destroys and recreates screens (effectively a restart without restarting in terms of UI?)
-            void reinitScreens();
+            void reinitScreens(ScreenCreate);
 
             // Wrapper for display function
             void setHoldDelay(int);

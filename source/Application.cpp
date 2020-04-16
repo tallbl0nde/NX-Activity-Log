@@ -86,6 +86,7 @@ namespace Main {
 
         // Setup screens
         this->setDisplayTheme();
+        this->createReason = ScreenCreate::Normal;
         this->createScreens();
         this->reinitScreens_ = false;
 
@@ -108,7 +109,8 @@ namespace Main {
         this->hasUpdate_ = Utils::Update::available();
     }
 
-    void Application::reinitScreens() {
+    void Application::reinitScreens(ScreenCreate c) {
+        this->createReason = c;
         this->reinitScreens_ = true;
     }
 
@@ -117,13 +119,15 @@ namespace Main {
         this->scCustomTheme = new Screen::CustomTheme(this);
         this->scDetails = new Screen::Details(this);
         this->scRecentActivity = new Screen::RecentActivity(this);
-        this->scSettings = new Screen::Settings(this);
+        this->scSettings = new Screen::Settings(this, this->createReason);
         this->scUpdate = new Screen::Update(this);
 
         // These screens aren't used on the user page so no point wasting memory
         if (!this->isUserPage_) {
             this->scUserSelect = new Screen::UserSelect(this, this->users);
         }
+
+        this->createReason = ScreenCreate::Normal;
     }
 
     void Application::deleteScreens() {

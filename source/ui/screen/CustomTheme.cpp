@@ -41,7 +41,7 @@ namespace Screen {
             // Set new theme and recreate all screens
             this->app->theme()->saveCustom();
             this->app->popScreen();
-            this->app->reinitScreens();
+            this->app->reinitScreens(ScreenCreate::ThemeEdit);
         });
     }
 
