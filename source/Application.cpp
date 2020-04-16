@@ -445,7 +445,10 @@ namespace Main {
 
         // Cleanup Aether
         this->deleteScreens();
-        delete this->display;
+        if (!this->isUserPage_) {
+            // Don't delete display as it flickers black (hopefully there's a better way around this)
+            delete this->display;
+        }
 
         // Stop all services
         Utils::Curl::exit();
@@ -453,5 +456,9 @@ namespace Main {
 
         // Install update if present
         Utils::Update::install();
+
+        if (this->isUserPage_) {
+            appletRequestExitToSelf();
+        }
     }
 };

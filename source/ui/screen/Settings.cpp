@@ -24,18 +24,18 @@ namespace Screen {
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        if (!(this->app->isUserPage())) {
-            c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        }
+        c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
         c->setColour(this->app->theme()->text());
         this->addElement(c);
 
         // Add button callbacks
-        if (!(this->app->isUserPage())) {
-            this->onButtonPress(Aether::Button::B, [this](){
+        this->onButtonPress(Aether::Button::B, [this](){
+            if (this->app->isUserPage()) {
+                this->app->exit();
+            } else {
                 this->app->setScreen(ScreenID::UserSelect);
-            });
-        }
+            }
+        });
     }
 
     void Settings::installForwarder() {

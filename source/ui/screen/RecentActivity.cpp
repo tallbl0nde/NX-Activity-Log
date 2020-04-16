@@ -22,9 +22,7 @@ namespace Screen {
         this->addElement(r);
         Aether::Controls * c = new Aether::Controls();
         c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        if (!(this->app->isUserPage())) {
-            c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        }
+        c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
         c->addItem(new Aether::ControlItem(Aether::Button::X, "common.buttonHint.date"_lang));
         c->addItem(new Aether::ControlItem(Aether::Button::Y, "common.buttonHint.view"_lang));
         c->setColour(this->app->theme()->text());
@@ -34,11 +32,13 @@ namespace Screen {
         this->noStats->setColour(this->app->theme()->mutedText());
         this->addElement(this->noStats);
 
-        if (!(this->app->isUserPage())) {
-            this->onButtonPress(Aether::Button::B, [this](){
+        this->onButtonPress(Aether::Button::B, [this](){
+            if (this->app->isUserPage()) {
+                this->app->exit();
+            } else {
                 this->app->setScreen(ScreenID::UserSelect);
-            });
-        }
+            }
+        });
         this->onButtonPress(Aether::Button::X, [this](){
             this->app->createDatePicker();
         });
