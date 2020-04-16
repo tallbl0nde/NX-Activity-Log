@@ -45,9 +45,15 @@ namespace Screen {
             CustomElm::ListColour * colourMutedText;
 
             // Copy theme on load (highlight1/2 aren't in Theme_T)
+            bool oldImage;
             Aether::Theme_T oldTheme;
             Aether::Colour oldHighlight1;
             Aether::Colour oldHighlight2;
+
+            // Error popup
+            Aether::MessageBox * msgbox;
+            // Create popup
+            void showErrorMsg();
 
             // Colour picker
             CustomOvl::ColourPicker * picker;

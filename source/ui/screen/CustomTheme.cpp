@@ -23,6 +23,7 @@ namespace Screen {
 
         this->onButtonPress(Aether::Button::B, [this](){
             // Restore backed up theme
+            this->app->config()->setTImage(this->oldImage);
             this->app->theme()->setAccent(this->oldTheme.accent);
             this->app->theme()->setAltBG(this->oldTheme.altBG);
             this->app->theme()->setBg(this->oldTheme.bg);
@@ -43,6 +44,30 @@ namespace Screen {
             this->app->popScreen();
             this->app->reinitScreens(ScreenCreate::ThemeEdit);
         });
+    }
+
+    void CustomTheme::showErrorMsg() {
+        delete this->msgbox;
+        this->msgbox = new Aether::MessageBox();
+        this->msgbox->setLineColour(this->app->theme()->mutedLine());
+        this->msgbox->setRectangleColour(this->app->theme()->altBG());
+        this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this]() {
+            this->msgbox->close(true);
+        });
+        this->msgbox->setTextColour(this->app->theme()->accent());
+        int bw, bh;
+        this->msgbox->getBodySize(&bw, &bh);
+        Aether::Element * e = new Aether::Element(0, 0, 700, bh);
+        Aether::TextBlock * t = new Aether::TextBlock(40, 30, "customTheme.imageError.heading"_lang, 24, e->w() - 80);
+        t->setColour(this->app->theme()->text());
+        e->addElement(t);
+        t = new Aether::TextBlock(40, t->y() + t->h() + 20, "customTheme.imageError.body"_lang, 20, e->w() - 80);
+        t->setColour(this->app->theme()->mutedText());
+        e->addElement(t);
+        e->setH(t->y() + t->h() + 30);
+        this->msgbox->setBodySize(e->w(), e->h());
+        this->msgbox->setBody(e);
+        this->app->addOverlay(this->msgbox);
     }
 
     void CustomTheme::setupPicker(std::string title, Aether::Colour col, std::function<void(Aether::Colour)> func) {
@@ -151,6 +176,7 @@ namespace Screen {
 
     void CustomTheme::onLoad() {
         // Backup current theme (restored if not applied)
+        this->oldImage = this->app->config()->tImage();
         this->oldTheme.accent = this->app->theme()->accent();
         this->oldTheme.altBG = this->app->theme()->altBG();
         this->oldTheme.bg = this->app->theme()->bg();
@@ -167,6 +193,30 @@ namespace Screen {
         this->list = new Aether::List(200, 88, 880, 559);
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
+        // Image button
+        this->optionImage = new Aether::ListOption("customTheme.image"_lang, (this->app->config()->tImage() ? "common.yes"_lang : "common.no"_lang), [this](){
+            bool b = !(this->app->config()->tImage());
+            this->app->config()->setTImage(b);
+            this->app->setDisplayTheme();
+
+            // tImage is set false if an error occurred
+            if (this->app->config()->tImage()) {
+                this->optionImage->setValue("common.yes"_lang);
+                this->optionImage->setValueColour(this->app->theme()->accent());
+            } else {
+                this->optionImage->setValue("common.no"_lang);
+                this->optionImage->setValueColour(this->app->theme()->mutedText());
+            }
+
+            // Show message if error occurred
+            if (b && !this->app->config()->tImage()) {
+                this->showErrorMsg();
+            }
+        });
+        this->list->addElement(this->optionImage);
+        this->imageHint = new Aether::ListComment("customTheme.imageHint"_lang);
+        this->list->addElement(this->imageHint);
+
         // Choose from preset
         this->optionPreset = new Aether::ListButton("customTheme.preset"_lang, [this]() {
             this->presetList->close(false);
@@ -174,22 +224,6 @@ namespace Screen {
         });
         this->list->addElement(this->optionPreset);
 
-        // Image button
-        this->optionImage = new Aether::ListOption("customTheme.image"_lang, (this->app->config()->tImage() ? "common.yes"_lang : "common.no"_lang), [this](){
-            bool b = !(this->app->config()->tImage());
-            this->app->config()->setTImage(b);
-            if (b) {
-                this->optionImage->setValue("common.yes"_lang);
-                this->optionImage->setValueColour(this->app->theme()->accent());
-            } else {
-                this->optionImage->setValue("common.no"_lang);
-                this->optionImage->setValueColour(this->app->theme()->mutedText());
-            }
-            this->app->setDisplayTheme();
-        });
-        this->list->addElement(this->optionImage);
-        this->imageHint = new Aether::ListComment("customTheme.imageHint"_lang);
-        this->list->addElement(this->imageHint);
         this->list->addElement(new Aether::ListSeparator());
 
         // Accent
@@ -308,11 +342,14 @@ namespace Screen {
 
         // Set colours!
         this->recolourElements();
+
+        this->msgbox = nullptr;
     }
 
     void CustomTheme::onUnload() {
         this->removeElement(this->list);
         this->removeElement(this->updateElm);
+        delete this->msgbox;
         delete this->picker;
         delete this->presetList;
     }

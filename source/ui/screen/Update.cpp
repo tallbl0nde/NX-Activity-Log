@@ -9,9 +9,12 @@ namespace Screen {
         this->app = a;
 
         // Create elements
-        Aether::Rectangle * r = new Aether::Rectangle(30, 87, 1220, 1);
-        r->setColour(this->app->theme()->fg());
-        this->addElement(r);
+        Aether::Rectangle * r;
+        if (!this->app->config()->tImage()) {
+            r = new Aether::Rectangle(400, 88, 850, 559);
+            r->setColour(this->app->theme()->altBG());
+            this->addElement(r);
+        }
         r = new Aether::Rectangle(30, 647, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
@@ -160,10 +163,10 @@ namespace Screen {
         int bw, bh;
         this->msgbox->getBodySize(&bw, &bh);
         Aether::Element * e = new Aether::Element(0, 0, 700, bh);
-        Aether::TextBlock * t = new Aether::TextBlock(50, 40, "update.download.error"_lang, 24, e->w() - 80);
+        Aether::TextBlock * t = new Aether::TextBlock(50, 40, "update.download.error"_lang, 24, e->w() - 100);
         t->setColour(this->app->theme()->text());
         e->addElement(t);
-        t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.error.tip"_lang, 20, e->w() - 80);
+        t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.error.tip"_lang, 20, e->w() - 100);
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);
         e->setH(t->y() + t->h() + 40);
@@ -176,13 +179,13 @@ namespace Screen {
         int bw, bh;
         this->msgbox->getBodySize(&bw, &bh);
         Aether::Element * e = new Aether::Element(0, 0, 700, bh);
-        Aether::TextBlock * t = new Aether::TextBlock(50, 40, "update.download.success"_lang, 24, e->w() - 80);
+        Aether::TextBlock * t = new Aether::TextBlock(50, 40, "update.download.success"_lang, 24, e->w() - 100);
         t->setColour(this->app->theme()->text());
         e->addElement(t);
         if (this->app->isUserPage()) {
-            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHintPage"_lang, 20, e->w() - 80);
+            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHintPage"_lang, 20, e->w() - 100);
         } else {
-            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHint"_lang, 20, e->w() - 80);
+            t = new Aether::TextBlock(50, t->y() + t->h() + 20, "update.download.successHint"_lang, 20, e->w() - 100);
         }
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);

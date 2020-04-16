@@ -8,9 +8,12 @@ namespace Screen {
         this->app = a;
 
         // Create "static" elements
-        Aether::Rectangle * r = new Aether::Rectangle(400, 88, 850, 559);
-        r->setColour(this->app->theme()->altBG());
-        this->addElement(r);
+        Aether::Rectangle * r;
+        if (!this->app->config()->tImage()) {
+            r = new Aether::Rectangle(400, 88, 850, 559);
+            r->setColour(this->app->theme()->altBG());
+            this->addElement(r);
+        }
         r = new Aether::Rectangle(30, 87, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
