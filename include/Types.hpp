@@ -13,8 +13,11 @@ enum Language {
     German,
     Italian,
     Portugese,
-    Russian
+    Russian,
+    TotalLanguages  // Total number of languages (only used for iterating)
 };
+// Return string matching language
+std::string toString(Language);
 
 // Enumeration for screens (allows for easy switching)
 enum ScreenID {
@@ -30,20 +33,26 @@ enum ScreenID {
 // Enumerations for sorting methods
 enum SortType {
     AlphaAsc,       // Alphabetically (A-Z)
+    FirstPlayed,    // First played (earliest first)
+    LastPlayed,     // Last played (most recent first)
     HoursAsc,       // Playtime (ascending)
     HoursDec,       // Playtime (descending)
     LaunchAsc,      // Launches (ascending)
     LaunchDec,      // Launches (descending)
-    FirstPlayed,    // First played (earliest first)
-    LastPlayed,     // Last played (most recent first)
+    TotalSorts      // Total number of sort methods (only used for iterating)
 };
+// Return string matching sort type
+std::string toString(SortType);
 
 enum ThemeType {
-    Auto, // Note this isn't actually set in the object
-    Light,
-    Dark,
-    Custom
+    Auto,           // Note this isn't actually set in the object
+    Light,          // Basic White
+    Dark,           // Basic Black
+    Custom,         // Custom set by user
+    TotalThemes     // Total number of themes (only used for iterating)
 };
+// Return string matching theme type
+std::string toString(ThemeType);
 
 // Variables (colours) forming a theme
 typedef struct {
@@ -68,11 +77,14 @@ typedef struct {
 } UpdateData;
 
 // Period to view recent stats for
-enum class ViewPeriod {
+enum ViewPeriod {
     Day,
     Month,
-    Year
+    Year,
+    TotalViews      // Total number of view types (only used for iterating)
 };
+// Return string matching theme type
+std::string toString(ViewPeriod);
 
 // Just so function decs. are easier to read
 typedef u64 TitleID;

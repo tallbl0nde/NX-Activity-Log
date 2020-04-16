@@ -46,6 +46,7 @@
             "month": "Month",
             "year": "Year"
         },
+        "default": "System Default",
         "disabled": "Disabled",
         "enabled": "Enabled",
         "heading": "$[name]'s Activity",
@@ -219,17 +220,12 @@
     },
     "settings": {
         "about": "Thanks for using my app! I hope it's been useful! :)",
-        "launch": {
-            "default": "Default",
-            "heading": "Launch Options",
+        "appearance": {
+            "24H": "Use 24 Hour Time",
+            "graph": "Show Graph Values",
+            "graphHint": "Toggles whether values are visible above each bar on graphs.",
+            "heading": "Appearance",
             "language": "Language",
-            "languageHint": "The language to use for app. Default will match your system language if a translation is available.",
-            "screen": "Default Screen",
-            "screenHint": "The screen to show on launch/after selecting a user.",
-            "sort": "Default Sort Method",
-            "sortHint": "The sort method for 'All Activity' to use on launch.",
-            "view": "Default View Type",
-            "viewHint": "The period of activity to view on launch.",
             "theme": {
                 "auto": "Auto",
                 "custom": "Custom",
@@ -240,14 +236,19 @@
             "themeEdit": "Customize Theme",
             "themeHint": "The theme to use for the application. Auto chooses black/white based on your Switch settings. Select Custom to set a background image and adjust colours."
         },
+        "launch": {
+            "heading": "Launch Options",
+            "screen": "Default Screen",
+            "screenHint": "The screen to show on launch/after selecting a user.",
+            "sort": "Default Sort Method",
+            "sortHint": "The sort method for 'All Activity' to use on launch.",
+            "view": "Default View Type",
+            "viewHint": "The period of activity to view on launch."
+        },
         "other": {
-            "24H": "Use 24 Hour Time",
-            "24HHint": "Use 24 hour time instead of 12 hour where applicable.",
             "heading": "Other Options",
             "hideDeleted": "Hide Deleted Games",
             "hideDeletedHint": "Excludes deleted games from 'All Activity'.",
-            "graph": "Graph Bar Labels",
-            "graphHint": "Toggles the small numbers visible above each bar on graphs.",
             "replace": "Replace User Page",
             "replaceBox": {
                 "error": "An error occurred:",

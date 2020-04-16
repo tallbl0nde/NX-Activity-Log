@@ -65,28 +65,13 @@ namespace Screen {
         this->sortOverlay->removeEntries();
 
         // Add entries and highlight current sort
-        SortType t = this->list->sort();
-        this->sortOverlay->addEntry("common.sort.name"_lang, [this](){
-            this->list->setSort(SortType::AlphaAsc);
-        }, t == SortType::AlphaAsc);
-        this->sortOverlay->addEntry("common.sort.firstPlayed"_lang, [this](){
-            this->list->setSort(SortType::FirstPlayed);
-        }, t == SortType::FirstPlayed);
-        this->sortOverlay->addEntry("common.sort.recentlyPlayed"_lang, [this](){
-            this->list->setSort(SortType::LastPlayed);
-        }, t == SortType::LastPlayed);
-        this->sortOverlay->addEntry("common.sort.mostPlaytime"_lang, [this](){
-            this->list->setSort(SortType::HoursAsc);
-        }, t == SortType::HoursAsc);
-        this->sortOverlay->addEntry("common.sort.leastPlaytime"_lang, [this](){
-            this->list->setSort(SortType::HoursDec);
-        }, t == SortType::HoursDec);
-        this->sortOverlay->addEntry("common.sort.mostLaunched"_lang, [this](){
-            this->list->setSort(SortType::LaunchAsc);
-        }, t == SortType::LaunchAsc);
-        this->sortOverlay->addEntry("common.sort.leastLaunched"_lang, [this](){
-            this->list->setSort(SortType::LaunchDec);
-        }, t == SortType::LaunchDec);
+        SortType sort = this->list->sort();
+        for (int i = 0; i < SortType::TotalSorts; i++) {
+            SortType s = (SortType)i;
+            this->sortOverlay->addEntry(toString(s), [this, s](){
+                this->list->setSort(s);
+            }, sort == s);
+        }
 
         // List is focussed when overlay is closed
         this->setFocussed(this->list);

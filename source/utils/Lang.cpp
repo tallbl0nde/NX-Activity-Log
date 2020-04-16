@@ -53,6 +53,9 @@ namespace Utils::Lang {
             case Russian:
                 path = "romfs:/lang/ru.json";
                 break;
+
+            default:
+                break;
         }
 
         return setFile(path);
@@ -67,9 +70,9 @@ namespace Utils::Lang {
             t = t[k];
         }
 
-        // If the string is not present return ?
+        // If the string is not present return key
         if (t == nullptr || !t.is_string()) {
-            return "?";
+            return key;
         }
 
         return t.get<std::string>();

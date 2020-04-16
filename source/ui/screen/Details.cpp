@@ -114,6 +114,9 @@ namespace Screen {
                 e.tm_mon = 11;
                 e.tm_mday = Utils::Time::tmGetDaysInMonth(t);
                 break;
+
+            default:
+                break;
         }
         this->graphHeading->setString(Utils::Time::dateToActivityForString(t, this->app->viewPeriod()));
         this->graphHeading->setX(this->header->x() + (this->header->w() - this->graphHeading->w())/2);
@@ -200,6 +203,9 @@ namespace Screen {
                 for (int i = 0; i < 12; i++) {
                     this->graph->setLabel(i, Utils::Time::getShortMonthString(i));
                 }
+                break;
+
+            default:
                 break;
         }
 
@@ -292,6 +298,9 @@ namespace Screen {
                 }
                 break;
             }
+
+            default:
+                break;
         }
 
         // Set headings etc...
@@ -303,6 +312,9 @@ namespace Screen {
             case ViewPeriod::Month:
             case ViewPeriod::Year:
                 this->graphSubheading->setString("common.playtimeHours"_lang);
+                break;
+
+            default:
                 break;
         }
 
@@ -338,6 +350,9 @@ namespace Screen {
 
             case ViewPeriod::Year:
                 c = 'Y';
+                break;
+
+            default:
                 break;
         }
         unsigned int s = Utils::Time::getTimeT(this->app->time());
@@ -417,6 +432,9 @@ namespace Screen {
                         }
                         last += tmp + Utils::Time::getAMPM(eTm.tm_hour);
                     }
+                    break;
+
+                default:
                     break;
             }
             ls->setTimeString(first + " - " + last + (outRange ? "*" : ""));

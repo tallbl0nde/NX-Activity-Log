@@ -172,6 +172,10 @@ void Theme::setTheme(ThemeType t) {
         case ThemeType::Light:
             this->setThemeLight();
             break;
+
+        // Never called but I don't like compiler warnings
+        default:
+            break;
     }
 }
 

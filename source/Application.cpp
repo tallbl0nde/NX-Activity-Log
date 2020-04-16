@@ -58,7 +58,7 @@ namespace Main {
             case ViewPeriod::Month:
                 this->tm.tm_mday = 1;
 
-            case ViewPeriod::Day:
+            default:
                 break;
         }
         this->tmCopy = this->tm;
@@ -222,6 +222,9 @@ namespace Main {
                 }
                 this->tm = Utils::Time::decreaseTm(this->tm, 'Y');
                 break;
+
+            default:
+                break;
         }
         this->timeChanged_ = true;
     }
@@ -249,6 +252,9 @@ namespace Main {
                 }
                 this->tm = Utils::Time::increaseTm(this->tm, 'Y');
                 break;
+
+            default:
+                break;
         }
         this->timeChanged_ = true;
     }
@@ -269,6 +275,9 @@ namespace Main {
             case ViewPeriod::Year:
                 this->dtpicker = new Aether::DateTime("common.datePanel.headingYear"_lang, this->tm, Aether::DTFlag::Year);
                 break;
+
+            default:
+                break;
         }
         this->dtpicker->setDayHint("common.datePanel.day"_lang);
         this->dtpicker->setMonthHint("common.datePanel.month"_lang);
@@ -282,20 +291,20 @@ namespace Main {
     void Application::createPeriodPicker() {
         this->periodpicker->close(false);
         this->periodpicker->removeEntries();
-        this->periodpicker->addEntry("common.view.day"_lang, [this](){
+        this->periodpicker->addEntry(toString(ViewPeriod::Day), [this](){
             if (this->viewType != ViewPeriod::Day) {
                 this->viewType = ViewPeriod::Day;
                 this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Day);
-        this->periodpicker->addEntry("common.view.month"_lang, [this](){
+        this->periodpicker->addEntry(toString(ViewPeriod::Month), [this](){
             if (this->viewType != ViewPeriod::Month) {
                 this->tm.tm_mday = 1;
                 this->viewType = ViewPeriod::Month;
                 this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Month);
-        this->periodpicker->addEntry("common.view.year"_lang, [this](){
+        this->periodpicker->addEntry(toString(ViewPeriod::Year), [this](){
             if (this->viewType != ViewPeriod::Year) {
                 this->tm.tm_mon = 0;
                 this->tm.tm_mday = 1;

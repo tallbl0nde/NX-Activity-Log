@@ -67,7 +67,7 @@ namespace Screen {
         this->presetList->setBackLabel("common.buttonHint.back"_lang);
         this->presetList->setOKLabel("common.buttonHint.ok"_lang);
         // Basic Black
-        this->presetList->addEntry("settings.launch.theme.dark"_lang, [this]() {
+        this->presetList->addEntry("settings.appearance.theme.dark"_lang, [this]() {
             this->app->theme()->setAccent(ThemePreset::Dark.accent);
             this->app->theme()->setAltBG(ThemePreset::Dark.altBG);
             this->app->theme()->setBg(ThemePreset::Dark.bg);
@@ -82,7 +82,7 @@ namespace Screen {
             this->recolourElements();
         });
         // Basic White
-        this->presetList->addEntry("settings.launch.theme.light"_lang, [this]() {
+        this->presetList->addEntry("settings.appearance.theme.light"_lang, [this]() {
             this->app->theme()->setAccent(ThemePreset::Light.accent);
             this->app->theme()->setAltBG(ThemePreset::Light.altBG);
             this->app->theme()->setBg(ThemePreset::Light.bg);

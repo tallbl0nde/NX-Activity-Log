@@ -172,6 +172,9 @@ namespace Utils::Time {
             case ViewPeriod::Year:
                 return std::regex_replace("common.activityFor.year"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
                 break;
+
+            default:
+                break;
         }
 
         return "";

@@ -83,6 +83,9 @@ namespace CustomElm {
                     return lhs.second->lastPlayed > rhs.second->lastPlayed;
                 });
                 break;
+
+            default:
+                break;
         }
         this->heading->setX(this->x() + (this->w() - this->heading->w())/2);
 
