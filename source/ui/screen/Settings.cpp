@@ -1,5 +1,5 @@
 #include "Application.hpp"
-#include <filesystem>
+#include "Forwarder.hpp"
 #include "Lang.hpp"
 #include "Settings.hpp"
 #include "Utils.hpp"
@@ -11,7 +11,7 @@ namespace Screen {
 
         // Create "static" elements
         Aether::Rectangle * r;
-        if (!this->app->config()->tImage()) {
+        if (!this->app->config()->tImage() || this->app->config()->gTheme() != ThemeType::Custom) {
             r = new Aether::Rectangle(400, 88, 850, 559);
             r->setColour(this->app->theme()->altBG());
             this->addElement(r);
@@ -44,50 +44,13 @@ namespace Screen {
         this->msgbox->emptyBody();
 
         // Check if forwarder exists
-        bool atms = false;
-        bool rei = false;
-        bool sx = false;
-        bool hasAtms = false;
-        bool hasRei = false;
-        bool hasSx = false;
-        if (std::filesystem::exists("/atmosphere/contents")) {
-            hasAtms = true;
-            if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp")) {
-                atms = true;
-            }
-        }
-        if (std::filesystem::exists("/ReiNX/titles")) {
-            hasRei = true;
-            if (std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp")) {
-                rei = true;
-            }
-        }
-        if (std::filesystem::exists("/sxos/titles")) {
-            hasSx = true;
-            if (std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
-                sx = true;
-            }
-        }
+        Utils::Forwarder::initVars();
+        if (Utils::Forwarder::installed()) {
+            Utils::Forwarder::uninstall();
 
-        // If the file is present, delete it
-        if (atms || rei || sx) {
-            if (atms) {
-                std::filesystem::remove("/atmosphere/contents/0100000000001013/exefs.nsp");
-                atms = false;
-            }
-            if (rei) {
-                std::filesystem::remove("/ReiNX/titles/0100000000001013/exefs.nsp");
-                rei = false;
-            }
-            if (sx) {
-                std::filesystem::remove("/sxos/titles/0100000000001013/exefs.nsp");
-                sx = false;
-            }
-
-        // Otherwise if it isn't, copy it
         } else {
-            // First check if .nro is in correct location
-            if (!(std::filesystem::exists("/switch/NX-Activity-Log/NX-Activity-Log.nro"))) {
+            // Show message if .nro isn't in right location
+            if (!Utils::Forwarder::prepared()) {
                 // Create text and add to overlay
                 int bw, bh;
                 this->msgbox->getBodySize(&bw, &bh);
@@ -104,34 +67,18 @@ namespace Screen {
                 return;
             }
 
-            if (hasAtms) {
-                std::filesystem::create_directory("/atmosphere/contents/0100000000001013");
-                Utils::copyFile("romfs:/exefs.nsp", "/atmosphere/contents/0100000000001013/exefs.nsp");
-                atms = true;
-            }
-
-            if (hasRei) {
-                std::filesystem::create_directory("/ReiNX/titles/0100000000001013");
-                Utils::copyFile("romfs:/exefs.nsp", "/ReiNX/titles/0100000000001013/exefs.nsp");
-                rei = true;
-            }
-
-            if (hasSx) {
-                std::filesystem::create_directory("/sxos/titles/0100000000001013");
-                Utils::copyFile("romfs:/exefs.nsp", "/sxos/titles/0100000000001013/exefs.nsp");
-                sx = true;
-            }
+            Utils::Forwarder::install();
         }
 
-        // Create message box based on result (success)
-        if (atms || rei || sx) {
+        // Create message box based on result
+        if (Utils::Forwarder::installed()) {
             int bw, bh;
             this->msgbox->getBodySize(&bw, &bh);
             Aether::Element * body = new Aether::Element(0, 0, bw, bh);
             Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "settings.other.replaceBox.success"_lang, 24, bw - 100);
             tb->setColour(this->app->theme()->text());
             body->addElement(tb);
-            std::string str = std::string(atms ? "common.atmosphere"_lang + "  " : "") + std::string(rei ? "common.reinx"_lang + "  " : "") + std::string(sx ? "common.sxos"_lang : "");
+            std::string str = std::string(Utils::Forwarder::atmosphere() ? "common.atmosphere"_lang + "  " : "") + std::string(Utils::Forwarder::reinx() ? "common.reinx"_lang + "  " : "") + std::string(Utils::Forwarder::sxos() ? "common.sxos"_lang : "");
             tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "settings.other.replaceBox.successMsg1"_lang + "\n" + str + "\n\n" + "settings.other.replaceBox.successMsg2"_lang + "\n" + "settings.other.replaceBox.successMsg3"_lang, 20, bw - 100);
             tb->setColour(this->app->theme()->mutedText());
             body->addElement(tb);
@@ -449,11 +396,8 @@ namespace Screen {
         this->list->addElement(lc);
 
         // REPLACE USER PAGE
-        str = "common.disabled"_lang;
-        if (std::filesystem::exists("/atmosphere/contents/0100000000001013/exefs.nsp") || std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp") || std::filesystem::exists("/sxos/titles/0100000000001013/exefs.nsp")) {
-            str = "common.enabled"_lang;
-        }
-        this->optionPage = new Aether::ListOption("settings.other.replace"_lang, str, [this](){
+        Utils::Forwarder::initVars();
+        this->optionPage = new Aether::ListOption("settings.other.replace"_lang, (Utils::Forwarder::installed() ? "common.enabled"_lang : "common.disabled"_lang), [this](){
             this->installForwarder();
         });
         this->optionPage->setHintColour(this->app->theme()->text());

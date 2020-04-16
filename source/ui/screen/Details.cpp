@@ -14,7 +14,7 @@ namespace Screen {
 
         // Create static elements
         Aether::Rectangle * r;
-        if (!this->app->config()->tImage()) {
+        if (!this->app->config()->tImage() || this->app->config()->gTheme() != ThemeType::Custom) {
             r = new Aether::Rectangle(890, 88, 360, 559);
             r->setColour(this->app->theme()->altBG());
             this->addElement(r);
