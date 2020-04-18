@@ -10,11 +10,9 @@ namespace Screen {
 
         // Create elements
         Aether::Rectangle * r;
-        if (!this->app->config()->tImage() || this->app->config()->gTheme() != ThemeType::Custom) {
-            r = new Aether::Rectangle(400, 88, 850, 559);
-            r->setColour(this->app->theme()->altBG());
-            this->addElement(r);
-        }
+        r = new Aether::Rectangle(30, 87, 1220, 1);
+        r->setColour(this->app->theme()->fg());
+        this->addElement(r);
         r = new Aether::Rectangle(30, 647, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);

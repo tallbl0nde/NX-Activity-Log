@@ -322,12 +322,7 @@ namespace Screen {
         }
 
         this->graphSubheading->setX(this->header->x() + (this->header->w() - this->graphSubheading->w())/2);
-        if (totalSecs == 0) {
-            this->graphTotalSub->setString("common.playtime.0sec"_lang);
-        } else {
-            this->graphTotalSub->setString(Utils::playtimeToString(totalSecs));
-        }
-
+        this->graphTotalSub->setString(Utils::playtimeToString(totalSecs));
         int w = this->graphTotalHead->w() + this->graphTotalSub->w();
         this->graphTotalHead->setX(this->graphTotal->x());
         this->graphTotalSub->setX(this->graphTotalHead->x() + this->graphTotalHead->w());

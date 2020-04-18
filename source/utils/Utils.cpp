@@ -115,18 +115,36 @@ namespace Utils {
     }
 
     std::string playtimeToString(unsigned int s) {
-        if (s < 60) {
-            return "common.playtime.0min"_lang;
+        if (s == 0) {
+            return "common.playtime.0sec"_lang;
+        } else if (s == 1) {
+            return "common.playtime.1sec"_lang;
+        } else if (s < 60) {
+            return std::regex_replace("common.playtime.secs"_lang, std::regex("\\$\\[s]"), std::to_string(s));
         }
 
         unsigned int h = s/3600;
         unsigned int m = (s/60)%60;
+        s = s%60;
 
         if (h == 0) {
             if (m == 1) {
-                return "common.playtime.1min"_lang;
+                if (s == 0) {
+                    return std::regex_replace("common.playtime.1min"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else if (s == 1) {
+                    return std::regex_replace("common.playtime.1min1sec"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else {
+                    return std::regex_replace("common.playtime.1minSecs"_lang, std::regex("\\$\\[s]"), std::to_string(s));
+                }
             } else {
-                return std::regex_replace("common.playtime.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                if (s == 0) {
+                    return std::regex_replace("common.playtime.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else if (s == 1) {
+                    return std::regex_replace("common.playtime.mins1sec"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else {
+                    std::string str = std::regex_replace("common.playtime.minsSecs"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                    return std::regex_replace(str, std::regex("\\$\\[s]"), std::to_string(s));
+                }
             }
         } else if (h == 1) {
             if (m == 0) {
@@ -155,12 +173,26 @@ namespace Utils {
 
         unsigned int h = s/3600;
         unsigned int m = (s/60)%60;
+        s = s%60;
 
         if (h == 0) {
             if (m == 1) {
-                return "common.playedFor.1min"_lang;
+                if (s == 0) {
+                    return std::regex_replace("common.playedFor.1min"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else if (s == 1) {
+                    return std::regex_replace("common.playedFor.1min1sec"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else {
+                    return std::regex_replace("common.playedFor.1minSecs"_lang, std::regex("\\$\\[s]"), std::to_string(s));
+                }
             } else {
-                return std::regex_replace("common.playedFor.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                if (s == 0) {
+                    return std::regex_replace("common.playedFor.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else if (s == 1) {
+                    return std::regex_replace("common.playedFor.mins1sec"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else {
+                    std::string str = std::regex_replace("common.playedFor.minsSecs"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                    return std::regex_replace(str, std::regex("\\$\\[s]"), std::to_string(s));
+                }
             }
         } else if (h == 1) {
             if (m == 0) {
@@ -183,18 +215,34 @@ namespace Utils {
     }
 
     std::string playtimeToTotalPlaytimeString(unsigned int s) {
-        if (s < 60) {
+        if (s == 0) {
+            return "common.totalPlaytime.0sec"_lang;
+        } else if (s < 60) {
             return "common.totalPlaytime.0min"_lang;
         }
 
         unsigned int h = s/3600;
         unsigned int m = (s/60)%60;
+        s = s%60;
 
         if (h == 0) {
             if (m == 1) {
-                return "common.totalPlaytime.1min"_lang;
+                if (s == 0) {
+                    return std::regex_replace("common.totalPlaytime.1min"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else if (s == 1) {
+                    return std::regex_replace("common.totalPlaytime.1min1sec"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else {
+                    return std::regex_replace("common.totalPlaytime.1minSecs"_lang, std::regex("\\$\\[s]"), std::to_string(s));
+                }
             } else {
-                return std::regex_replace("common.totalPlaytime.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                if (s == 0) {
+                    return std::regex_replace("common.totalPlaytime.mins"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else if (s == 1) {
+                    return std::regex_replace("common.totalPlaytime.mins1sec"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                } else {
+                    std::string str = std::regex_replace("common.totalPlaytime.minsSecs"_lang, std::regex("\\$\\[m]"), std::to_string(m));
+                    return std::regex_replace(str, std::regex("\\$\\[s]"), std::to_string(s));
+                }
             }
         } else if (h == 1) {
             if (m == 0) {
