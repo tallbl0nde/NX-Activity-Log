@@ -130,11 +130,10 @@ namespace CustomOvl {
         this->func(this->colourRect->getColour());
     }
 
-    bool ColourPicker::handleEvent(Aether::InputEvent * e) {
-        bool b = Overlay::handleEvent(e);
+    void ColourPicker::update(uint32_t dt) {
+        Aether::Overlay::update(dt);
 
-        // Adjust colour whenever input is received
-        // Done in event call to avoid being done every frame
+        // Adjust colour text and rectangle
         Aether::Colour c;
         c.r = this->red->value();
         c.g = this->green->value();
@@ -143,8 +142,6 @@ namespace CustomOvl {
         this->colourRect->setColour(c);
         this->colourHex->setString(RGBtoHex(c));
         this->colourHex->setX(this->colourRect->x() - 24 - this->colourHex->w());
-
-        return b;
     }
 
     void ColourPicker::setBackLabel(std::string s) {

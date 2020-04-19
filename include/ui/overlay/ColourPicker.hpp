@@ -37,8 +37,8 @@ namespace CustomOvl {
             // Pass title, colour and callback which is given colour (not called if closed by cancelling!)
             ColourPicker(std::string, Aether::Colour, std::function<void(Aether::Colour)>);
 
-            // Preview colour is update on each input
-            bool handleEvent(Aether::InputEvent *);
+            // Update colour every frame
+            void update(uint32_t);
 
             // Set button labels
             void setBackLabel(std::string);
