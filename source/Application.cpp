@@ -305,11 +305,24 @@ namespace Main {
         this->periodpicker->removeEntries();
         this->periodpicker->addEntry(toString(ViewPeriod::Day), [this](){
             if (this->viewType != ViewPeriod::Day) {
+                // Set to current day if within range
+                struct tm now = Utils::Time::getTmForCurrentTime();
+                if ((this->viewType == ViewPeriod::Year && this->tm.tm_year == now.tm_year) || (this->viewType == ViewPeriod::Month && this->tm.tm_mon == now.tm_mon && this->tm.tm_year == now.tm_year)) {
+                    this->tm.tm_mon = now.tm_mon;
+                    this->tm.tm_mday = now.tm_mday;
+                }
+
                 this->viewType = ViewPeriod::Day;
             }
         }, this->viewType == ViewPeriod::Day);
         this->periodpicker->addEntry(toString(ViewPeriod::Month), [this](){
             if (this->viewType != ViewPeriod::Month) {
+                // Set to current month if within range
+                struct tm now = Utils::Time::getTmForCurrentTime();
+                if (this->viewType == ViewPeriod::Year && this->tm.tm_year == now.tm_year) {
+                    this->tm.tm_mon = now.tm_mon;
+                }
+
                 this->tm.tm_mday = 1;
                 this->viewType = ViewPeriod::Month;
             }
