@@ -41,6 +41,11 @@ namespace Screen {
             Aether::Text * noStats;
             Aether::Image * updateElm;
 
+            // Copy of tm on push
+            struct tm tmCopy;
+            // Copy of viewPeriod on push
+            ViewPeriod viewCopy;
+
         public:
             // Passed main application object
             RecentActivity(Main::Application *);
@@ -52,6 +57,9 @@ namespace Screen {
             void onLoad();
             // Delete elements created in onLoad()
             void onUnload();
+
+            void onPush();
+            void onPop();
     };
 };
 

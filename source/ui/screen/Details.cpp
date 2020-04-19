@@ -65,9 +65,6 @@ namespace Screen {
         // Add key callbacks
         this->onButtonPress(Aether::Button::B, [this](){
             this->app->popScreen();
-            // Hacky way to update previous screen
-            this->app->increaseDate();
-            this->app->decreaseDate();
             this->popped = true;
         });
         this->onButtonPress(Aether::Button::X, [this](){

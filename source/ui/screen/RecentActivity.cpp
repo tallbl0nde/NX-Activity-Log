@@ -474,4 +474,15 @@ namespace Screen {
         this->removeElement(this->menu);
         this->removeElement(this->updateElm);
     }
+
+    void RecentActivity::onPush() {
+        this->tmCopy = this->app->time();
+    }
+
+    void RecentActivity::onPop() {
+        // If time was changed in details update this screen too!
+        if (Utils::Time::areDifferentDates(this->tmCopy, this->app->time()) || this->viewCopy != this->app->viewPeriod()) {
+            this->updateActivity();
+        }
+    }
 };

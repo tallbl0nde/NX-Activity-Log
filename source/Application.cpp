@@ -62,7 +62,7 @@ namespace Main {
                 break;
         }
         this->tmCopy = this->tm;
-        this->timeChanged_ = false;
+        this->viewTypeCopy = this->viewType;
 
         // Populate users vector
         if (!this->isUserPage_) {
@@ -193,6 +193,11 @@ namespace Main {
     void Application::pushScreen() {
         this->display->pushScreen();
         this->screenStack.push(this->screen);
+
+        // I'll add the onPush()/onPop() methods to all screen when I refactor them
+        if (this->screen == RecentActivity) {
+            this->scRecentActivity->onPush();
+        }
     }
 
     void Application::popScreen() {
@@ -200,6 +205,11 @@ namespace Main {
         if (!this->screenStack.empty()) {
             this->screen = this->screenStack.top();
             this->screenStack.pop();
+
+            // I'll add the onPush()/onPop() methods to all screen when I refactor them
+            if (this->screen == RecentActivity) {
+                this->scRecentActivity->onPop();
+            }
         }
     }
 
@@ -230,7 +240,6 @@ namespace Main {
             default:
                 break;
         }
-        this->timeChanged_ = true;
     }
 
     void Application::increaseDate() {
@@ -260,7 +269,6 @@ namespace Main {
             default:
                 break;
         }
-        this->timeChanged_ = true;
     }
 
     void Application::createDatePicker() {
@@ -298,14 +306,12 @@ namespace Main {
         this->periodpicker->addEntry(toString(ViewPeriod::Day), [this](){
             if (this->viewType != ViewPeriod::Day) {
                 this->viewType = ViewPeriod::Day;
-                this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Day);
         this->periodpicker->addEntry(toString(ViewPeriod::Month), [this](){
             if (this->viewType != ViewPeriod::Month) {
                 this->tm.tm_mday = 1;
                 this->viewType = ViewPeriod::Month;
-                this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Month);
         this->periodpicker->addEntry(toString(ViewPeriod::Year), [this](){
@@ -313,7 +319,6 @@ namespace Main {
                 this->tm.tm_mon = 0;
                 this->tm.tm_mday = 1;
                 this->viewType = ViewPeriod::Year;
-                this->timeChanged_ = true;
             }
         }, this->viewType == ViewPeriod::Year);
         this->addOverlay(this->periodpicker);
@@ -363,11 +368,14 @@ namespace Main {
     }
 
     bool Application::timeChanged() {
-        if (this->timeChanged_) {
-            this->timeChanged_ = false;
-            return true;
+        bool b = Utils::Time::areDifferentDates(this->tm, this->tmCopy);
+        if (!b) {
+            b = (this->viewType != this->viewTypeCopy);
         }
-        return false;
+        this->tmCopy = this->tm;
+        this->viewTypeCopy = this->viewType;
+
+        return b;
     }
 
     NX::User * Application::activeUser() {
@@ -397,12 +405,6 @@ namespace Main {
     void Application::run() {
         // Do main loop
         while (this->display->loop()) {
-            // Check for variable changes
-            if (Utils::Time::areDifferentDates(this->tm, this->tmCopy)) {
-                this->timeChanged_ = true;
-                this->tmCopy = this->tm;
-            }
-
             // Check if screens should be recreated
             if (this->reinitScreens_) {
                 this->reinitScreens_ = false;

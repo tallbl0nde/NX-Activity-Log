@@ -71,6 +71,8 @@ namespace Main {
             struct tm tmCopy;
             // Period of time to view
             ViewPeriod viewType;
+            // Copy of view period to determine if changed
+            ViewPeriod viewTypeCopy;
             // Set true when either have been changed
             bool timeChanged_;
 
