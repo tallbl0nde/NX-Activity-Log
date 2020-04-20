@@ -46,6 +46,7 @@
             "month": "Mês",
             "year": "Ano"
         },
+        "default": "Padrão de sistema",
         "disabled": "Desativado",
         "enabled": "Ativado",
         "heading": "Página de $[name]",
@@ -97,6 +98,10 @@
             "0min": "Jogado por menos de um minuto",
             "1min": "Jogado por 1 minuto",
             "mins": "Jogado por $[m] minutos",
+            "mins1sec": "Jogado por $[m] minutos e 1 segundo",
+            "1min1sec": "Jogado por 1 minuto e 1 segundo",
+            "1minSecs": "Jogado por 1 minuto e $[s] segundos",
+            "minsSecs": "Jogado por $[m] minutos e $[s] segundos",
             "1hr": "Jogado por 1 hora",
             "hrs": "Jogado por $[h] horas",
             "hrs1min": "Jogado por $[h] horas e 1 minuto",
@@ -106,9 +111,14 @@
         },
         "playtime": {
             "0sec": "0 segundo",
-            "0min": "0 minuto",
+            "1sec": "1 segundo",
+            "secs": "$[s] segundos",
             "1min": "1 minuto",
             "mins": "$[m] minutos",
+            "mins1sec": "$[m] minutos e 1 segundo",
+            "1min1sec": "1 minuto e 1 segundo",
+            "1minSecs": "1 minuto e $[s] segundos",
+            "minsSecs": "$[m] minutos e $[s] segundos",
             "1hr": "1 hora",
             "hrs": "$[h] horas",
             "hrs1min": "$[h] hora e 1 minuto",
@@ -143,9 +153,14 @@
         },
         "totalPlaytime": {
             "heading": "Total jogado:",
+            "0sec": "Total jogado: 0 segundos", 
             "0min": "Total jogado: 0 minuto",
             "1min": "Total jogado: 1 minuto",
             "mins": "Total jogado: $[m] minutos",
+            "mins1sec": "Total jogado: $[m] minutos e 1 segundo",
+            "1min1sec": "Total jogado: 1 minuto e 1 segundo",
+            "1minSecs": "Total jogado: 1 minuto e $[s] segundos",
+            "minsSecs": "Total jogado: $[m] minutos e $[s] segundos",
             "1hr": "Total jogado: 1 hora",
             "hrs": "Total jogado: $[h] horas",
             "hrs1min": "Total jogado: $[h] hora e 1 minuto",
@@ -160,6 +175,35 @@
             "year": "Por ano"
         },
         "yes": "Sim"
+    },
+    "customTheme": {
+        "accent": "Cor de realce",
+        "altBackground": "Plano de fundo alternativo",
+        "apply": "Aplicar",
+        "background": "Plano de fundo",
+        "picker": {
+            "alpha": "Alfa",
+            "blue": "Azul",
+            "green": "Vere",
+            "red": "Vermelho",
+            "tip": "Dica: Segure ZL/ZR para alterar os valores de forma rápida!"
+        },
+        "heading": "Customizar tema",
+        "highlight1": "Animação de realce 1",
+        "highlight2": "Animação de realce 2",
+        "highlightBG": "Realçar plano de fundo",
+        "image": "Usar imagem como plano de fundo",
+        "imageError": {
+            "body": "A imagem não pode ser encontrada ou pode estar corrompida. Por favor, cheque o nome da imagem, ela deve estar contida em /config/NX-Activity-Log/background.png",
+            "heading": "Ocorreu um erro..."
+        },
+        "imageHint": "Define a imagem localizada em /config/NX-Activity-Log/background.png como plano de funda da aplicação. Caso a imagem não tenha resolução de 1280x720 ela será redimensionada.",
+        "line": "Linha",
+        "mutedLine": "Linha escura",
+        "mutedText": "Texto escuro",
+        "preset": "Carregar tema predefinido",
+        "selected": "Selecionado",
+        "text": "Texto"
     },
     "details": {
         "allTime": "Atividade total",
@@ -194,33 +238,35 @@
     },
     "settings": {
         "about": "Obrigado por usar meu aplicativo! Espero que esteja lhe ajudando! :)",
-        "launch": {
-            "default": "Configuração padrão",
-            "heading": "Opções de inicialização",
+        "appearance": {
+            "24H": "Utilizar horário militar",
+            "graph": "Etiquetas dos gráficos de barra",
+            "graphHint": "Habilita ou desabilita as etiquetas (pequenos números em cima de cada barra) nos gráficos de barra.",
+            "heading": "Aparência",
             "language": "Idioma",
-            "languageHint": "O idioma a ser utilizado por este aplicativo. A configuração padrão utilizará o mesmo idioma do sistema do seu Nintendo Switch.",
+            "theme": {
+                "auto": "Automático",
+                "custom": "Customizado",
+                "dark": "Escuro Básico",
+                "heading": "Tema",
+                "light": "Cláro Básico"
+            },
+            "themeEdit": "Customizar tema",
+            "themeHint": "O tema a ser usado pelo aplcativo. Automático segue o tema atualmente utilizado pelo seu Nintendo Switch."
+        },
+        "launch": {
+            "heading": "Opções de inicialização",
             "screen": "Tela padrão",
             "screenHint": "É a tela que será exibida ao abrir o aplicativo.",
             "sort": "Método de classificação padrão",
             "sortHint": "O método padrão de classificação utilizado em 'Atividades totais'.",
             "view": "Tipo de visualização padrão",
-            "viewHint": "O período de tempo padrão das atividades.",
-            "theme": {
-                "auto": "Automático",
-                "dark": "Escuro Básico",
-                "heading": "Tema",
-                "light": "Cláro Básico"
-            },
-            "themeHint": "O tema a ser usado pelo aplcativo. Automático segue o tema atualmente utilizado pelo seu Nintendo Switch."
+            "viewHint": "O período de tempo padrão das atividades."
         },
         "other": {
-            "24H": "Utilizar horário militar",
-            "24HHint": "Usar o horário militar (conhecido como 24h) ao invés do horário civil (conhecido como AM/PM ou 12h).",
             "heading": "Outras Opções",
             "hideDeleted": "Ocultar jogos apagados",
             "hideDeletedHint": "Oculta jogos apagados das 'Atividades totais'",
-            "graph": "Etiquetas dos gráficos de barra",
-            "graphHint": "Habilita ou desabilita as etiquetas (pequenos números em cima de cada barra) nos gráficos de barra.",
             "replace": "Substituir o Menu de Usuário",
             "replaceBox": {
                 "error": "Ocorreu um erro:",
@@ -235,10 +281,19 @@
             "replaceHint": "Substitui o Menu de Usuário padrão do seu Nintendo Switch por este aplicativo. Requer LayeredFS e Atmosphere 0.10.0+, ReiNX ou SXOS."
         },
         "support": "Você pode doar pelo Ko-fi:",
-        "translations": "Obrigado às seguintes pessoas por tornar as traduções desse aplicativos realidade:"
-    },
-    "update": {
+        "translations": "Obrigado às seguintes pessoas por tornar as traduções desse aplicativos realidade:",
+        "update": "Check for Updates",
+        "updateHint": "Note: You may experience problems if you're using 90DNS. If this is the case simply try again."
+        },
+        "update": {
         "cancel": "Cancelar",
+        "download": {
+            "dl": "Baixando...",
+            "error": "Não foi possível baixar o arquivo",
+            "success": "Atualização foi baixada!",
+            "successHint": "O aplicativo irá atualizar e sair.",
+            "successHintPage": "O aplicativo irá atualizar e reiniciar."
+        },
         "error": {
             "heading": "Não foi possível buscar por atualizações!",
             "tip": "Verifique sua conexão com a internet e tente novamente mais tarde."
