@@ -6,6 +6,30 @@
 // Maximum number of entries to process in one iteration
 #define MAX_PROCESS_ENTRIES 1000
 
+// Here until libnx gets updated to support 10.0.0 (it's just copied from the commit that fixes the issue)
+// Note this is exactly the same as what libnx will do - I just don't want to build against it when it's not a release, this is easier :P
+Result pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountIdWorkaround(u64 application_id, AccountUid uid, bool flag, PdmPlayStatistics *stats) {
+    Service * pdmqrySrv = pdmqryGetServiceSession();
+
+    if (hosversionBefore(10,0,0)) {
+        const struct {
+            u64 application_id;
+            AccountUid uid;
+        } in = { application_id, uid };
+
+        return serviceDispatchInOut(pdmqrySrv, 5, in, *stats);
+    }
+
+    const struct {
+        u8 flag;
+        u8 pad[7];
+        u64 application_id;
+        AccountUid uid;
+    } in = { flag!=0, {0}, application_id, uid };
+
+    return serviceDispatchInOut(pdmqrySrv, 5, in, *stats);
+}
+
 namespace NX {
     std::vector<PD_Session> PlayData::getPDSessions(TitleID titleID, AccountUid userID, u64 start_ts, u64 end_ts) {
         // Break each "session" apart and keep if matching titleID and userID
@@ -363,7 +387,7 @@ namespace NX {
 
     PlayStatistics * PlayData::getStatisticsForUser(TitleID titleID, AccountUid userID) {
         PdmPlayStatistics tmp;
-        pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountId(titleID, userID, &tmp);
+        pdmqryQueryPlayStatisticsByApplicationIdAndUserAccountIdWorkaround(titleID, userID, false, &tmp);
         PlayStatistics * stats = new PlayStatistics;
         stats->firstPlayed = tmp.first_timestampUser;
         stats->lastPlayed = tmp.last_timestampUser;
