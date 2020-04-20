@@ -394,11 +394,11 @@ namespace Screen {
         // Add heading and L
         this->header = new Aether::Container(0, 0, 100, 70);
         Aether::Element * e = new Aether::Element(this->header->x(), this->header->y(), 80, 50);
-        Aether::Text * t = new Aether::Text(e->x() + 10, e->y(), "\uE0E4", 20, Aether::FontType::Extended); // L
+        Aether::Text * t = new Aether::Text(e->x() + 10, e->y(), "\uE0E4", 20); // L
         t->setY(e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);
-        t = new Aether::Text(e->x(), e->y(), "\uE149", 26, Aether::FontType::Extended); // <
+        t = new Aether::Text(e->x(), e->y(), "\uE149", 26); // <
         t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->text());
         e->addElement(t);
@@ -412,11 +412,11 @@ namespace Screen {
 
         // R button
         e = new Aether::Element(this->header->x() + this->header->w() - 80, this->header->y(), 80, 50);
-        t = new Aether::Text(e->x() + 10, e->y(), "\uE14A", 26, Aether::FontType::Extended); // >
+        t = new Aether::Text(e->x() + 10, e->y(), "\uE14A", 26); // >
         t->setY(e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->text());
         e->addElement(t);
-        t = new Aether::Text(e->x(), e->y(), "\uE0E5", 20, Aether::FontType::Extended); // R
+        t = new Aether::Text(e->x(), e->y(), "\uE0E5", 20); // R
         t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);
