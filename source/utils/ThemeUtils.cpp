@@ -1,4 +1,4 @@
-#include "simpleIniParser.hpp"
+#include "SimpleIniParser.hpp"
 #include "ThemeUtils.hpp"
 
 // Ini file path
