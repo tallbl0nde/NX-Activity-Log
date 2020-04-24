@@ -421,10 +421,10 @@ namespace Main {
             // Check if screens should be recreated
             if (this->reinitScreens_) {
                 this->reinitScreens_ = false;
+                this->display->dropScreen();
                 this->deleteScreens();
                 this->setDisplayTheme();
                 this->createScreens();
-                this->display->dropScreen();
                 this->setScreen(this->screen);
             }
         }
