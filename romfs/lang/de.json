@@ -10,7 +10,7 @@
             "recentlyPlayed": "Sortieren nach: zuletzt gespielt"
         }
     },
-    "common": {
+	"common": {
         "12H": "$[h]$[s]",
         "activityFor": {
             "day": "Aktivität für den $[d].$[m].",
@@ -46,6 +46,7 @@
             "month": "Monat",
             "year": "Jahr"
         },
+        "default": "Systemstandard",
         "disabled": "Deaktiviert",
         "enabled": "Aktiviert",
         "heading": "$[name]s Aktivität",
@@ -97,23 +98,32 @@
             "0min": "Für wenige Sekunden gespielt",
             "1min": "Für 1 Minute gespielt",
             "mins": "Für $[m] Minuten gespielt",
+            "mins1sec": "Für $[m] Minuten und 1 Sekunde gespielt",
+            "1min1sec": "Für 1 Minute und 1 Sekunde gespielt",
+            "1minSecs": "Für 1 Minute und $[s] Sekunden gespielt",
+            "minsSecs": "Für $[m] Minuten und $[s] Sekunden gespielt",
             "1hr": "Für 1 Stunde gespielt",
             "hrs": "Für $[h] Stunden gespielt",
             "hrs1min": "Für $[h] Stunden und 1 Minute gespielt",
             "1hr1min": "Für 1 Stunde und 1 Minute gespielt",
-            "1hrMins": "Für 1 Stunde und $[m] Minuten gespielt",
-            "hrsMins": " Für $[h] Stunden und $[m] Minuten gespielt"
+            "1hrMins": "Für 1 Stunde und $[m] MInuten gespielt",
+            "hrsMins": "Für $[h] Stunden und $[m] Minuten gespielt"
         },
         "playtime": {
             "0sec": "0 Sekunden",
-            "0min": "0 Minuten",
+            "1sec": "1 Sekunde",
+            "secs": "$[s] Sekunden",
             "1min": "1 Minute",
             "mins": "$[m] Minuten",
+            "mins1sec": "$[m] Minuten und 1 Sekunde",
+            "1min1sec": "1 Minute und 1 Sekunde",
+            "1minSecs": "1 Minute und $[s] Sekunden",
+            "minsSecs": "$[m] Minuten und $[s] Sekunden",
             "1hr": "1 Stunde",
             "hrs": "$[h] Stunden",
             "hrs1min": "$[h] Stunden und 1 Minute",
             "1hr1min": "1 Stunde und 1 Minute",
-            "1hrMins": "1 Stunde und $[m] Minuten",
+            "1hrMins": "1 Stunde und $[m] Minute",
             "hrsMins": "$[h] Stunden und $[m] Minuten"
         },
         "playtimeHours": "Spielzeit (in Stunden)",
@@ -125,7 +135,7 @@
             "allActivity": "Alle Aktivitäten",
             "recentActivity": "Neueste Aktivitäten",
             "settings": "Einstellungen"
-        },
+		},
         "sort": {
             "firstPlayed": "zuerst gespielt",
             "heading": "Sortieren Nach",
@@ -142,14 +152,19 @@
             "once": "1 mal gespielt"
         },
         "totalPlaytime": {
-            "heading": "Gesamte Spielzeit",
+            "heading": "Gesamte Spielzeit:",
+            "0sec": "Gesamte Spielzeit: 0 Sekunden",
             "0min": "Gesamte Spielzeit: 0 Minuten",
             "1min": "Gesamte Spielzeit: 1 Minute",
             "mins": "Gesamte Spielzeit: $[m] Minuten",
+            "mins1sec": "Gesamte Spielzeit: $[m] Minuten und 1 Sekunde",
+            "1min1sec": "Gesamte Spielzeit: 1 Minute und 1 Sekunde",
+            "1minSecs": "Gesamte Spielzeit: 1 Minute und $[s] Sekunden",
+            "minsSecs": "Gesamte Spielzeit: $[m] Minuten und $[s] Sekunden",
             "1hr": "Gesamte Spielzeit: 1 Stunde",
             "hrs": "Gesamte Spielzeit: $[h] Stunden",
             "hrs1min": "Gesamte Spielzeit: $[h] Stunden und 1 Minute",
-            "1hr1min": "Gesamte Spielzeit: 1 Stunde und 1 Minute",
+            "1hr1min": "Gesamte Spielzeit: 1 Stunden und 1 Minute",
             "1hrMins": "Gesamte Spielzeit: 1 Stunde und $[m] Minuten",
             "hrsMins": "Gesamte Spielzeit: $[h] Stunden und $[m] Minuten"
         },
@@ -160,6 +175,35 @@
             "year": "Nach Jahr"
         },
         "yes": "Ja"
+    },
+    "customTheme": {
+        "accent": "Farbakzent",
+        "altBackground": "Hintergrundfarbe der Fenster",
+        "apply": "Anwenden",
+        "background": "Hintergrundfarbe der App",
+        "picker": {
+            "alpha": "Alpha",
+            "blue": "Blau",
+            "green": "Grün",
+            "red": "Rot",
+            "tip": "Tipp: Halte ZL/ZR um Werte schneller zu ändern!"
+        },
+        "heading": "Theme ändern",
+        "highlight1": "Animation ausgewählter Zeile 1",
+        "highlight2": "Animation ausgewählter Zeile 2",
+        "highlightBG": "Hintergrund ausgewählter Zeile",
+        "image": "Hintergrundbild benutzen",
+        "imageError": {
+            "body": "Das Bild konnte nicht gefunden werden oder ist fehlerhaft. Bitte prüfe ob es den korrekten Dateinamen hat und im Verzeichnis /config/NX-Activity-Log/background.png gespeichert ist",
+            "heading": "Ein Fehler ist aufgetreten..."
+        },
+        "imageHint": "Das Bild im Verzeichnis /config/NX-Activity-Log/background.png als Hintergrund der App verwenden. Wenn das Bild nicht die Auflösung von 1280x720 hat wird es auf diese Größe angepasst.",
+        "line": "Trennlinien am Bildschirmrand",
+        "mutedLine": "Trennlinien zwischen Zeilen",
+        "mutedText": "Textfarbe 1",
+        "preset": "Von Voreinstellung laden",
+        "selected": "Ausgewählte Zeile",
+        "text": "Textfarbe 2"
     },
     "details": {
         "allTime": "gesamte Aktivität",
@@ -194,33 +238,35 @@
     },
     "settings": {
         "about": "Danke, dass du meine App benutzt, ich hoffe ich konnte dir helfen :)",
+        "appearance": {
+            "24H": "24-Stunden Format benutzen",
+            "graph": "Diagrammbeschriftungen anzeigen",
+            "graphHint": "Schaltet die Beschriftungen der Diagrammleisten um.",
+            "heading": "Aussehen",
+            "language": "Sprache / language",
+            "theme": {
+                "auto": "Automatisch",
+                "custom": "Benutzerdefiniert",
+                "dark": "Schwarz",
+                "heading": "Theme",
+                "light": "Weiß"
+            },
+            "themeEdit": "App-Theme bearbeiten",
+            "themeHint": "Das Design, das für diese App benutzt wird. 'Automatisch' wählt das aktuelle Design deiner Switch aus. Beachte: Die App muss neu gestartet werden um die Einstellungen zu speichern."
+        },
         "launch": {
-            "default": "Standard",
             "heading": "Startoptionen",
-            "language": "Sprache",
-            "languageHint": "Spracheinstellung dieser App.",
             "screen": "Standardfenster",
             "screenHint": "Das Fenster, das angezeigt wird wenn die App gestartet oder ein Nutzer ausgewählt wird.",
             "sort": "Standardsortierung",
             "sortHint": "Sortierung für den Reiter 'gesamte Aktivität' wenn die App gestartet wird.",
             "view": "Standardansicht",
-            "viewHint": "Der Zeitraum der Aktivtät, die beim Starten der App angezeigt wird.",
-            "theme": {
-                "auto": "Automatisch",
-                "dark": "Schwarz",
-                "heading": "Design",
-                "light": "Weiß"
-            },
-            "themeHint": "Design / Theme, das für diese App benutzt wird. 'Automatisch' wählt das aktuelle Design deiner Switch aus."
+            "viewHint": "Der Zeitraum der Aktivtät, die beim Starten der App angezeigt wird."
         },
         "other": {
-            "24H": "24-Stunden Format benutzen",
-            "24HHint": "Das 24-Stunden Format benutzen, um Zeiten anzuzeigen.",
             "heading": "Sonstige Einstellungen",
             "hideDeleted": "Gelöschte Spiele verstecken",
             "hideDeletedHint": "Zeigt Spiele, die du von deiner Switch gelöscht hast nicht mehr bei 'gesamte Aktivitäten' an.",
-            "graph": "Diagrammbeschriftungen",
-            "graphHint": "Schaltet die Beschriftungen der Diagrammleisten um.",
             "replace": "Profilseite ersetzen",
             "replaceBox": {
                 "error": "Ein Fehler ist aufgetreten:",
@@ -229,13 +275,35 @@
                 "errorMsg3": "Bitte verschiebe Dateien und Ordner oder benenne sie um und versuche es noch einmal!",
                 "success": "Installation erfolgreich!",
                 "successMsg1": "Folgende CFWs wurden erkannt und haben diese Funktion freigeschaltet:",
-                "successMsg2": "Beachte: Diese Funktion benutzt kein sysmodule, falls du weiterhin Fehlermeldungen bekommst deaktiviere diese Funktion oder lösche sie",
+                "successMsg2": "Beachte: Diese Funktion benutzt kein sysmodule, falls du weiterhin Fehlermeldungen bekommst deaktiviere diese Funktion oder lösche sie.",
                 "successMsg3": "<cfw contents folder>/0100000000001013/exefs.nsp"
             },
             "replaceHint": "Ersetzt die Profilseite auf dem Switch Homescreen mit dieser App. Erfordert LayeredFS und entweder Atmosphere 0.10.0+, ReiNX oder SXOS."
         },
         "support": "Unterstütze mich auf Ko-fi:",
-        "translations": "Thank you to the following people for their help in translating the app:"
+        "translations": "Thank you to the following people for their help in translating the app:",
+        "update": "Nach Updates suchen",
+        "updateHint": "Hinweis: Du könntest auf Probleme stoßen wenn du 90DNS benutzt. Falls dies auftritt versuche es einfach nochmal."
+    },
+    "update": {
+        "cancel": "Abbrechen",
+        "download": {
+            "dl": "Herunterladen...",
+            "error": "Konnte Datei nicht herunterladen! :(",
+            "success": "Aktualisierung Heruntergeladen!",
+            "successHint": "Die App wird jetzt aktualisieren und schließen.",
+            "successHintPage": "Die App wird jetzt aktualisieren und neu starten."
+        },
+        "error": {
+            "heading": "Konnte nicht auf Aktualisierungen prüfen! :(",
+            "tip": "Prüfe deine Internetverbindungen und versuche es noch einmal."
+        },
+        "heading": "App aktualisieren",
+        "newAvailable": "Version $[v] ist verfügbar!",
+        "update": "Update",
+        "upToDate": "Deine App ist auf der neuesten Version!",
+        "version": "Version $[v]",
+        "waiting": "Suche bei GitHub nach updates..."
     },
     "userSelect": {
         "heading": "Nutzer auswählen"
