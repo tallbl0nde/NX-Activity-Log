@@ -33,12 +33,21 @@ This application currently has the following features:
     * Total playtime in seconds
     * Number of launches
     * Viewing each 'Play Session'
-* Miscellaneous
-  * Automatic theme detection to match the Switch's colour scheme
   * Event-by-event breakdown of your activity
-  * Ability to replace User Page
-    * Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS (or build and copy the forwarder to your CFW-specific titles folder)
-    * **Requires .nro to be at /switch/NX-Activity-Log/NX-Activity-Log.nro**
+* Multi-language Support
+  * English, French, German, Italian, Portugese and Russian
+* Theme Support
+  * Automatic theme detection to match the Switch's colour scheme
+  * Custom Themes
+    * All colours used in the app can be adjusted
+    * Set a custom background image
+      * **Requires a PNG saved at /config/NX-Activity-Log/background.png**
+* Update in-app
+  * Checks for updates automatically and displays an icon if one is available
+  * Update completely within the app
+* User Page Replacement
+  * Requires LayeredFS and either Atmosphere 0.10.0+, ReiNX or SXOS (or build and copy the forwarder to your CFW-specific titles folder)
+  * **Requires .nro to be at /switch/NX-Activity-Log/NX-Activity-Log.nro**
 
 _Note: The data shown in Recent Activity and Details may be slightly inaccurate over larger periods of time (ie. off by a few minutes) but I will try to improve this over time. If activity is not being shown for earlier periods of time it is likely your switch has been reset at some point, which wipes the data used to calculate playtime in this way._
 
@@ -68,8 +77,6 @@ _Note: If the data shown under All Activity is incorrect there is nothing I can 
   * I think I know a way to fix this but if it impacts you you'll have to launch this app in title mode for now.
 * Having a lot of games logged causes a long pause/freeze when loading the 'All Activity' screen
   * Once I learn how to handle threads this won't be a problem :)
-* Changing the date while a game is minimised causes incorrect playtime/play sessions to be shown
-  * Nothing I can do as the time has literally been changed!
 
 ## Credits
 

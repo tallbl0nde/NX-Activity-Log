@@ -35,8 +35,8 @@ FFILE		:=	exefs.nsp
 # Application version
 #---------------------------------------------------------------------------------
 VER_MAJOR	:= 1
-VER_MINOR	:= 2
-VER_MICRO	:= 2
+VER_MINOR	:= 3
+VER_MICRO	:= 0
 
 #---------------------------------------------------------------------------------
 # Options for .nacp information
