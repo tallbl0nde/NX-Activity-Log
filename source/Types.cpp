@@ -32,7 +32,9 @@ std::string toString(Language l) {
         case Language::Russian:
             str = "Pусский";
             break;
-
+        case Language::Spanish:
+            str = "Español";
+            break;
         default:
             break;
     }
