@@ -1,0 +1,313 @@
+{
+    "allActivity": {
+        "sort": {
+            "firstPlayed": "Ordernar por: Jugado primero",
+            "leastLaunched": "Ordernar por: Menos iniciado",
+            "leastPlaytime": "Ordernar por: Menos jugado",
+            "mostLaunched": "Ordernar por: Más iniciado",
+            "mostPlaytime": "Ordernar por: Más jugado",
+            "name": "Ordernar por: Nombre",
+            "recentlyPlayed": "Ordernar por: Más jugado recientemente"
+        }
+    },
+    "common": {
+        "12H": "$[h]$[s]",
+        "activityFor": {
+            "day": "Actividad en $[m] $[d]$[s]",
+            "dayYear": "Actividad en $[m] $[d]$[s], $[y]",
+            "month": "Actividad en $[m] $[y]",
+            "year": "Actividad en $[y]"
+        },
+        "AM": "AM",
+        "am": "am",
+        "atmosphere": "Atmosphere",
+        "buttonHint": {
+            "back": "Atrás",
+            "date": "Seleccionar fecha",
+            "exit": "Salir",
+            "ok": "OK",
+            "sort": "Ordenar",
+            "view": "Cambiar vista"
+        },
+        "close": "Cerrar",
+        "dateFormat": "$[m] $[d]$[s]",
+        "dateFormatYear": "$[m] $[d]$[s], $[y]",
+        "dateSuffix": {
+            "nd": "nd",
+            "rd": "rd",
+            "st": "st",
+            "th": "th"
+        },
+        "datePanel": {
+            "headingDate": "Ver fecha",
+            "headingMonth": "Ver mes",
+            "headingYear": "Ver año",
+            "day": "Día",
+            "month": "Mes",
+            "year": "Año"
+        },
+        "default": "Sistema por defecto",
+        "disabled": "Deshabilitado",
+        "enabled": "Habilitado",
+        "heading": "Actividad en $[name]",
+        "lastPlayed": {
+            "future": "Jugado en el futuro",
+            "secs": "Jugado por última vez hace unos segundos",
+            "1min": "Jugado por última vez hace 1 minutos",
+            "mins": "Jugado por última vez hace $[m] minutos",
+            "1hr": "Jugado por última vez hace 1 hora",
+            "hrs": "Jugado por última vez hace $[h] horas",
+            "1day": "Jugado por última vez hace 1 día",
+            "days": "Jugado por última vez hace $[d] días",
+            "date": "Jugado por última vez hace el $[m] $[d]$[s]",
+            "dateYear": "Jugado por última vez hace el $[m] $[d]$[s], $[y]"
+        },
+        "month": {
+            "jan": "Enero",
+            "feb": "Febrero",
+            "mar": "Marzo",
+            "apr": "Abril",
+            "may": "Mayo",
+            "jun": "Junio",
+            "jul": "Julio",
+            "aug": "Agosto",
+            "sep": "Septiembre",
+            "oct": "Octubre",
+            "nov": "Noviembre",
+            "dec": "Diciembre",
+            "short": {
+                "jan": "en.",
+                "feb": "feb.",
+                "mar": "mar.",
+                "apr": "abr.",
+                "may": "may.",
+                "jun": "jun.",
+                "jul": "jul.",
+                "aug": "agt.",
+                "sep": "set.",
+                "oct": "oct",
+                "nov": "nov.",
+                "dec": "dec."
+            }
+        },
+        "off": "Off",
+        "on": "On",
+        "no": "No",
+        "noActivity": "No se ha registro actividad de juego en este periódo de tiempo.",
+        "playedFor" : {
+            "0min": "Jugado menos de 1 minuto",
+            "1min": "Jugado 1 minuto",
+            "mins": "Jugado $[m] minutos",
+            "mins1sec": "Jugado $[m] minutos y 1 segundo",
+            "1min1sec": "Jugado 1 minuto y 1 segundo",
+            "1minSecs": "Jugado 1 minuto y $[s] segundos",
+            "minsSecs": "Jugado $[m] minutos y $[s] segundos",
+            "1hr": "Jugado 1 hora",
+            "hrs": "Jugado $[h] horas",
+            "hrs1min": "Jugado $[h] horas y 1 minuto",
+            "1hr1min": "Jugado 1 hora y 1 minuto",
+            "1hrMins": "Jugado 1 hora y $[m] minutos",
+            "hrsMins": "Jugado $[h] horas y $[m] minutos"
+        },
+        "playtime": {
+            "0sec": "0 segundos",
+            "1sec": "1 segundo",
+            "secs": "$[s] segundos",
+            "1min": "1 minuto",
+            "mins": "$[m] minutos",
+            "mins1sec": "$[m] minutos y 1 segundo",
+            "1min1sec": "1 minuto y 1 segundo",
+            "1minSecs": "1 minuto y $[s] segundos",
+            "minsSecs": "$[m] minutos y $[s] segundos",
+            "1hr": "1 hora",
+            "hrs": "$[h] horas",
+            "hrs1min": "$[h] horas y 1 minuto",
+            "1hr1min": "1 hora y 1 minuto",
+            "1hrMins": "1 hora y $[m] minutos",
+            "hrsMins": "$[h] horas y $[m] minutos"
+        },
+        "playtimeHours": "Tiempo de juego (en horas)",
+        "playtimeMinutes": "Tiempo de juego (en minutos)",
+        "PM": "PM",
+        "pm": "pm",
+        "reinx": "ReiNX",
+        "screen": {
+            "allActivity": "Toda la actividad",
+            "recentActivity": "Actividad reciente",
+            "settings": "Ajustes"
+        },
+        "sort": {
+            "firstPlayed": "Por jugado primero",
+            "heading": "Ordenar títulos",
+            "leastLaunched": "Por menos iniciado",
+            "leastPlaytime": "Por menos jugado",
+            "mostLaunched": "Por más iniciado",
+            "mostPlaytime": "Por más jugado",
+            "name": "Por nombre",
+            "recentlyPlayed": "Por más jugado recientemente"
+        },
+        "sxos": "SX OS",
+        "timesPlayed": {
+            "multiple": "Jugado $[t] veces",
+            "once": "Jugado 1 vez"
+        },
+        "totalPlaytime": {
+            "heading": "Tiempo total de juego:",
+            "0sec": "Tiempo total de juego: 0 segundos",
+            "0min": "Tiempo total de juego: 0 minutos",
+            "1min": "Tiempo total de juego: 1 minuto",
+            "mins": "Tiempo total de juego: $[m] minutos",
+            "mins1sec": "Tiempo total de juego: $[m] minutos y 1 segundo",
+            "1min1sec": "Tiempo total de juego: 1 minuto y 1 segundo",
+            "1minSecs": "Tiempo total de juego: 1 minuto y $[s] segundos",
+            "minsSecs": "Tiempo total de juego: $[m] minutos y $[s] segundos",
+            "1hr": "Tiempo total de juego: 1 hora",
+            "hrs": "Tiempo total de juego: $[h] horas",
+            "hrs1min": "Tiempo total de juego: $[h] horas y 1 minuto",
+            "1hr1min": "Tiempo total de juego: 1 hora y 1 minuto",
+            "1hrMins": "Tiempo total de juego: 1 hora y $[m] minutos",
+            "hrsMins": "Tiempo total de juego: $[h] horas y $[m] minutos"
+        },
+        "view": {
+            "day": "Por dia",
+            "heading": "Ver actividad",
+            "month": "Por mes",
+            "year": "Por año"
+        },
+        "yes": "Sí"
+    },
+    "customTheme": {
+        "accent": "Acento",
+        "altBackground": "Panel de fondo",
+        "apply": "Aplicar",
+        "background": "Fondo",
+        "picker": {
+            "alpha": "Alpha",
+            "blue": "Azul",
+            "green": "Verde",
+            "red": "Rojo",
+            "tip": "Consejo: ¡Mantén ZL/ZR para cambiar valores rápidamente!"
+        },
+        "heading": "Customizar tema",
+        "highlight1": "Animación de destaque 1",
+        "highlight2": "Animación de destaque 2",
+        "highlightBG": "Destacar fondo",
+        "image": "Usar imágen de fondo",
+        "imageError": {
+            "body": "La imágen no ha podido ser encontrada o está corrupta. Por favor comprueba si el nombre es correcto y se encuentra en /config/NX-Activity-Log/background.png",
+            "heading": "Ha ocurrido un error..."
+        },
+        "imageHint": "Set the image located at /config/NX-Activity-Log/background.png as the application's background. If the image is not 1280x720 it will be resized to fit.",
+        "imageHint": "Establecer la imagen localizada en /config/NX-Activity-Log/background.png como el fondo de la aplicación. Si la imágen no es 1280x720 se redimensionará para adaptarse.",
+        "line": "Línea",
+        "mutedLine": "Línea ténue",
+        "mutedText": "Texto ténue",
+        "preset": "Cargar desde preestablecido",
+        "selected": "Seleccionado",
+        "text": "Texto"
+    },
+    "details": {
+        "allTime": "Todo el tiempo de actividad",
+        "avgPlaytime": "Tiempo de juego medio",
+        "break": {
+            "appClosed": "Aplicación cerrada",
+            "appLaunched": "Aplicación lanzada",
+            "appResumed": "Aplicación reanudada",
+            "appSuspended": "Aplicación suspendida",
+            "heading": "Detalles de sesión de juego",
+            "length": "Duración de la sesión",
+            "playtime": "Tiempo total de juego"
+        },
+        "firstPlayed": "Primera vez jugado",
+        "lastPlayed": "Última vez jugado",
+        "playSessions": "Sesiones de juego",
+        "playtime": "Tiempo de juego",
+        "popup": {
+            "heading": "Una sesión de juego representa el tiempo entre que un juego fué iniciado hasta que se cerró.",
+            "msg1": "Se muestra el momento de inicio, momento de salida, tiempo de juego y porcentaje del tiempo total.",
+            "msg2": "Seleciona una sesión para ver un desglose más detallado.",
+            "msg3": "Nota: Las sesiones con un asterisco comienzan antes y/o terminan después de la fecha seleccionada. Su tiempo de juego ha sido ajustado para reflejar el rango de tiempo actual, su desglose mostrará la duración completa de la sesión."
+        },
+        "timesPlayed": {
+            "heading": "Veces jugado",
+            "multiple": "$[t] veces",
+            "once": "1 vez"
+        }
+    },
+    "recentActivity": {
+        "titleHeading": "Títulos jugados"
+    },
+    "settings": {
+        "about": "¡Gracias por usar mi app! Espero que te sea útil :)",
+        "appearance": {
+            "24H": "Usar 24 horas",
+            "graph": "Mostrar valores en gráficos",
+            "graphHint": "Slterna si los valores son visibles encima de cada barra en los gráficos.",
+            "heading": "Apariencia",
+            "language": "Lenguaje",
+            "theme": {
+                "auto": "Auto",
+                "custom": "Personalizado",
+                "dark": "Negro básico",
+                "heading": "Tema",
+                "light": "Blanco básico"
+            },
+            "themeEdit": "Personalizar tema",
+            "themeHint": "El tema a usar por la aplicación. Se auto selecciona entre negro/blanco según los ajustes de tu Swtich. Selecciona Personalizado para establecer una imagen de fondo y ajustar los colores."
+        },
+        "launch": {
+            "heading": "Opciones de lanzamiento",
+            "screen": "Pantalla por defecto",
+            "screenHint": "La pantalla que se muestra al iniciar / después de seleccionar un usuario.",
+            "sort": "Método de ordenación por defecto",
+            "sortHint": "El método de ordenación para 'Toda la actividad' a usar en el inicio.",
+            "view": "Tipo de vista por defecto",
+            "viewHint": "El periódo de actividad a ver en el inicio."
+        },
+        "other": {
+            "heading": "Otros ajustes",
+            "hideDeleted": "Ocultar juegos borrados",
+            "hideDeletedHint": "Oculta juegos borrados en 'Toda la actividad'.",
+            "replace": "Reemplazar página de usuario",
+            "replaceBox": {
+                "error": "Ha ocurrido un error:",
+                "errorMsg1": "Ésta aplicación .nro no fue encontrada en la locación esperada:",
+                "errorMsg2": "Ésta característica requiere que el .nro esté presente en ésta ubicación.",
+                "errorMsg3": "Por favor mueve/renombra cualquier archivo y carpeta y vuelve a intentarlo.",
+                "success": "¡Instalación exitosa!",
+                "successMsg1": "El siguiente CFW ha sido detectado y tiene las siguientes características activadas:",
+                "successMsg2": "Note: This feature does not use a sysmodule, if you encounter any errors either disable this feature in the app or delete",
+                "successMsg2": "Nota: Ésta característica no usa un sysmodule, si encuentras cualquier error, desactive ésta función en la aplicación o elimínela",
+                "successMsg3": "<carpeta del contenido cfw>/0100000000001013/exefs.nsp"
+            },
+            "replaceHint": "Reemplace la página de usuario con ésta aplicación. Requiere LayeredFS y también Atmosphere 0.10.0+, ReiNX o SXOS."
+        },
+        "support": "Puedes apoyarme en Ko-fi:",
+        "translations": "Gracias a las siguientes personas por su ayuda en la traducción de la aplicación:",
+        "update": "Buscar actualizaciones",
+        "updateHint": "Nota: Puedes experimentar problemas si estás utilizando 90DNS. Si éste es el caso, simplemente intentalo nuevamente."
+    },
+    "update": {
+        "cancel": "Cancelar",
+        "download": {
+            "dl": "Descargando...",
+            "error": "No se puede descargar el archivo",
+            "success": "¡Descarga completada!",
+            "successHint": "La aplicación ahora se actualizará y cerrará.",
+            "successHintPage": "La aplicación ahora se actualizará y reiniciará."
+        },
+        "error": {
+            "heading": "¡No se puede buscar una actualización!",
+            "tip": "Comprueba tu conexión a Internet y/o vuelve a intentarlo más tarde."
+        },
+        "heading": "Actualizar aplicación",
+        "newAvailable": "¡Versión $[v] disponible!",
+        "update": "Actualizar",
+        "upToDate": "¡Tu aplicación está actualizada!",
+        "version": "Versión $[v]",
+        "waiting": "Comprobando GitHub para actualizaciones..."
+    },
+    "userSelect": {
+        "heading": "Selecciona un usuario"
+    }
+}
