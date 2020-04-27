@@ -412,7 +412,7 @@ namespace Screen {
         this->list->addElement(new Aether::ListSeparator());
 
         // INFORMATION
-        lc = new Aether::ListComment("settings.translations"_lang + "\nFrench: xRock\nGerman: Ayk\nItalian: reinzanini\nPortugese: evertonstz\nRussian: Sookie69");
+        lc = new Aether::ListComment("settings.translations"_lang + "\nFrench: xRock\nGerman: Ayk\nItalian: reinzanini\nPortugese: evertonstz\nRussian: Sookie69\nSpanish: ivanmarbin\nTurkish: fpscan");
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
         lc = new Aether::ListComment("NX Activity Log v" + std::string(VER_STRING) + "\n" + "settings.about"_lang + "\n\n" + "settings.support"_lang + "\nhttps://ko-fi.com/tallbl0nde");

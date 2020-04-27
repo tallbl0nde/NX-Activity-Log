@@ -21,6 +21,10 @@ std::string toString(Language l) {
             str = "Deutsch";
             break;
 
+        case Language::Spanish:
+            str = "Español";
+            break;
+
         case Language::Italian:
             str = "Italiano";
             break;
@@ -32,9 +36,11 @@ std::string toString(Language l) {
         case Language::Russian:
             str = "Pусский";
             break;
-        case Language::Spanish:
-            str = "Español";
+
+        case Language::Turkish:
+            str = "Türkçe";
             break;
+
         default:
             break;
     }

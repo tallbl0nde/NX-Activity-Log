@@ -53,11 +53,15 @@ namespace Utils::Lang {
             case Russian:
                 path = "romfs:/lang/ru.json";
                 break;
-            
+
             case Spanish:
                 path = "romfs:/lang/es.json";
                 break;
-                 
+
+            case Turkish:
+                path = "romfs:/lang/tr.json";
+                break;
+
             default:
                 break;
         }

@@ -11,10 +11,11 @@ enum Language {
     English,
     French,
     German,
+    Spanish,
     Italian,
     Portugese,
     Russian,
-    Spanish,
+    Turkish,
     TotalLanguages  // Total number of languages (only used for iterating)
 };
 // Return string matching language
