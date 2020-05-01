@@ -4,3 +4,6 @@
 [submodule "Aether"]
 	path = libs/Aether
 	url = https://github.com/tallbl0nde/Aether
+[submodule "Translations"]
+	path = romfs/lang
+	url = https://github.com/tallbl0nde/NX-Activity-Log-Translations.git
