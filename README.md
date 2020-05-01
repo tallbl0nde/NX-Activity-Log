@@ -12,8 +12,9 @@ Curious about what's next? See my to-do list on [Trello](https://trello.com/b/Ha
 2. [Screenshots](#screenshots)
 3. [Reporting Incorrect Data](#reporting-incorrect-data)
 4. [Known Issues](#known-issues)
-5. [Credits](#credits)
-6. [Support](#support-3)
+5. [Translations](#translations)
+6. [Credits](#credits)
+7. [Support](#support-3)
 
 ## Features
 
@@ -77,6 +78,10 @@ _Note: If the data shown under All Activity is incorrect there is nothing I can 
   * I think I know a way to fix this but if it impacts you you'll have to launch this app in title mode for now.
 * Having a lot of games logged causes a long pause/freeze when loading the 'All Activity' screen
   * Once I learn how to handle threads this won't be a problem :)
+
+## Translations
+
+If you'd like to translate the app or fix an issue with a translation, please make a pull request to [this repo](https://github.com/tallbl0nde/NX-Activity-Log-Translations)! I'll add all the relevant code here (if need be) once I see the request :)
 
 ## Credits
 
