@@ -98,9 +98,11 @@ namespace Screen {
                 this->el->addElement(t);
             } else {
                 // Background behind buttons
-                Aether::Rectangle * r = new Aether::Rectangle(30, 88, 810, 559);
-                r->setColour(this->app->theme()->altBG());
-                this->el->addElement(r);
+                if (!this->app->config()->tImage() || this->app->config()->gTheme() != ThemeType::Custom) {
+                    Aether::Rectangle * r = new Aether::Rectangle(30, 88, 810, 559);
+                    r->setColour(this->app->theme()->altBG());
+                    this->el->addElement(r);
+                }
 
                 // Update button
                 Aether::BorderButton * bb = new Aether::BorderButton(915, 270, 260, 80, 3, "update.update"_lang, 24, [this]() {
