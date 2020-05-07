@@ -92,7 +92,7 @@ namespace Utils::NX {
             case SetLanguage_ES:
                 lang = Spanish;
                 break;
-                
+
             default:
                 lang = Default;
                 break;

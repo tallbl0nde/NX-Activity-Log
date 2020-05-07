@@ -27,9 +27,9 @@ namespace Utils::Forwarder {
                 atms = true;
             }
         }
-        if (std::filesystem::exists("/ReiNX/titles")) {
+        if (std::filesystem::exists("/ReiNX/contents")) {
             hasRei = true;
-            if (std::filesystem::exists("/ReiNX/titles/0100000000001013/exefs.nsp")) {
+            if (std::filesystem::exists("/ReiNX/contents/0100000000001013/exefs.nsp")) {
                 rei = true;
             }
         }
@@ -51,7 +51,7 @@ namespace Utils::Forwarder {
             atms = false;
         }
         if (rei) {
-            std::filesystem::remove("/ReiNX/titles/0100000000001013/exefs.nsp");
+            std::filesystem::remove("/ReiNX/contents/0100000000001013/exefs.nsp");
             rei = false;
         }
         if (sx) {
@@ -68,8 +68,8 @@ namespace Utils::Forwarder {
         }
 
         if (hasRei) {
-            std::filesystem::create_directory("/ReiNX/titles/0100000000001013");
-            Utils::copyFile("romfs:/exefs.nsp", "/ReiNX/titles/0100000000001013/exefs.nsp");
+            std::filesystem::create_directory("/ReiNX/contents/0100000000001013");
+            Utils::copyFile("romfs:/exefs.nsp", "/ReiNX/contents/0100000000001013/exefs.nsp");
             rei = true;
         }
 
