@@ -20,6 +20,12 @@ namespace Screen {
     class UserSelect;
 };
 
+enum class ReinitState {
+    False,
+    True,
+    Wait
+};
+
 namespace Main {
     // The Application class represents the "root" object of the app. It stores/handles all states
     // and objects used through the app
@@ -43,7 +49,7 @@ namespace Main {
             ScreenCreate createReason;
             // Set true by reinitScreens() in order to recreate screens
             // before next loop
-            bool reinitScreens_;
+            ReinitState reinitScreens_;
             // Create screens
             void createScreens();
             // Delete screens

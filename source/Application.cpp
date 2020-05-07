@@ -88,7 +88,7 @@ namespace Main {
         this->setDisplayTheme();
         this->createReason = ScreenCreate::Normal;
         this->createScreens();
-        this->reinitScreens_ = false;
+        this->reinitScreens_ = ReinitState::False;
 
         if (this->isUserPage_) {
             // Skip UserSelect screen if launched via user page
@@ -111,7 +111,7 @@ namespace Main {
 
     void Application::reinitScreens(ScreenCreate c) {
         this->createReason = c;
-        this->reinitScreens_ = true;
+        this->reinitScreens_ = ReinitState::Wait;
     }
 
     void Application::createScreens() {
@@ -419,8 +419,10 @@ namespace Main {
         // Do main loop
         while (this->display->loop()) {
             // Check if screens should be recreated
-            if (this->reinitScreens_) {
-                this->reinitScreens_ = false;
+            if (this->reinitScreens_ == ReinitState::Wait) {
+                this->reinitScreens_ = ReinitState::True;
+            } else if (this->reinitScreens_ == ReinitState::True) {
+                this->reinitScreens_ = ReinitState::False;
                 this->display->dropScreen();
                 this->deleteScreens();
                 this->setDisplayTheme();
