@@ -62,6 +62,10 @@ namespace Utils::Lang {
                 path = "romfs:/lang/tr.json";
                 break;
 
+            case Korean:
+                path = "romfs:/lang/ko.json";
+                break;
+
             default:
                 break;
         }

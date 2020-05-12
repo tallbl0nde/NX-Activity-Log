@@ -93,6 +93,10 @@ namespace Utils::NX {
                 lang = Spanish;
                 break;
 
+            case SetLanguage_KO:
+                lang = Korean;
+                break;
+
             default:
                 lang = Default;
                 break;
