@@ -40,7 +40,6 @@ namespace Screen {
 
     void Settings::installForwarder() {
         // A message box will be shown regardless of the outcome
-        this->msgbox->close(false);
         this->msgbox->emptyBody();
 
         // Check if forwarder exists
@@ -424,7 +423,7 @@ namespace Screen {
         // Create base message box
         this->msgbox = new Aether::MessageBox();
         this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this](){
-            this->msgbox->close(true);
+            this->msgbox->close();
         });
         this->msgbox->setLineColour(this->app->theme()->mutedLine());
         this->msgbox->setRectangleColour(this->app->theme()->altBG());

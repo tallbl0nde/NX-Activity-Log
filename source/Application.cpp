@@ -301,7 +301,6 @@ namespace Main {
     }
 
     void Application::createPeriodPicker() {
-        this->periodpicker->close(false);
         this->periodpicker->removeEntries();
         this->periodpicker->addEntry(toString(ViewPeriod::Day), [this](){
             if (this->viewType != ViewPeriod::Day) {

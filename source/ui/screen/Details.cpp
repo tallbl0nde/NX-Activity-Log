@@ -454,7 +454,6 @@ namespace Screen {
 
     void Details::setupSessionHelp() {
         this->msgbox->emptyBody();
-        this->msgbox->close(false);
 
         int bw, bh;
         this->msgbox->getBodySize(&bw, &bh);
@@ -473,7 +472,6 @@ namespace Screen {
     }
 
     void Details::setupSessionBreakdown(NX::PlaySession s) {
-        this->panel->close(false);
         this->panel->setPlaytime(Utils::playtimeToString(s.playtime));
         this->panel->setLength(Utils::playtimeToString(s.endTimestamp - s.startTimestamp));
 
@@ -712,7 +710,7 @@ namespace Screen {
         // Create blank messagebox
         this->msgbox = new Aether::MessageBox();
         this->msgbox->addTopButton("common.close"_lang, [this](){
-            this->msgbox->close(true);
+            this->msgbox->close();
         });
         this->msgbox->setLineColour(this->app->theme()->mutedLine());
         this->msgbox->setRectangleColour(this->app->theme()->altBG());

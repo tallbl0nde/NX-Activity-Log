@@ -64,7 +64,6 @@ namespace Screen {
 
     void AllActivity::setupOverlay() {
         // Empty previous entries
-        this->sortOverlay->close(false);
         this->sortOverlay->removeEntries();
 
         // Add entries and highlight current sort

@@ -37,7 +37,7 @@ namespace CustomOvl {
 
         // Close on B
         this->onButtonPress(Aether::Button::B, [this](){
-            this->close(true);
+            this->close();
             this->removeElement(this->list);
             this->list = nullptr;
         });

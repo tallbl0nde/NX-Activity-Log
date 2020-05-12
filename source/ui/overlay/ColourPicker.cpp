@@ -75,7 +75,7 @@ namespace CustomOvl {
         // OK Button
         this->button = new Aether::BorderButton(this->alpha->x() + 250, 0, 160, 60, 3, "OK", 22, [this](){
             this->callFunc();
-            this->close(true);
+            this->close();
         });
         this->button->setY(y - this->button->h()/2 - 26);
         this->addElement(this->button);
@@ -91,12 +91,12 @@ namespace CustomOvl {
 
         // Close without updating
         this->onButtonPress(Aether::Button::B, [this](){
-            this->close(true);
+            this->close();
         });
         // Close and update
         this->onButtonPress(Aether::Button::A, [this](){
             this->callFunc();
-            this->close(true);
+            this->close();
         });
 
         // Change speed when ZL/ZR pressed
