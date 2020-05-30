@@ -1,5 +1,5 @@
-#include "Lang.hpp"
-#include "PlaySession.hpp"
+#include "utils/Lang.hpp"
+#include "ui/overlay/PlaySession.hpp"
 
 #define WIDTH 800
 

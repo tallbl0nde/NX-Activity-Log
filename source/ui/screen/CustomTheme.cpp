@@ -1,7 +1,7 @@
 #include "Application.hpp"
-#include "CustomTheme.hpp"
-#include "Lang.hpp"
-#include "ThemePresets.hpp"
+#include "ui/screen/CustomTheme.hpp"
+#include "utils/Lang.hpp"
+#include "ui/ThemePresets.hpp"
 
 namespace Screen {
     CustomTheme::CustomTheme(Main::Application * a) {

@@ -1,8 +1,8 @@
 #ifndef SCREEN_CUSTOMTHEME_HPP
 #define SCREEN_CUSTOMTHEME_HPP
 
-#include "ColourPicker.hpp"
-#include "ListColour.hpp"
+#include "ui/overlay/ColourPicker.hpp"
+#include "ui/element/ListColour.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {

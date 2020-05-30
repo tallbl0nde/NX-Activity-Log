@@ -1,7 +1,7 @@
 #ifndef SCREEN_ALLACTIVITY_HPP
 #define SCREEN_ALLACTIVITY_HPP
 
-#include "SortedList.hpp"
+#include "ui/element/SortedList.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {

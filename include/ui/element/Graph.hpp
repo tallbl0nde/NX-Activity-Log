@@ -1,7 +1,7 @@
 #ifndef ELEMENT_GRAPH_HPP
 #define ELEMENT_GRAPH_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 // Stores info required for each "bar"/entry (within elements)
 struct Entry {

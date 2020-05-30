@@ -1,7 +1,7 @@
 #ifndef OVERLAY_COLOURPICKER_HPP
 #define OVERLAY_COLOURPICKER_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 namespace CustomOvl {
     // Select a colour using a spinner for r, g, b, a. Shows preview, hex value

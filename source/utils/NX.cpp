@@ -1,4 +1,4 @@
-#include "NX.hpp"
+#include "utils/NX.hpp"
 
 // Maximum number of titles to read using pdm
 #define MAX_TITLES 2000

@@ -1,5 +1,5 @@
-#include "ListColour.hpp"
-#include "Utils.hpp"
+#include "ui/element/ListColour.hpp"
+#include "utils/Utils.hpp"
 
 // Height of element
 #define HEIGHT 70

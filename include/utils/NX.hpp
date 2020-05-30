@@ -1,9 +1,9 @@
 #ifndef UTILS_NX_HPP
 #define UTILS_NX_HPP
 
-#include "Title.hpp"
+#include "nx/Title.hpp"
 #include "Types.hpp"
-#include "User.hpp"
+#include "nx/User.hpp"
 #include <vector>
 
 // Comparison of AccountUid

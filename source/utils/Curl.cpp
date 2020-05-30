@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <curl/curl.h>
-#include "Curl.hpp"
+#include "utils/Curl.hpp"
 #include <fstream>
 #include <sstream>
 

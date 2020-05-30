@@ -1,9 +1,9 @@
 #include <cmath>
 #include <fstream>
-#include "Lang.hpp"
+#include "utils/Lang.hpp"
 #include <regex>
-#include "Utils.hpp"
-#include "Time.hpp"
+#include "utils/Utils.hpp"
+#include "utils/Time.hpp"
 
 namespace Utils {
     void copyFile(std::string src, std::string dest) {

@@ -1,6 +1,6 @@
 #include <filesystem>
-#include "Forwarder.hpp"
-#include "Utils.hpp"
+#include "utils/Forwarder.hpp"
+#include "utils/Utils.hpp"
 
 // Variables used for installation/detection
 // Realistically I could do without them but this saves repeat 'exists' calls

@@ -1,8 +1,8 @@
 #ifndef SCREEN_DETAILS_HPP
 #define SCREEN_DETAILS_HPP
 
-#include "Graph.hpp"
-#include "PlaySession.hpp"
+#include "ui/element/Graph.hpp"
+#include "ui/overlay/PlaySession.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {

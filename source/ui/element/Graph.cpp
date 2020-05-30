@@ -1,5 +1,5 @@
-#include "Graph.hpp"
-#include "Utils.hpp"
+#include "ui/element/Graph.hpp"
+#include "utils/Utils.hpp"
 
 // Padding between xAxis and labels
 #define LABEL_PADDING 10

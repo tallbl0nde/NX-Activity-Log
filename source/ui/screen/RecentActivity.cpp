@@ -1,7 +1,7 @@
 #include "Application.hpp"
-#include "Lang.hpp"
-#include "RecentActivity.hpp"
-#include "Utils.hpp"
+#include "utils/Lang.hpp"
+#include "ui/screen/RecentActivity.hpp"
+#include "utils/Utils.hpp"
 
 namespace Screen {
     RecentActivity::RecentActivity(Main::Application * a) {
@@ -95,7 +95,7 @@ namespace Screen {
         NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForUser(Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
 
         // Remove current sessions regardless
-        this->list->removeFollowingElements(this->topElm);
+        this->list->removeElementsAfter(this->topElm);
         if (this->focussed() == this->list) {
             this->list->setFocussed(this->header);
         }

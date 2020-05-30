@@ -1,7 +1,7 @@
 #ifndef SCREEN_USERSELECT_HPP
 #define SCREEN_USERSELECT_HPP
 
-#include "User.hpp"
+#include "nx/User.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {

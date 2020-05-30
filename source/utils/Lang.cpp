@@ -1,8 +1,8 @@
 #include <filesystem>
 #include <fstream>
-#include "JSON.hpp"
-#include "Lang.hpp"
-#include "NX.hpp"
+#include "nlohmann/json.hpp"
+#include "utils/Lang.hpp"
+#include "utils/NX.hpp"
 #include <sstream>
 
 namespace Utils::Lang {

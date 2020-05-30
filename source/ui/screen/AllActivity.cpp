@@ -1,7 +1,7 @@
-#include "AllActivity.hpp"
+#include "ui/screen/AllActivity.hpp"
 #include "Application.hpp"
-#include "Lang.hpp"
-#include "Utils.hpp"
+#include "utils/Lang.hpp"
+#include "utils/Utils.hpp"
 
 namespace Screen {
     AllActivity::AllActivity(Main::Application * a) {

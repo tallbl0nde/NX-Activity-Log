@@ -1,8 +1,8 @@
 #ifndef SCREEN_RECENTACTIVITY_HPP
 #define SCREEN_RECENTACTIVITY_HPP
 
-#include "Graph.hpp"
-#include "SortedList.hpp"
+#include "ui/element/Graph.hpp"
+#include "ui/element/SortedList.hpp"
 
 // Forward declaration due to circular dependency
 namespace Main {

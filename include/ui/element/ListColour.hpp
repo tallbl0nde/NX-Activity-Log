@@ -1,7 +1,7 @@
 #ifndef ELEMENT_LISTCOLOUR_HPP
 #define ELEMENT_LISTCOLOUR_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 namespace CustomElm {
     // A list element storing a string, colour hex value and colour 'box'

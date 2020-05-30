@@ -1,7 +1,7 @@
 #ifndef ELEMENT_LISTACTIVITY_HPP
 #define ELEMENT_LISTACTIVITY_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 namespace CustomElm {
     // List item containing game icon and a few left/right aligned strings

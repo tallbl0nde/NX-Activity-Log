@@ -1,4 +1,4 @@
-#include "ColourPicker.hpp"
+#include "ui/overlay/ColourPicker.hpp"
 
 // Defaults
 #define HEIGHT 470

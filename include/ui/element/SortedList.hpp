@@ -1,8 +1,8 @@
 #ifndef ELEMENT_SORTEDLIST_HPP
 #define ELEMENT_SORTEDLIST_HPP
 
-#include "Aether.hpp"
-#include "ListActivity.hpp"
+#include "Aether/Aether.hpp"
+#include "ui/element/ListActivity.hpp"
 #include "Types.hpp"
 
 // Struct storing information about entry used for sorting

@@ -4,11 +4,11 @@
 #include <atomic>
 #include "Config.hpp"
 #include <future>
-#include "NX.hpp"
-#include "PlayData.hpp"
+#include "utils/NX.hpp"
+#include "nx/PlayData.hpp"
 #include <stack>
-#include "Theme.hpp"
-#include "Time.hpp"
+#include "ui/Theme.hpp"
+#include "utils/Time.hpp"
 
 namespace Screen {
     class AllActivity;
