@@ -25,7 +25,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 TARGET		:=	NX-Activity-Log
 BUILD		:=	build
 SOURCES		:=	source source/nx source/ui source/ui/screen source/ui/element source/ui/overlay source/utils
-INCLUDES	:=	include include/nx include/ui include/ui/screen include/ui/element include/ui/overlay include/utils
+INCLUDES	:=	include
 ROMFS		:=	romfs
 OUTDIR		:=	sdcard
 FDIR		:=	forwarder
@@ -68,7 +68,8 @@ LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/libs/SimpleIniParser $(CURDIR)/libs/Aether
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/libs/SimpleIniParser $(CURDIR)/libs/Aether\
+			$(CURDIR)/libs/json
 
 #---------------------------------------------------------------------------------
 # This is all wizardry to me also
