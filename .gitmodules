@@ -7,3 +7,6 @@
 [submodule "Translations"]
 	path = romfs/lang
 	url = https://github.com/tallbl0nde/NX-Activity-Log-Translations.git
+[submodule "libs/json"]
+	path = libs/json
+	url = git@github.com:nlohmann/json.git
