@@ -1,8 +1,8 @@
 #include "Application.hpp"
-#include "Forwarder.hpp"
-#include "Lang.hpp"
-#include "Settings.hpp"
-#include "Utils.hpp"
+#include "utils/Forwarder.hpp"
+#include "utils/Lang.hpp"
+#include "ui/screen/Settings.hpp"
+#include "utils/Utils.hpp"
 
 namespace Screen {
     Settings::Settings(Main::Application * a, ScreenCreate sc) {

@@ -1,6 +1,6 @@
-#include "Lang.hpp"
-#include "SortedList.hpp"
-#include "Utils.hpp"
+#include "utils/Lang.hpp"
+#include "ui/element/SortedList.hpp"
+#include "utils/Utils.hpp"
 
 namespace CustomElm {
     SortedList::SortedList(int x, int y, int w, int h) : Aether::List(x, y, w, h) {

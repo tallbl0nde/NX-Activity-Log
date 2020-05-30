@@ -1,5 +1,5 @@
 #include <cstring>
-#include "Title.hpp"
+#include "nx/Title.hpp"
 
 namespace NX {
     Title::Title(TitleID titleID, bool installed) {

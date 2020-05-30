@@ -1,9 +1,9 @@
-#include "Curl.hpp"
+#include "utils/Curl.hpp"
 #include <filesystem>
 #include <fstream>
-#include "JSON.hpp"
-#include "UpdateUtils.hpp"
-#include "Time.hpp"
+#include "nlohmann/json.hpp"
+#include "utils/UpdateUtils.hpp"
+#include "utils/Time.hpp"
 
 // Flag indicating an update is available
 #define AVAILABLE_FILE "/config/NX-Activity-Log/update.flag"

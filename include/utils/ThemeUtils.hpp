@@ -1,7 +1,7 @@
 #ifndef UTILS_THEME_HPP
 #define UTILS_THEME_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 namespace Utils::Theme {
     // Reads theme.ini

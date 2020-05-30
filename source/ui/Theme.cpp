@@ -1,7 +1,7 @@
-#include "NX.hpp"
-#include "Theme.hpp"
-#include "ThemePresets.hpp"
-#include "ThemeUtils.hpp"
+#include "utils/NX.hpp"
+#include "ui/Theme.hpp"
+#include "ui/ThemePresets.hpp"
+#include "utils/ThemeUtils.hpp"
 
 Theme::Theme(ThemeType t) {
     Utils::Theme::readIni();

@@ -1,7 +1,7 @@
 #include "Application.hpp"
-#include "Lang.hpp"
-#include "ListUser.hpp"
-#include "UserSelect.hpp"
+#include "utils/Lang.hpp"
+#include "ui/element/ListUser.hpp"
+#include "ui/screen/UserSelect.hpp"
 
 namespace Screen {
     UserSelect::UserSelect(Main::Application * a, std::vector<NX::User *> u) {

@@ -1,7 +1,7 @@
 #ifndef ELEMENT_LISTUSER_HPP
 #define ELEMENT_LISTUSER_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 namespace CustomElm {
     // A list element storing a user image and name

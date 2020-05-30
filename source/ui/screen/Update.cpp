@@ -1,8 +1,8 @@
 #include "Application.hpp"
-#include "Lang.hpp"
-#include "Update.hpp"
-#include "UpdateUtils.hpp"
-#include "Utils.hpp"
+#include "utils/Lang.hpp"
+#include "ui/screen/Update.hpp"
+#include "utils/UpdateUtils.hpp"
+#include "utils/Utils.hpp"
 
 namespace Screen {
     Update::Update(Main::Application * a) {

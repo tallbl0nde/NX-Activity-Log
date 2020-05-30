@@ -1,7 +1,7 @@
 #include <algorithm>
-#include "PlayData.hpp"
-#include "NX.hpp"
-#include "Time.hpp"
+#include "nx/PlayData.hpp"
+#include "utils/NX.hpp"
+#include "utils/Time.hpp"
 
 // Maximum number of entries to process in one iteration
 #define MAX_PROCESS_ENTRIES 1000

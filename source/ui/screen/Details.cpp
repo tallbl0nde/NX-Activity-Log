@@ -1,8 +1,8 @@
 #include "Application.hpp"
-#include "Details.hpp"
-#include "Lang.hpp"
-#include "ListSession.hpp"
-#include "Utils.hpp"
+#include "ui/screen/Details.hpp"
+#include "utils/Lang.hpp"
+#include "ui/element/ListSession.hpp"
+#include "utils/Utils.hpp"
 
 // Values for summary appearance
 #define SUMMARY_BOX_HEIGHT 60
@@ -123,7 +123,7 @@ namespace Screen {
         NX::RecentPlayStatistics * ps = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->activeTitle()->titleID(), Utils::Time::getTimeT(t), Utils::Time::getTimeT(e), this->app->activeUser()->ID());
 
         // Remove current sessions regardless
-        this->list->removeFollowingElements(this->topElm);
+        this->list->removeElementsAfter(this->topElm);
         this->list->setFocussed(this->header);
 
         // Only update list if there is activity

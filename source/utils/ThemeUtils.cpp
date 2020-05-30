@@ -1,5 +1,5 @@
 #include "SimpleIniParser.hpp"
-#include "ThemeUtils.hpp"
+#include "utils/ThemeUtils.hpp"
 
 // Ini file path
 #define INI_PATH "/config/NX-Activity-Log/theme.ini"

@@ -1,7 +1,7 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 #include <string>
 #include <switch.h>
 

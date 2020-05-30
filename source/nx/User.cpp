@@ -1,4 +1,4 @@
-#include "User.hpp"
+#include "nx/User.hpp"
 
 namespace NX {
     User::User(AccountUid ID){

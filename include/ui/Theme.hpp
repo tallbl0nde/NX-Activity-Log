@@ -1,7 +1,7 @@
 #ifndef THEME_HPP
 #define THEME_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 #include "Types.hpp"
 
 class Theme {

@@ -1,7 +1,7 @@
 #ifndef OVERLAY_PLAYSESSION_HPP
 #define OVERLAY_PLAYSESSION_HPP
 
-#include "Aether.hpp"
+#include "Aether/Aether.hpp"
 
 namespace CustomOvl {
     // Overlay to show a breakdown of a PlaySession
