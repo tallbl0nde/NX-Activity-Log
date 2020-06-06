@@ -1,3 +1,4 @@
+#include <numbers>
 #include "utils/NX.hpp"
 #include "ui/Theme.hpp"
 #include "ui/ThemePresets.hpp"
@@ -30,10 +31,10 @@ std::function<Aether::Colour(uint32_t)> Theme::highlightFunc() {
     Aether::Colour h2 = this->theme.highlight2;
     return [h1, h2](uint32_t t) {
         Aether::Colour col = {0, 0, 0, 0};
-        col.r = h1.r + ((h2.r - h1.r) * (0.5 * sin(1.8 * M_PI * (t/1000.0)) + 0.5));
-        col.g = h1.g + ((h2.g - h1.g) * (0.5 * sin(1.8 * M_PI * (t/1000.0)) + 0.5));
-        col.b = h1.b + ((h2.b - h1.b) * (0.5 * sin(1.8 * M_PI * (t/1000.0)) + 0.5));
-        col.a = h1.a + ((h2.a - h1.a) * (0.5 * sin(1.8 * M_PI * (t/1000.0)) + 0.5));
+        col.r = h1.r + ((h2.r - h1.r) * (0.5 * sin(1.8 * std::numbers::pi * (t/1000.0)) + 0.5));
+        col.g = h1.g + ((h2.g - h1.g) * (0.5 * sin(1.8 * std::numbers::pi * (t/1000.0)) + 0.5));
+        col.b = h1.b + ((h2.b - h1.b) * (0.5 * sin(1.8 * std::numbers::pi * (t/1000.0)) + 0.5));
+        col.a = h1.a + ((h2.a - h1.a) * (0.5 * sin(1.8 * std::numbers::pi * (t/1000.0)) + 0.5));
         return col;
     };
 }
