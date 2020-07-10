@@ -70,6 +70,11 @@ namespace Utils::NX {
                 lang = Spanish;
                 break;
 
+            case SetLanguage_ZHCN:
+            case SetLanguage_ZHHANS:
+                lang = Chinese;
+                break;
+
             case SetLanguage_KO:
                 lang = Korean;
                 break;

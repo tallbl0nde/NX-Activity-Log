@@ -41,6 +41,10 @@ std::string toString(Language l) {
             str = "Türkçe";
             break;
 
+        case Language::Chinese:
+            str = "简体中文";
+            break;
+
         case Language::Korean:
             str = "한국어";
             break;
