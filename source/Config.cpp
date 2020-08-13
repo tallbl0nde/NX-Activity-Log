@@ -37,6 +37,8 @@ namespace Main {
             this->gLang_ = Spanish;
         } else if (option->value == "Turkish") {
             this->gLang_ = Turkish;
+        } else if (option->value == "ChineseTraditional") {
+            this->gLang_ = ChineseTraditional;
         } else if (option->value == "Chinese") {
             this->gLang_ = Chinese;
         } else if (option->value == "Korean") {
@@ -145,6 +147,8 @@ namespace Main {
             option->value = "Spanish";
         } else if (this->gLang_ == Turkish) {
             option->value = "Turkish";
+        } else if (this->gLang_ == ChineseTraditional) {
+            option->value = "ChineseTraditional";
         } else if (this->gLang_ == Chinese) {
             option->value = "Chinese";
         } else if (this->gLang_ == Korean) {

@@ -16,6 +16,7 @@ enum Language {
     Portugese,
     Russian,
     Turkish,
+    ChineseTraditional,
     Chinese,
     Korean,
     TotalLanguages  // Total number of languages (only used for iterating)

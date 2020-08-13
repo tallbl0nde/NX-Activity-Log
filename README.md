@@ -36,7 +36,7 @@ This application currently has the following features:
     * Viewing each 'Play Session'
   * Event-by-event breakdown of your activity
 * Multi-language Support
-  * English, French, German, Italian, Portugese, Russian and Spanish
+  * English, Chinese (Simplified and Traditional), French, German, Italian, Korean, Portugese, Russian, Spanish and Turkish
 * Theme Support
   * Automatic theme detection to match the Switch's colour scheme
   * Custom Themes
