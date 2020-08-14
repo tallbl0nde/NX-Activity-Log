@@ -1,10 +1,7 @@
 .vscode
 .VSCodeCounter
-/changelog.txt
-/build
-/forwarder/build
-/helpful
-/sdcard
+build/
+sdcard/
 *.elf
 *.nro
 *.nacp

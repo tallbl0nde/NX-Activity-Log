@@ -54,9 +54,9 @@ _Note: The data shown in Recent Activity and Details may be slightly inaccurate 
 
 ## Screenshots
 
-![Recent View](/img/sc_recent.jpg)
-![All Activity View](/img/sc_activity.jpg)
-![Detailed View](/img/sc_detailed.jpg)
+![Recent View](/Images/sc_recent.jpg)
+![All Activity View](/Images/sc_activity.jpg)
+![Detailed View](/Images/sc_detailed.jpg)
 
 ## Reporting Incorrect Data
 

@@ -1,12 +1,12 @@
 [submodule "SimpleIniParser"]
-	path = libs/SimpleIniParser
+	path = Application/libs/SimpleIniParser
 	url = https://github.com/AtlasNX/SimpleIniParser
 [submodule "Aether"]
-	path = libs/Aether
+	path = Application/libs/Aether
 	url = https://github.com/tallbl0nde/Aether
 [submodule "Translations"]
-	path = romfs/lang
+	path = Application/romfs/lang
 	url = https://github.com/tallbl0nde/NX-Activity-Log-Translations.git
 [submodule "libs/json"]
-	path = libs/json
+	path = Application/libs/json
 	url = https://github.com/nlohmann/json.git
