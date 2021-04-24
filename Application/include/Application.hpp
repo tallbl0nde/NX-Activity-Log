@@ -31,8 +31,8 @@ namespace Main {
     // and objects used through the app
     class Application {
         private:
-            // Display object used for rendering
-            Aether::Display * display;
+            // Main aether object used for rendering
+            Aether::Window * window;
 
             // Screens of the app
             Screen::AllActivity * scAllActivity;
@@ -106,7 +106,7 @@ namespace Main {
             // Destroys and recreates screens (effectively a restart without restarting in terms of UI?)
             void reinitScreens(ScreenCreate);
 
-            // Wrapper for display function
+            // Wrapper for window function
             void setHoldDelay(int);
 
             // Pass an overlay element in order to render
@@ -162,9 +162,9 @@ namespace Main {
             // Set active title given index
             void setActiveTitle(unsigned int);
 
-            // Handles display loop
+            // Handles window loop
             void run();
-            // Call to stop display loop
+            // Call to stop window loop
             void exit();
 
             // Destructor frees memory and quits Aether

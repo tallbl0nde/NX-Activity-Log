@@ -25,12 +25,13 @@ namespace Screen {
         r = new Aether::Rectangle(30, 647, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
-        Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::X, "common.buttonHint.date"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::Y, "common.buttonHint.view"_lang));
-        c->setColour(this->app->theme()->text());
+        Aether::ControlBar * c = new Aether::ControlBar();
+        c->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
+        c->addControl(Aether::Button::B, "common.buttonHint.back"_lang);
+        c->addControl(Aether::Button::X, "common.buttonHint.date"_lang);
+        c->addControl(Aether::Button::Y, "common.buttonHint.view"_lang);
+        c->setDisabledColour(this->app->theme()->text());
+        c->setEnabledColour(this->app->theme()->text());
         this->addElement(c);
         this->noStats = new Aether::Text(460, 350, "common.noActivity"_lang, 20);
         this->noStats->setXY(this->noStats->x() - this->noStats->w()/2, this->noStats->y() - this->noStats->h()/2);
@@ -368,7 +369,7 @@ namespace Screen {
             ls->setPlaytimeColour(this->app->theme()->accent());
             ls->setTimeColour(this->app->theme()->text());
             NX::PlaySession ses = stats[i];
-            ls->setCallback([this, ses](){
+            ls->onPress([this, ses](){
                 this->setupSessionBreakdown(ses);
             });
 
@@ -563,8 +564,9 @@ namespace Screen {
         this->popped = false;
 
         // Render user's image
-        this->userimage = new Aether::Image(1155, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), 4, 4);
-        this->userimage->setWH(60, 60);
+        this->userimage = new Aether::Image(1155, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), Aether::Render::Wait);
+        this->userimage->setScaleDimensions(60, 60);
+        this->userimage->renderSync();
         this->addElement(this->userimage);
 
         // Render user's name
@@ -574,8 +576,9 @@ namespace Screen {
         this->addElement(this->username);
 
         // Render title icon
-        this->icon = new Aether::Image(65, 15, this->app->activeTitle()->imgPtr(), this->app->activeTitle()->imgSize(), 4, 4);
-        this->icon->setWH(60, 60);
+        this->icon = new Aether::Image(65, 15, this->app->activeTitle()->imgPtr(), this->app->activeTitle()->imgSize(), Aether::Render::Wait);
+        this->icon->setScaleDimensions(60, 60);
+        this->icon->renderSync();
         this->addElement(this->icon);
 
         // Render title name and limit length
@@ -584,7 +587,7 @@ namespace Screen {
         this->title->setColour(this->app->theme()->text());
         if (this->title->w() > this->username->x() - this->title->x() - 60) {
             this->title->setW(this->username->x() - this->title->x() - 60);
-            this->title->setScroll(true);
+            this->title->setCanScroll(true);
         }
         this->addElement(this->title);
 
@@ -604,7 +607,7 @@ namespace Screen {
         t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->text());
         e->addElement(t);
-        e->setCallback([this](){
+        e->onPress([this](){
             this->app->decreaseDate();
         });
         this->header->addElement(e);
@@ -622,7 +625,7 @@ namespace Screen {
         t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);
-        e->setCallback([this](){
+        e->onPress([this](){
             this->app->increaseDate();
         });
         this->header->addElement(e);

@@ -20,12 +20,13 @@ namespace Screen {
         r = new Aether::Rectangle(30, 647, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
-        Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::X, "common.buttonHint.date"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::Y, "common.buttonHint.view"_lang));
-        c->setColour(this->app->theme()->text());
+        Aether::ControlBar * c = new Aether::ControlBar();
+        c->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
+        c->addControl(Aether::Button::B, "common.buttonHint.back"_lang);
+        c->addControl(Aether::Button::X, "common.buttonHint.date"_lang);
+        c->addControl(Aether::Button::Y, "common.buttonHint.view"_lang);
+        c->setDisabledColour(this->app->theme()->text());
+        c->setEnabledColour(this->app->theme()->text());
         this->addElement(c);
         this->noStats = new Aether::Text(825, 350, "common.noActivity"_lang, 20);
         this->noStats->setXY(this->noStats->x() - this->noStats->w()/2, this->noStats->y() - this->noStats->h()/2);
@@ -326,12 +327,15 @@ namespace Screen {
             if (stats[i].first->launches > 0) {
                 totalSecs += stats[i].first->playtime;
                 CustomElm::ListActivity * la = new CustomElm::ListActivity();
-                la->setImage(new Aether::Image(0, 0, this->app->titleVector()[stats[i].second]->imgPtr(), this->app->titleVector()[stats[i].second]->imgSize(), 2, 2));
+                Aether::Image * icon = new Aether::Image(0, 0, this->app->titleVector()[stats[i].second]->imgPtr(), this->app->titleVector()[stats[i].second]->imgSize(), Aether::Render::Wait);
+                la->setImage(icon);
+                icon->setScaleDimensions(icon->w(), icon->h());
+                icon->renderSync();
                 la->setTitle(this->app->titleVector()[stats[i].second]->name());
                 la->setPlaytime(Utils::playtimeToPlayedForString(stats[i].first->playtime));
                 la->setLeftMuted(Utils::launchesToPlayedString(stats[i].first->launches));
                 unsigned int j = stats[i].second;
-                la->setCallback([this, j](){
+                la->onPress([this, j](){
                     this->app->setActiveTitle(j);
                     this->app->pushScreen();
                     this->app->setScreen(ScreenID::Details);
@@ -367,8 +371,9 @@ namespace Screen {
         this->addElement(this->hours);
 
         // Render user's image
-        this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), 4, 4);
-        this->image->setWH(60, 60);
+        this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), Aether::Render::Wait);
+        this->image->setScaleDimensions(60, 60);
+        this->image->renderSync();
         this->addElement(this->image);
 
         // Create side menu
@@ -402,7 +407,7 @@ namespace Screen {
         t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->text());
         e->addElement(t);
-        e->setCallback([this](){
+        e->onPress([this](){
             this->app->decreaseDate();
         });
         this->header->addElement(e);
@@ -420,7 +425,7 @@ namespace Screen {
         t->setXY(e->x() + e->w() - t->w() - 10, e->y() + (e->h() - t->h())/2);
         t->setColour(this->app->theme()->mutedText());
         e->addElement(t);
-        e->setCallback([this](){
+        e->onPress([this](){
             this->app->increaseDate();
         });
         this->header->addElement(e);

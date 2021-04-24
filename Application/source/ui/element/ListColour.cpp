@@ -9,7 +9,7 @@
 // Formats colour as hex string
 static std::string RGBtoHex(Aether::Colour c) {
     char str[10];
-    snprintf(str, 10, "#%02x%02x%02x%02x", c.r, c.g, c.b, c.a);
+    snprintf(str, 10, "#%02x%02x%02x%02x", c.r(), c.g(), c.b(), c.a());
     return std::string(str);
 }
 
@@ -28,7 +28,7 @@ namespace CustomElm {
         this->hex = new Aether::Text(this->x(), this->y(), "#", 18);
         this->hex->setY(this->y() + (this->h() - this->hex->h())/2);
         this->addElement(this->hex);
-        this->setCallback(f);
+        this->onPress(f);
     }
 
     void ListColour::setColour(Aether::Colour c) {

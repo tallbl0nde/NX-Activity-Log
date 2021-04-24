@@ -15,10 +15,10 @@ namespace Screen {
         this->heading = new Aether::Text(65, 44, "customTheme.heading"_lang, 28);
         this->heading->setY(this->heading->y() - this->heading->h()/2);
         this->addElement(this->heading);
-        this->controls = new Aether::Controls();
-        this->controls->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        this->controls->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        this->controls->addItem(new Aether::ControlItem(Aether::Button::X, "customTheme.apply"_lang));
+        this->controls = new Aether::ControlBar();
+        this->controls->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
+        this->controls->addControl(Aether::Button::B, "common.buttonHint.back"_lang);
+        this->controls->addControl(Aether::Button::X, "customTheme.apply"_lang);
         this->addElement(this->controls);
 
         this->onButtonPress(Aether::Button::B, [this](){
@@ -127,7 +127,8 @@ namespace Screen {
         this->topR->setColour(this->app->theme()->fg());
         this->bottomR->setColour(this->app->theme()->fg());
         this->heading->setColour(this->app->theme()->text());
-        this->controls->setColour(this->app->theme()->text());
+        this->controls->setDisabledColour(this->app->theme()->text());
+        this->controls->setEnabledColour(this->app->theme()->text());
         this->optionPreset->setLineColour(this->app->theme()->mutedLine());
         this->optionPreset->setTextColour(this->app->theme()->text());
         this->optionImage->setHintColour(this->app->theme()->text());

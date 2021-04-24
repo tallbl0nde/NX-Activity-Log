@@ -13,7 +13,7 @@ namespace CustomElm {
 
         public:
             // Pass username and pointer to / size of image
-            ListUser(std::string, u8 *, u32);
+            ListUser(std::string, uint8_t *, uint32_t);
 
             // Setter for colours
             void setLineColour(Aether::Colour);

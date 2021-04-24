@@ -13,7 +13,7 @@ namespace CustomElm {
 
         this->title = new Aether::Text(this->x() + 130, this->y() + 15, "", 22);
         this->title->setScrollSpeed(75);
-        this->title->setScroll(true);
+        this->title->setCanScroll(true);
         this->addElement(this->title);
         this->playtime = new Aether::Text(this->x() + 130, this->y() + 51, "", 18);
         this->addElement(this->playtime);
@@ -77,7 +77,7 @@ namespace CustomElm {
     }
 
     void ListActivity::setTextWidth() {
-        if (this->title->texW() > this->rank->x() - this->title->x() - 25) {
+        if (this->title->textureWidth() > this->rank->x() - this->title->x() - 25) {
             this->title->setW(this->rank->x() - this->title->x() - 25);
         }
     }

@@ -22,10 +22,11 @@ namespace Screen {
         r = new Aether::Rectangle(30, 647, 1220, 1);
         r->setColour(this->app->theme()->fg());
         this->addElement(r);
-        Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        c->setColour(this->app->theme()->text());
+        Aether::ControlBar * c = new Aether::ControlBar();
+        c->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
+        c->addControl(Aether::Button::B, "common.buttonHint.back"_lang);
+        c->setDisabledColour(this->app->theme()->text());
+        c->setEnabledColour(this->app->theme()->text());
         this->addElement(c);
 
         // Add button callbacks
@@ -203,8 +204,9 @@ namespace Screen {
         this->addElement(this->heading);
 
         // Render user's image
-        this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), 4, 4);
-        this->image->setWH(60, 60);
+        this->image = new Aether::Image(65, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), Aether::Render::Wait);
+        this->image->setScaleDimensions(60, 60);
+        this->image->renderSync();
         this->addElement(this->image);
 
         // Create side menu

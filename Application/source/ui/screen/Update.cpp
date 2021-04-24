@@ -20,10 +20,11 @@ namespace Screen {
         t->setY(t->y() - t->h()/2);
         t->setColour(this->app->theme()->text());
         this->addElement(t);
-        this->controls = new Aether::Controls();
-        this->controls->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        this->controls->addItem(new Aether::ControlItem(Aether::Button::B, "common.buttonHint.back"_lang));
-        this->controls->setColour(this->app->theme()->text());
+        this->controls = new Aether::ControlBar();
+        this->controls->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
+        this->controls->addControl(Aether::Button::B, "common.buttonHint.back"_lang);
+        this->controls->setDisabledColour(this->app->theme()->text());
+        this->controls->setEnabledColour(this->app->theme()->text());
         this->addElement(this->controls);
 
         // Exit only once thread is done

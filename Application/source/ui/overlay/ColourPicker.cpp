@@ -7,7 +7,7 @@
 // Formats colour as hex string
 static std::string RGBtoHex(Aether::Colour c) {
     char str[10];
-    snprintf(str, 10, "#%02x%02x%02x%02x", c.r, c.g, c.b, c.a);
+    snprintf(str, 10, "#%02x%02x%02x%02x", c.r(), c.g(), c.b(), c.a());
     return std::string(str);
 }
 
@@ -27,12 +27,10 @@ namespace CustomOvl {
         this->title->setY(this->title->y() - this->title->h()/2);
         this->addElement(this->title);
 
-        this->ctrl = new Aether::Controls();
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::A, "OK"));
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, "Back"));
-        this->labelOK = "OK";
-        this->labelBack = "Back";
-        this->addElement(this->ctrl);
+        this->ctrlBar = new Aether::ControlBar();
+        this->ctrlBar->addControl(Aether::Button::A, "OK");
+        this->ctrlBar->addControl(Aether::Button::B, "Back");
+        this->addElement(this->ctrlBar);
 
         this->tip = new Aether::Text(this->x() + 72, this->bottom->y() + 36, "Tip:", 20);
         this->tip->setY(this->tip->y() - this->tip->h()/2);
@@ -44,7 +42,7 @@ namespace CustomOvl {
         this->red->setMin(0);
         this->red->setMax(255);
         this->red->setLabel("Red");
-        this->red->setValue(c.r);
+        this->red->setValue(c.r());
         this->red->setY(y - this->red->h()/2);
         this->addElement(this->red);
 
@@ -52,7 +50,7 @@ namespace CustomOvl {
         this->green->setMin(0);
         this->green->setMax(255);
         this->green->setLabel("Green");
-        this->green->setValue(c.g);
+        this->green->setValue(c.g());
         this->green->setY(y - this->green->h()/2);
         this->addElement(this->green);
 
@@ -60,7 +58,7 @@ namespace CustomOvl {
         this->blue->setMin(0);
         this->blue->setMax(255);
         this->blue->setLabel("Blue");
-        this->blue->setValue(c.b);
+        this->blue->setValue(c.b());
         this->blue->setY(y - this->blue->h()/2);
         this->addElement(this->blue);
 
@@ -68,7 +66,7 @@ namespace CustomOvl {
         this->alpha->setMin(0);
         this->alpha->setMax(255);
         this->alpha->setLabel("Alpha");
-        this->alpha->setValue(c.a);
+        this->alpha->setValue(c.a());
         this->alpha->setY(y - this->alpha->h()/2);
         this->addElement(this->alpha);
 
@@ -127,40 +125,25 @@ namespace CustomOvl {
     }
 
     void ColourPicker::callFunc() {
-        this->func(this->colourRect->getColour());
+        this->func(this->colourRect->colour());
     }
 
     void ColourPicker::update(uint32_t dt) {
         Aether::Overlay::update(dt);
 
         // Adjust colour text and rectangle
-        Aether::Colour c;
-        c.r = this->red->value();
-        c.g = this->green->value();
-        c.b = this->blue->value();
-        c.a = this->alpha->value();
+        Aether::Colour c = Aether::Colour(this->red->value(), this->green->value(), this->blue->value(), this->alpha->value());
         this->colourRect->setColour(c);
         this->colourHex->setString(RGBtoHex(c));
         this->colourHex->setX(this->colourRect->x() - 24 - this->colourHex->w());
     }
 
     void ColourPicker::setBackLabel(std::string s) {
-        this->labelBack = s;
-        this->removeElement(this->ctrl);
-        this->ctrl = new Aether::Controls();
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::A, this->labelOK));
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, this->labelBack));
-        this->addElement(this->ctrl);
+        this->ctrlBar->updateControl(Aether::Button::B, s);
     }
 
     void ColourPicker::setOKLabel(std::string s) {
-        this->labelOK = s;
-        this->button->setString(s);
-        this->removeElement(this->ctrl);
-        this->ctrl = new Aether::Controls();
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::A, this->labelOK));
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, this->labelBack));
-        this->addElement(this->ctrl);
+        this->ctrlBar->updateControl(Aether::Button::A, s);
     }
 
     void ColourPicker::setTipText(std::string s) {
@@ -212,7 +195,8 @@ namespace CustomOvl {
         this->title->setColour(c);
         this->top->setColour(c);
         this->bottom->setColour(c);
-        this->ctrl->setColour(c);
+        this->ctrlBar->setDisabledColour(c);
+        this->ctrlBar->setEnabledColour(c);
         this->colourHex->setColour(c);
     }
 };

@@ -13,7 +13,7 @@ namespace CustomOvl {
             Aether::Rectangle * top;
             Aether::Rectangle * bottom;
             Aether::Rectangle * sep;
-            Aether::Controls * ctrl;
+            Aether::ControlBar * ctrlBar;
             Aether::List * list;
 
             // Summary at bottom

@@ -20,14 +20,14 @@ namespace Utils::Theme {
         }
 
         simpleIniParser::IniSection * sec = ini->findOrCreateSection(s);
-        simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("r", std::to_string(col.r));
-        col.r = std::stoi(option->value);
-        option = sec->findOrCreateFirstOption("g", std::to_string(col.g));
-        col.g = std::stoi(option->value);
-        option = sec->findOrCreateFirstOption("b", std::to_string(col.b));
-        col.b = std::stoi(option->value);
-        option = sec->findOrCreateFirstOption("a", std::to_string(col.a));
-        col.a = std::stoi(option->value);
+        simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("r", std::to_string(col.r()));
+        col.setR(std::stoi(option->value));
+        option = sec->findOrCreateFirstOption("g", std::to_string(col.g()));
+        col.setG(std::stoi(option->value));
+        option = sec->findOrCreateFirstOption("b", std::to_string(col.b()));
+        col.setB(std::stoi(option->value));
+        option = sec->findOrCreateFirstOption("a", std::to_string(col.a()));
+        col.setA(std::stoi(option->value));
     }
 
     void writeValues(std::string s, Aether::Colour col) {
@@ -36,14 +36,14 @@ namespace Utils::Theme {
         }
 
         simpleIniParser::IniSection * sec = ini->findOrCreateSection(s);
-        simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("r", std::to_string(col.r));
-        option->value = std::to_string(col.r);
-        option = sec->findOrCreateFirstOption("g", std::to_string(col.g));
-        option->value = std::to_string(col.g);
-        option = sec->findOrCreateFirstOption("b", std::to_string(col.b));
-        option->value = std::to_string(col.b);
-        option = sec->findOrCreateFirstOption("a", std::to_string(col.a));
-        option->value = std::to_string(col.a);
+        simpleIniParser::IniOption * option = sec->findOrCreateFirstOption("r", std::to_string(col.r()));
+        option->value = std::to_string(col.r());
+        option = sec->findOrCreateFirstOption("g", std::to_string(col.g()));
+        option->value = std::to_string(col.g());
+        option = sec->findOrCreateFirstOption("b", std::to_string(col.b()));
+        option->value = std::to_string(col.b());
+        option = sec->findOrCreateFirstOption("a", std::to_string(col.a()));
+        option->value = std::to_string(col.a());
         changed = true;
     }
 

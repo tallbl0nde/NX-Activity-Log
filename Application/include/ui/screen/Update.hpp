@@ -14,7 +14,7 @@ namespace Screen {
             Main::Application * app;
 
             // Controls so the colours can be changed
-            Aether::Controls * controls;
+            Aether::ControlBar * controls;
             // Element containing other elements created based on outcome
             Aether::Element * el;
             // Progress elements

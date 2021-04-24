@@ -21,7 +21,7 @@ namespace Screen {
             Aether::Text * heading;
             Aether::Rectangle * topR;
             Aether::Rectangle * bottomR;
-            Aether::Controls * controls;
+            Aether::ControlBar * controls;
             Aether::List * list;
 
             Aether::ListButton * optionPreset;

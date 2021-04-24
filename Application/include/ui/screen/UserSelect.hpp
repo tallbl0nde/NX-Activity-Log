@@ -22,7 +22,7 @@ namespace Screen {
             std::vector<NX::User *> users;
 
         public:
-            // Constructor takes display element and vector of User objects and sets up elements
+            // Constructor takes window element and vector of User objects and sets up elements
             UserSelect(Main::Application *, std::vector<NX::User *>);
 
             // User images + names are handled + elements created on load

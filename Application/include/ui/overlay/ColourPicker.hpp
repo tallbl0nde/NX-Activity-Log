@@ -8,11 +8,8 @@ namespace CustomOvl {
     // and requires a callback for when OK is pressed
     class ColourPicker : public Aether::Overlay {
         private:
-            // Strings for button labels
-            std::string labelBack, labelOK;
-
             // Pointers to elements
-            Aether::Controls * ctrl;
+            Aether::ControlBar * ctrlBar;
             Aether::Rectangle * rect, * top, * bottom;
             Aether::Text * title;
             Aether::BorderButton * button;

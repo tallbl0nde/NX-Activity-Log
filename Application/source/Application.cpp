@@ -27,7 +27,7 @@ namespace Main {
 
         // Set language
         if (!Utils::Lang::setLanguage(this->config_->gLang())) {
-            this->display->exit();
+            this->window->exit();
         }
 
         this->playdata_ = new NX::PlayData();
@@ -74,9 +74,11 @@ namespace Main {
         this->titles = Utils::NX::getTitleObjects(this->users);
         this->titleIdx = 0;
 
-        // Create Aether instance
-        this->display = new Aether::Display();
-        // this->display->setShowFPS(true);
+        // Create Aether instance (ignore log messages for now)
+        this->window = new Aether::Window("NX-Activity-Log", 1280, 720, [](const std::string message, const bool important) {
+
+        });
+        this->window->showDebugInfo(true);
 
         // Create overlays
         this->dtpicker = nullptr;
@@ -95,8 +97,8 @@ namespace Main {
             this->setScreen(this->config_->lScreen());
         } else {
             // Start with UserSelect screen
-            this->display->setFadeIn();
-            this->display->setFadeOut();
+            this->window->setFadeIn(true);
+            this->window->setFadeOut(true);
             this->setScreen(ScreenID::UserSelect);
         }
     }
@@ -144,54 +146,54 @@ namespace Main {
     }
 
     void Application::setHoldDelay(int i) {
-        this->display->setHoldDelay(i);
+        this->window->setHoldDelay(i);
     }
 
     void Application::addOverlay(Aether::Overlay * o) {
-        this->display->addOverlay(o);
+        this->window->addOverlay(o);
     }
 
     void Application::setScreen(ScreenID s) {
         switch (s) {
             case AllActivity:
-                this->display->setScreen(this->scAllActivity);
+                this->window->showScreen(this->scAllActivity);
                 this->screen = AllActivity;
                 break;
 
             case CustomTheme:
-                this->display->setScreen(this->scCustomTheme);
+                this->window->showScreen(this->scCustomTheme);
                 this->screen = CustomTheme;
                 break;
 
             case Details:
-                this->display->setScreen(this->scDetails);
+                this->window->showScreen(this->scDetails);
                 this->screen = Details;
                 break;
 
             case RecentActivity:
-                this->display->setScreen(this->scRecentActivity);
+                this->window->showScreen(this->scRecentActivity);
                 this->screen = RecentActivity;
                 break;
 
             case Settings:
-                this->display->setScreen(this->scSettings);
+                this->window->showScreen(this->scSettings);
                 this->screen = Settings;
                 break;
 
             case Update:
-                this->display->setScreen(this->scUpdate);
+                this->window->showScreen(this->scUpdate);
                 this->screen = Update;
                 break;
 
             case UserSelect:
-                this->display->setScreen(this->scUserSelect);
+                this->window->showScreen(this->scUserSelect);
                 this->screen = UserSelect;
                 break;
         }
     }
 
     void Application::pushScreen() {
-        this->display->pushScreen();
+        this->window->pushScreen();
         this->screenStack.push(this->screen);
 
         // I'll add the onPush()/onPop() methods to all screen when I refactor them
@@ -201,7 +203,7 @@ namespace Main {
     }
 
     void Application::popScreen() {
-        this->display->popScreen();
+        this->window->popScreen();
         if (!this->screenStack.empty()) {
             this->screen = this->screenStack.top();
             this->screenStack.pop();
@@ -354,17 +356,18 @@ namespace Main {
         this->periodpicker->setLineColour(this->theme_->fg());
         this->periodpicker->setHighlightColour(this->theme_->accent());
         this->periodpicker->setListLineColour(this->theme_->mutedLine());
-        this->display->setHighlightColours(this->theme_->highlightBG(), this->theme_->selected());
-        this->display->setHighlightAnimation(this->theme_->highlightFunc());
+        this->window->setHighlightAnimation(this->theme_->highlightFunc());
+        this->window->setHighlightBackground(this->theme_->highlightBG());
+        this->window->setHighlightOverlay(this->theme_->selected());
         if (this->config_->tImage() && this->config_->gTheme() == Custom) {
-            if (this->display->setBackgroundImage(BACKGROUND_IMAGE)) {
+            if (this->window->setBackgroundImage(BACKGROUND_IMAGE)) {
                 return;
             } else {
                 // Turn off background image
                 this->config_->setTImage(false);
             }
         }
-        this->display->setBackgroundColour(this->theme_->bg().r, this->theme_->bg().g, this->theme_->bg().b);
+        this->window->setBackgroundColour(this->theme_->bg());
     }
 
     bool Application::hasUpdate() {
@@ -416,13 +419,13 @@ namespace Main {
 
     void Application::run() {
         // Do main loop
-        while (this->display->loop()) {
+        while (this->window->loop()) {
             // Check if screens should be recreated
             if (this->reinitScreens_ == ReinitState::Wait) {
                 this->reinitScreens_ = ReinitState::True;
             } else if (this->reinitScreens_ == ReinitState::True) {
                 this->reinitScreens_ = ReinitState::False;
-                this->display->dropScreen();
+                this->window->removeScreen();
                 this->deleteScreens();
                 this->setDisplayTheme();
                 this->createScreens();
@@ -432,7 +435,7 @@ namespace Main {
     }
 
     void Application::exit() {
-        this->display->exit();
+        this->window->exit();
     }
 
     Application::~Application() {
@@ -462,8 +465,8 @@ namespace Main {
         // Cleanup Aether
         this->deleteScreens();
         if (!this->isUserPage_) {
-            // Don't delete display as it flickers black (hopefully there's a better way around this)
-            delete this->display;
+            // Don't delete window as it flickers black (hopefully there's a better way around this)
+            delete this->window;
         }
 
         // Stop all services

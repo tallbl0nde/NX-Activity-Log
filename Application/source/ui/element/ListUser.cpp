@@ -3,7 +3,7 @@
 #define HEIGHT 90
 
 namespace CustomElm {
-    ListUser::ListUser(std::string n, u8 * p, u32 s) : Aether::Element() {
+    ListUser::ListUser(std::string n, uint8_t * p, uint32_t s) : Aether::Element() {
         this->setH(HEIGHT);
         this->topR = new Aether::Rectangle(this->x(), this->y(), this->w(), 1);
         this->addElement(topR);

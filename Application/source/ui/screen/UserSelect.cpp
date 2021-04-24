@@ -19,10 +19,11 @@ namespace Screen {
         t->setY(t->y() - t->h()/2);
         t->setColour(this->app->theme()->text());
         this->addElement(t);
-        Aether::Controls * c = new Aether::Controls();
-        c->addItem(new Aether::ControlItem(Aether::Button::A, "common.buttonHint.ok"_lang));
-        c->addItem(new Aether::ControlItem(Aether::Button::PLUS, "common.buttonHint.exit"_lang));
-        c->setColour(this->app->theme()->text());
+        Aether::ControlBar * c = new Aether::ControlBar();
+        c->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
+        c->addControl(Aether::Button::PLUS, "common.buttonHint.exit"_lang);
+        c->setDisabledColour(this->app->theme()->text());
+        c->setEnabledColour(this->app->theme()->text());
         this->addElement(c);
 
         // Add handling of plus/B to exit
@@ -45,7 +46,7 @@ namespace Screen {
             CustomElm::ListUser * l = new CustomElm::ListUser(this->users[i]->username(), this->users[i]->imgPtr(), this->users[i]->imgSize());
             l->setLineColour(this->app->theme()->mutedLine());
             l->setTextColour(this->app->theme()->text());
-            l->setCallback([this, i](){
+            l->onPress([this, i](){
                 this->app->setActiveUser(i);
                 this->app->setScreen(this->app->config()->lScreen());
             });

@@ -17,9 +17,10 @@ namespace CustomOvl {
         this->addElement(this->bottom);
         this->sep = new Aether::Rectangle(this->rect->x() + 30, this->bottom->y() - 110, this->bottom->w(), 1);
         this->addElement(this->sep);
-        this->ctrl = new Aether::Controls(this->rect->x() + 45, 647, this->rect->w() - 90);
-        this->ctrl->addItem(new Aether::ControlItem(Aether::Button::B, "common.close"_lang));
-        this->addElement(this->ctrl);
+        this->ctrlBar = new Aether::ControlBar();
+        this->ctrlBar->setXYWH(this->rect->x() + 45, 647, this->rect->w() - 90, this->ctrlBar->h());
+        this->ctrlBar->addControl(Aether::Button::B, "common.close"_lang);
+        this->addElement(this->ctrlBar);
 
         this->list = nullptr;
         this->col = Aether::Colour{255, 255, 255, 255};
@@ -86,6 +87,7 @@ namespace CustomOvl {
         this->length->setColour(c);
         this->playtime->setColour(c);
         this->title->setColour(c);
-        this->ctrl->setColour(c);
+        this->ctrlBar->setDisabledColour(c);
+        this->ctrlBar->setEnabledColour(c);
     }
 };
