@@ -7,6 +7,9 @@ namespace CustomElm {
     // List item containing game icon and a few left/right aligned strings
     class ListActivity : public Aether::Element {
         private:
+            // Height of item in pixels
+            static const int height = 120;
+
             // Pointers to elements
             Aether::Rectangle * topR;
             Aether::Rectangle * bottomR;
@@ -18,27 +21,32 @@ namespace CustomElm {
             Aether::Text * mutedRight;
 
             // Sets width of applicable elements
-            void setTextWidth();
+            void positionItems();
+
+            // Small helper to return whether the given element is ready to be shown
+            bool textReady(Aether::Text *);
 
         public:
             // Constructor positions elements
             ListActivity();
 
-            // Set icon (deleted internally)
-            void setImage(Aether::Image *);
+            // Set icon using raw data
+            void setImage(uint8_t *, uint32_t);
 
             // Set strings
-            void setTitle(std::string);
-            void setPlaytime(std::string);
-            void setLeftMuted(std::string);
-            void setRightMuted(std::string);
-            void setRank(std::string);
+            void setTitle(const std::string &);
+            void setPlaytime(const std::string &);
+            void setLeftMuted(const std::string &);
+            void setRightMuted(const std::string &);
+            void setRank(const std::string &);
 
             // Set colours
-            void setTitleColour(Aether::Colour);
-            void setPlaytimeColour(Aether::Colour);
-            void setMutedColour(Aether::Colour);
-            void setLineColour(Aether::Colour);
+            void setTitleColour(const Aether::Colour &);
+            void setPlaytimeColour(const Aether::Colour &);
+            void setMutedColour(const Aether::Colour &);
+            void setLineColour(const Aether::Colour &);
+
+            void update(unsigned int);
 
             // Adjusting width must move/adjust children
             void setW(int);

@@ -327,10 +327,7 @@ namespace Screen {
             if (stats[i].first->launches > 0) {
                 totalSecs += stats[i].first->playtime;
                 CustomElm::ListActivity * la = new CustomElm::ListActivity();
-                Aether::Image * icon = new Aether::Image(0, 0, this->app->titleVector()[stats[i].second]->imgPtr(), this->app->titleVector()[stats[i].second]->imgSize(), Aether::Render::Wait);
-                la->setImage(icon);
-                icon->setScaleDimensions(icon->w(), icon->h());
-                icon->renderSync();
+                la->setImage(this->app->titleVector()[stats[i].second]->imgPtr(), this->app->titleVector()[stats[i].second]->imgSize());
                 la->setTitle(this->app->titleVector()[stats[i].second]->name());
                 la->setPlaytime(Utils::playtimeToPlayedForString(stats[i].first->playtime));
                 la->setLeftMuted(Utils::launchesToPlayedString(stats[i].first->launches));

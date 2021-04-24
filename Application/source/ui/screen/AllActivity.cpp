@@ -144,10 +144,7 @@ namespace Screen {
 
             // Create ListActivity and add to list
             CustomElm::ListActivity * la = new CustomElm::ListActivity();
-            Aether::Image * icon = new Aether::Image(0, 0, t[i]->imgPtr(), t[i]->imgSize(), Aether::Render::Wait);
-            la->setImage(icon);
-            icon->setScaleDimensions(icon->w(), icon->h());
-            icon->renderSync();
+            la->setImage(t[i]->imgPtr(), t[i]->imgSize());
             la->setTitle(t[i]->name());
             la->setPlaytime(Utils::playtimeToPlayedForString(ps->playtime));
             la->setLeftMuted(Utils::lastPlayedToString(pdmPlayTimestampToPosix(ps->lastPlayed)));
