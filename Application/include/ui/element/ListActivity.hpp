@@ -5,7 +5,7 @@
 
 namespace CustomElm {
     // List item containing game icon and a few left/right aligned strings
-    class ListActivity : public Aether::Element {
+    class ListActivity : public Aether::AsyncItem {
         private:
             // Height of item in pixels
             static const int height = 120;
@@ -21,14 +21,17 @@ namespace CustomElm {
             Aether::Text * mutedRight;
 
             // Sets width of applicable elements
-            void positionItems();
+            void positionElements();
 
-            // Small helper to return whether the given element is ready to be shown
-            bool textReady(Aether::Text *);
+            // Helper to prepare new element
+            void processText(Aether::Text * &, std::function<Aether::Text * ()>);
 
         public:
-            // Constructor positions elements
             ListActivity();
+
+            // Override update() to also change the alpha of lines
+            // (they are not monitored by AsyncItem)
+            void update(uint32_t);
 
             // Set icon using raw data
             void setImage(uint8_t *, uint32_t);
@@ -45,11 +48,6 @@ namespace CustomElm {
             void setPlaytimeColour(const Aether::Colour &);
             void setMutedColour(const Aether::Colour &);
             void setLineColour(const Aether::Colour &);
-
-            void update(unsigned int);
-
-            // Adjusting width must move/adjust children
-            void setW(int);
     };
 };
 

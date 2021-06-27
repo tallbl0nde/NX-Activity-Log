@@ -38,6 +38,8 @@ namespace CustomElm {
             void addElement(ListActivity *, SortInfo *);
             // Also frees memory used by SortInfos
             void removeAllElements();
+            // Returns all list items and SortInfos
+            void returnAllElements();
 
             // Sets sort method and sorts items
             void setSort(SortType);

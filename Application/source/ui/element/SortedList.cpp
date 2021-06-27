@@ -27,6 +27,15 @@ namespace CustomElm {
         }
     }
 
+    void SortedList::returnAllElements() {
+        // Return everything but heading + separator
+        for (size_t i = 2; i < this->children.size(); i++) {
+            this->children[i]->setParent(nullptr);
+        }
+        this->children.erase(this->children.begin() + 2, this->children.end());
+        this->sortinfo.clear();
+    }
+
     void SortedList::setSort(SortType t) {
         this->sorting = t;
 
@@ -34,6 +43,9 @@ namespace CustomElm {
         std::vector<Element *> items(this->children.begin() + 2, this->children.end());
         std::vector<std::pair<Element *, SortInfo *> > merged;
         Utils::mergeVectors(merged, items, this->sortinfo);
+
+        // Remove (without deleting) each item from the list
+        this->returnAllElements();
 
         // Change heading text + reorder items
         switch (t) {
@@ -89,15 +101,19 @@ namespace CustomElm {
         }
         this->heading->setX(this->x() + (this->w() - this->heading->w())/2);
 
-        // Split vectors and update positions
-        Utils::splitVectors(merged, items, this->sortinfo);
+        // Split vectors and re-add to list
+        std::vector<SortInfo *> tmp(merged.size(), nullptr);
+        Utils::splitVectors(merged, items, tmp);
+
         for (size_t i = 0; i < items.size(); i++) {
-            this->children[i+2] = items[i];
-            this->children[i+2]->setY(this->children[i+1]->y() + this->children[i+1]->h());
+            ListActivity * item = static_cast<ListActivity *>(items[i]);
+            this->addElement(item, tmp[i]);
+
+            // Update ranks
             if (this->sorting != AlphaAsc) {
-                static_cast<ListActivity *>(this->children[i+2])->setRank("#" + std::to_string(i+1));
+                item->setRank("#" + std::to_string(i+1));
             } else {
-                static_cast<ListActivity *>(this->children[i+2])->setRank("");
+                item->setRank("");
             }
         }
 
