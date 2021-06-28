@@ -364,10 +364,6 @@ namespace Screen {
 
             // Create element
             CustomElm::ListSession * ls = new CustomElm::ListSession();
-            ls->setLineColour(this->app->theme()->mutedLine());
-            ls->setPercentageColour(this->app->theme()->mutedText());
-            ls->setPlaytimeColour(this->app->theme()->accent());
-            ls->setTimeColour(this->app->theme()->text());
             NX::PlaySession ses = stats[i];
             ls->onPress([this, ses](){
                 this->setupSessionBreakdown(ses);
@@ -447,6 +443,10 @@ namespace Screen {
             }
             ls->setPercentageString(str);
 
+            ls->setLineColour(this->app->theme()->mutedLine());
+            ls->setPercentageColour(this->app->theme()->mutedText());
+            ls->setPlaytimeColour(this->app->theme()->accent());
+            ls->setTimeColour(this->app->theme()->text());
             this->list->addElement(ls);
         }
 
