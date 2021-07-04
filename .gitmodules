@@ -1,6 +1,6 @@
 [submodule "SimpleIniParser"]
 	path = Application/libs/SimpleIniParser
-	url = https://github.com/AtlasNX/SimpleIniParser
+	url = https://github.com/TehPsychedelic/SimpleIniParser
 [submodule "Aether"]
 	path = Application/libs/Aether
 	url = https://github.com/tallbl0nde/Aether
