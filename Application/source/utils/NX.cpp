@@ -174,15 +174,17 @@ namespace Utils::NX {
         std::vector<TitleID> installedIDs;
         NsApplicationRecord * records = new NsApplicationRecord[MAX_TITLES];
         s32 count = 0;
-        s32 installedTotal = 0;
-        while (true){
-            rc = nsListApplicationRecord(records, MAX_TITLES, count, &installedTotal);
+        s32 out = 0;
+        while (true) {
+            rc = nsListApplicationRecord(records, MAX_TITLES, count, &out);
             // Break if at the end or no titles
-            if (R_FAILED(rc) || installedTotal == 0){
+            if (R_FAILED(rc) || out == 0){
                 break;
             }
-            count++;
-            installedIDs.push_back(records->application_id);
+            for (s32 i = 0; i < out; i++) {
+                installedIDs.push_back((records + i)->application_id);
+            }
+            count += out;
         }
         delete[] records;
 
