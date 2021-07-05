@@ -9,8 +9,10 @@ namespace CustomElm {
         this->addElement(topR);
         this->bottomR = new Aether::Rectangle(this->x(), this->y() + this->h(), this->w(), 1);
         this->addElement(bottomR);
-        Aether::Image * im = new Aether::Image(this->x() + 10, this->y() + 10, p, s);
+        Aether::Image * im = new Aether::Image(this->x() + 10, this->y() + 10, p, s, Aether::Render::Wait);
         im->setWH(70, 70);
+        im->setScaleDimensions(70, 70);
+        im->renderSync();
         this->addElement(im);
         this->name = new Aether::Text(this->x() + 105, this->y() + this->h()/2, n, 24);
         this->name->setY(this->name->y() - this->name->h()/2);

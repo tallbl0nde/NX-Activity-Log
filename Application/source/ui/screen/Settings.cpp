@@ -383,7 +383,8 @@ namespace Screen {
 
         // EXPORT
         lb = new Aether::ListButton("settings.importExport.export"_lang, [this]() {
-            // TODO: export
+            // TODO: show popup
+            this->app->exportToJSON();
         });
         lb->setLineColour(this->app->theme()->mutedLine());
         lb->setTextColour(this->app->theme()->text());

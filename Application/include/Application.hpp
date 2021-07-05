@@ -162,6 +162,11 @@ namespace Main {
             // Set active title given index
             void setActiveTitle(unsigned int);
 
+            // Imports previously exported play data, returning if successful or not
+            // TODO: implement
+            // Exports stored play data, returning if successful or not
+            bool exportToJSON();
+
             // Handles window loop
             void run();
             // Call to stop window loop
