@@ -35,6 +35,8 @@ namespace Screen {
             Aether::ListOption * optionDeleted;
             Aether::ListOption * optionPage;
 
+            Aether::ListButton * optionDeleteImport;
+
             // MessageBox for forwarder/setting info
             Aether::MessageBox * msgbox;
             // PopupList for list-related options

@@ -55,6 +55,10 @@ namespace CustomElm {
         col.setA(this->icon->colour().a());
         this->topR->setColour(col);
         this->bottomR->setColour(col);
+
+        bool hide = (this->icon->hidden());
+        this->topR->setHidden(hide);
+        this->bottomR->setHidden(hide);
     }
 
     void ListActivity::setImage(uint8_t * ptr, uint32_t size) {

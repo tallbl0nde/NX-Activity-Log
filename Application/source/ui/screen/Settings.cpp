@@ -373,6 +373,57 @@ namespace Screen {
 
         this->list->addElement(new Aether::ListSeparator());
 
+        // ===== IMPORT/EXPORT =====
+        lh = new Aether::ListHeading("settings.importExport.heading"_lang);
+        lh->setRectColour(this->app->theme()->mutedLine());
+        lh->setTextColour(this->app->theme()->text());
+        this->list->addElement(lh);
+
+        this->list->addElement(new Aether::ListSeparator(20));
+
+        // EXPORT
+        lb = new Aether::ListButton("settings.importExport.export"_lang, [this]() {
+            // TODO: export
+        });
+        lb->setLineColour(this->app->theme()->mutedLine());
+        lb->setTextColour(this->app->theme()->text());
+        this->list->addElement(lb);
+        lc = new Aether::ListComment("settings.importExport.exportHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        this->list->addElement(new Aether::ListSeparator(20));
+
+        // IMPORT
+        lb = new Aether::ListButton("settings.importExport.import"_lang, [this]() {
+            // TODO: import
+        });
+        lb->setLineColour(this->app->theme()->mutedLine());
+        lb->setTextColour(this->app->theme()->text());
+        this->list->addElement(lb);
+        lc = new Aether::ListComment("settings.importExport.importHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        // DELETE IMPORTED DATA
+        this->optionDeleteImport = new Aether::ListButton("settings.importExport.deleteImport"_lang, [this]() {
+            // TODO: show dialog box
+        });
+        this->optionDeleteImport->setLineColour(this->app->theme()->mutedLine());
+        this->optionDeleteImport->setTextColour(this->app->theme()->text());
+        // TODO: uncomment
+        // if (!this->app->playData->hasImportedData()) {
+        //     // Disable if no imported data
+        //     this->optionDeleteImport->setSelectable(false);
+        //     this->optionDeleteImport->setTouchable(false);
+        // }
+        this->list->addElement(this->optionDeleteImport);
+        lc = new Aether::ListComment("settings.importExport.deleteImportHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
+        this->list->addElement(new Aether::ListSeparator(20));
+
         // ===== OTHERS =====
         lh = new Aether::ListHeading("settings.other.heading"_lang);
         lh->setRectColour(this->app->theme()->mutedLine());
