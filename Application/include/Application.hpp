@@ -31,6 +31,9 @@ namespace Main {
     // and objects used through the app
     class Application {
         private:
+            // Forward declare job classes
+            class ExportJob;
+
             // Main aether object used for rendering
             Aether::Window * window;
 
@@ -164,8 +167,9 @@ namespace Main {
 
             // Imports previously exported play data, returning if successful or not
             // TODO: implement
-            // Exports stored play data, returning if successful or not
-            bool exportToJSON();
+            // Exports all stored play data as a JSON.
+            // This operation is performed an it's own thread, updating the provided atomic.
+            void exportToJSON(std::atomic<double> & percent);
 
             // Handles window loop
             void run();

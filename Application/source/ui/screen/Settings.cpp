@@ -196,6 +196,24 @@ namespace Screen {
         this->app->addOverlay(this->popuplist);
     }
 
+    void Settings::showExportOverlay() {
+        this->pbar->setValue(0);
+        this->pheading->setString("settings.importExport.exporting"_lang);
+        this->progressbox->reuse();
+        this->app->addOverlay(this->progressbox);
+    }
+
+    void Settings::update(uint32_t dt) {
+        Screen::update(dt);
+
+        // Update the progressbox's value, closing the overlay once done
+        this->pvalue->setString(std::to_string(static_cast<int>(this->pbarValue)) + "%");
+        this->pbar->setValue(this->pbarValue);
+        if (this->pbarValue >= 100) {
+            this->progressbox->close();
+        }
+    }
+
     void Settings::onLoad() {
         // Create heading using user's name
         this->heading = new Aether::Text(150, 45, Utils::formatHeading(this->app->activeUser()->username()), 28);
@@ -383,8 +401,8 @@ namespace Screen {
 
         // EXPORT
         lb = new Aether::ListButton("settings.importExport.export"_lang, [this]() {
-            // TODO: show popup
-            this->app->exportToJSON();
+            this->showExportOverlay();
+            this->app->exportToJSON(this->pbarValue);
         });
         lb->setLineColour(this->app->theme()->mutedLine());
         lb->setTextColour(this->app->theme()->text());
@@ -483,8 +501,35 @@ namespace Screen {
         this->msgbox->setRectangleColour(this->app->theme()->altBG());
         this->msgbox->setTextColour(this->app->theme()->accent());
 
+        // Create base progress box
+        this->progressbox = new Aether::MessageBox();
+        this->progressbox->onButtonPress(Aether::Button::B, nullptr);
+        this->progressbox->setLineColour(Aether::Colour(255, 255, 255, 0));
+        this->progressbox->setRectangleColour(this->app->theme()->altBG());
+        this->progressbox->setTextColour(this->app->theme()->accent());
+
+        Aether::Element * body = new Aether::Element(0, 0, 560, 210);
+        this->pheading = new Aether::Text(50, 35, "|", 24);
+        this->pheading->setColour(this->app->theme()->text());
+        body->addElement(this->pheading);
+
+        this->pbar = new Aether::RoundProgressBar(50, this->pheading->y() + this->pheading->h() + 25, 400);
+        this->pbar->setBackgroundColour(this->app->theme()->mutedLine());
+        this->pbar->setForegroundColour(this->app->theme()->accent());
+        body->addElement(this->pbar);
+        this->pbarValue = 0;
+
+        this->pvalue = new Aether::Text(this->pbar->x() + this->pbar->w() + 25, 0, "0%", 18);
+        this->pvalue->setColour(this->app->theme()->text());
+        this->pvalue->setY(this->pbar->y() + (this->pbar->h() - this->pvalue->h())/2);
+        body->addElement(this->pvalue);
+
+        body->setH(this->pbar->y() + this->pbar->h() + 35);
+        this->progressbox->setBodySize(body->w(), body->h());
+        this->progressbox->setBody(body);
+
         // Show update icon if needbe
-        this->updateElm =nullptr;
+        this->updateElm = nullptr;
         if (this->app->hasUpdate()) {
             this->updateElm = new Aether::Image(50, 669, "romfs:/icon/download.png");
             this->updateElm->setColour(this->app->theme()->text());
@@ -516,5 +561,6 @@ namespace Screen {
         this->removeElement(this->updateElm);
         delete this->msgbox;
         delete this->popuplist;
+        delete this->progressbox;
     }
 };

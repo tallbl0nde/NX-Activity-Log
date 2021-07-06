@@ -42,6 +42,13 @@ namespace Screen {
             // PopupList for list-related options
             Aether::PopupList * popuplist;
 
+            // MessageBox containing progress bar
+            Aether::MessageBox * progressbox;
+            Aether::RoundProgressBar * pbar;
+            Aether::Text * pvalue;
+            std::atomic<double> pbarValue;
+            Aether::Text * pheading;
+
             void installForwarder();
 
             // Set elements and highlight one in overlay
@@ -52,9 +59,14 @@ namespace Screen {
             void setupThemeOverlay();
             void setupViewOverlay();
 
+            // Show overlays
+            void showExportOverlay();
+
         public:
             // Passed main application object
             Settings(Main::Application *, ScreenCreate);
+
+            void update(uint32_t);
 
             // Prepare user-specific elements
             void onLoad();
