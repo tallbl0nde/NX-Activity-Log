@@ -357,18 +357,18 @@ namespace Main {
         this->periodpicker->setLineColour(this->theme_->fg());
         this->periodpicker->setHighlightColour(this->theme_->accent());
         this->periodpicker->setListLineColour(this->theme_->mutedLine());
+
+        this->window->setBackgroundColour(this->theme_->bg());
         this->window->setHighlightAnimation(this->theme_->highlightFunc());
         this->window->setHighlightBackground(this->theme_->highlightBG());
         this->window->setHighlightOverlay(this->theme_->selected());
-        if (this->config_->tImage() && this->config_->gTheme() == Custom) {
-            if (this->window->setBackgroundImage(BACKGROUND_IMAGE)) {
-                return;
-            } else {
-                // Turn off background image
-                this->config_->setTImage(false);
-            }
+
+        // Set background image if enabled
+        bool set = this->window->setBackgroundImage(this->config_->tImage() && this->config_->gTheme() == Custom ? BACKGROUND_IMAGE : "");
+        if (!set) {
+            // Disable background image if failed to set
+            this->config_->setTImage(false);
         }
-        this->window->setBackgroundColour(this->theme_->bg());
     }
 
     bool Application::hasUpdate() {
