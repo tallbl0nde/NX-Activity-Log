@@ -1,6 +1,8 @@
 #ifndef SCREEN_SETTINGS_HPP
 #define SCREEN_SETTINGS_HPP
 
+#include "ui/overlay/ProgressBox.hpp"
+
 // Forward declaration due to circular dependency
 namespace Main {
     class Application;
@@ -43,11 +45,8 @@ namespace Screen {
             Aether::PopupList * popuplist;
 
             // MessageBox containing progress bar
-            Aether::MessageBox * progressbox;
-            Aether::RoundProgressBar * pbar;
-            Aether::Text * pvalue;
-            std::atomic<double> pbarValue;
-            Aether::Text * pheading;
+            CustomOvl::ProgressBox * progressbox;
+            std::atomic<double> progressValue;
 
             void installForwarder();
 
