@@ -33,6 +33,7 @@ namespace Main {
         private:
             // Forward declare job classes
             class ExportJob;
+            class ImportJob;
 
             // Main aether object used for rendering
             Aether::Window * window;
@@ -165,8 +166,9 @@ namespace Main {
             // Set active title given index
             void setActiveTitle(unsigned int);
 
-            // Imports previously exported play data, returning if successful or not
-            // TODO: implement
+            // Imports play data from a JSON (by matching usernames).
+            // This operation is performed an it's own thread, updating the provided atomic.
+            void importFromJSON(std::atomic<double> & percent);
             // Exports all stored play data as a JSON.
             // This operation is performed an it's own thread, updating the provided atomic.
             void exportToJSON(std::atomic<double> & percent);

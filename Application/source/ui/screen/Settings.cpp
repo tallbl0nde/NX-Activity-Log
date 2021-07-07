@@ -203,6 +203,13 @@ namespace Screen {
         this->app->addOverlay(this->progressbox);
     }
 
+    void Settings::showImportOverlay() {
+        this->progressbox->setHeading("settings.importExport.importing"_lang);
+        this->progressbox->setValue(0);
+        this->progressbox->reuse();
+        this->app->addOverlay(this->progressbox);
+    }
+
     void Settings::update(uint32_t dt) {
         Screen::update(dt);
 
@@ -414,7 +421,8 @@ namespace Screen {
 
         // IMPORT
         lb = new Aether::ListButton("settings.importExport.import"_lang, [this]() {
-            // TODO: import
+            this->showImportOverlay();
+            this->app->importFromJSON(this->progressValue);
         });
         lb->setLineColour(this->app->theme()->mutedLine());
         lb->setTextColour(this->app->theme()->text());

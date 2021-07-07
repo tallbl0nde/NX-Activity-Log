@@ -60,6 +60,7 @@ namespace Screen {
 
             // Show overlays
             void showExportOverlay();
+            void showImportOverlay();
 
         public:
             // Passed main application object

@@ -76,12 +76,21 @@ namespace Main {
                                 str = "Lost Focus";
                                 break;
 
+                            case NX::EventType::Account_Active:
+                                str = "Account Login";
+                                break;
+
+                            case NX::EventType::Account_Inactive:
+                                str = "Account Logout";
+                                break;
+
                             default:
                                 str = "Unknown";
                                 break;
                         }
 
-                        eJson["timestamp"] = events[k].clockTimestamp;
+                        eJson["clockTimestamp"] = events[k].clockTimestamp;
+                        eJson["steadyTimestamp"] = events[k].steadyTimestamp;
                         eJson["type"] = str;
                         tJson["events"].push_back(eJson);
                     }
@@ -104,7 +113,7 @@ namespace Main {
                 // Update percentage
                 size_t current = (i * this->app->titles.size()) + j;
                 size_t total = this->app->users.size() * this->app->titles.size();
-                this->percent = 100 * (current/static_cast<double>(total));
+                this->percent = 99 * (current/static_cast<double>(total));
             }
 
             // Append user

@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include "Application.ExportJob.hpp"
+#include "Application.ImportJob.hpp"
 #include "utils/Curl.hpp"
 #include "utils/Lang.hpp"
 #include "utils/UpdateUtils.hpp"
@@ -416,6 +417,11 @@ namespace Main {
 
     void Application::setActiveTitle(unsigned int i) {
         this->titleIdx = i;
+    }
+
+    void Application::importFromJSON(std::atomic<double> & percent) {
+        // We're gonna use Aether's thread pool even though we're not meant to :P
+        Aether::ThreadPool::getInstance()->queueJob(new Application::ImportJob(this, percent), Aether::ThreadPool::Importance::High);
     }
 
     void Application::exportToJSON(std::atomic<double> & percent) {
