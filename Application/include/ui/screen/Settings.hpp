@@ -12,6 +12,16 @@ namespace Screen {
     // Application Settings screen
     class Settings : public Aether::Screen {
         private:
+            // Types of running jobs
+            enum class Job {
+                Import,
+                Export,
+                None
+            };
+
+            // Current job running
+            Job job;
+
             // Pointer to main app object for config
             Main::Application * app;
             // Type of creation
@@ -51,7 +61,9 @@ namespace Screen {
             void installForwarder();
 
             // Set elements and highlight one in overlay
+            void prepareMessageBox();
             void preparePopupList(std::string);
+            void setupGenericMessageOverlay(const std::string &);
             void setupLangOverlay();
             void setupScreenOverlay();
             void setupSortOverlay();
@@ -61,6 +73,7 @@ namespace Screen {
             // Show overlays
             void showExportOverlay();
             void showImportOverlay();
+            void showDeleteImportedOverlay();
 
         public:
             // Passed main application object

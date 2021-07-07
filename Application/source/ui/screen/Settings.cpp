@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include <filesystem>
 #include "utils/Forwarder.hpp"
 #include "utils/Lang.hpp"
 #include "ui/screen/Settings.hpp"
@@ -40,8 +41,10 @@ namespace Screen {
     }
 
     void Settings::installForwarder() {
-        // A message box will be shown regardless of the outcome
-        this->msgbox->emptyBody();
+        this->prepareMessageBox();
+        this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this](){
+            this->msgbox->close();
+        });
 
         // Check if forwarder exists
         Utils::Forwarder::initVars();
@@ -91,6 +94,14 @@ namespace Screen {
         }
     }
 
+    void Settings::prepareMessageBox() {
+        delete this->msgbox;
+        this->msgbox = new Aether::MessageBox();
+        this->msgbox->setLineColour(this->app->theme()->mutedLine());
+        this->msgbox->setRectangleColour(this->app->theme()->altBG());
+        this->msgbox->setTextColour(this->app->theme()->accent());
+    }
+
     void Settings::preparePopupList(std::string s) {
         // Remove previous overlay
         if (this->popuplist != nullptr) {
@@ -105,6 +116,23 @@ namespace Screen {
         this->popuplist->setLineColour(this->app->theme()->fg());
         this->popuplist->setListLineColour(this->app->theme()->mutedLine());
         this->popuplist->setTextColour(this->app->theme()->text());
+    }
+
+    void Settings::setupGenericMessageOverlay(const std::string & message) {
+        this->prepareMessageBox();
+        this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this]() {
+            this->msgbox->close();
+        });
+
+        int bw, bh;
+        this->msgbox->getBodySize(&bw, &bh);
+        Aether::Element * body = new Aether::Element(0, 0, bw, bh);
+        Aether::TextBlock * tb = new Aether::TextBlock(50, 40, message, 24, bw - 100);
+        tb->setColour(this->app->theme()->text());
+        body->addElement(tb);
+        this->msgbox->setBodySize(bw, tb->y() + tb->h() + 40);
+        this->msgbox->setBody(body);
+        this->app->addOverlay(this->msgbox);
     }
 
     void Settings::setupLangOverlay() {
@@ -210,6 +238,41 @@ namespace Screen {
         this->app->addOverlay(this->progressbox);
     }
 
+    void Settings::showDeleteImportedOverlay() {
+        // Create msgbox
+        this->prepareMessageBox();
+        this->msgbox->addLeftButton("common.buttonHint.cancel"_lang, [this]() {
+            this->msgbox->close();
+        });
+        this->msgbox->addRightButton("common.delete"_lang, [this](){
+            // Delete file
+            std::filesystem::remove("/switch/NX-Activity-Log/importedData.json");
+
+            // Disable button
+            this->optionDeleteImport->setTextColour(this->app->theme()->mutedLine());
+            this->optionDeleteImport->setSelectable(false);
+            this->optionDeleteImport->setTouchable(false);
+            this->list->setFocused(this->optionDeleted);
+
+            this->msgbox->close();
+            this->setupGenericMessageOverlay("settings.importExport.deleteSuccessful"_lang);
+        });
+
+        // Add message box body
+        int bw, bh;
+        this->msgbox->getBodySize(&bw, &bh);
+        Aether::Element * body = new Aether::Element(0, 0, bw, bh);
+        Aether::TextBlock * tb = new Aether::TextBlock(50, 40, "settings.importExport.confirmDelete"_lang, 24, bw - 100);
+        tb->setColour(this->app->theme()->text());
+        body->addElement(tb);
+        tb = new Aether::TextBlock(50, tb->y() + tb->h() + 20, "settings.importExport.confirmDeleteBody"_lang, 20, bw - 100);
+        tb->setColour(this->app->theme()->mutedText());
+        body->addElement(tb);
+        this->msgbox->setBodySize(bw, tb->y() + tb->h() + 40);
+        this->msgbox->setBody(body);
+        this->app->addOverlay(this->msgbox);
+    }
+
     void Settings::update(uint32_t dt) {
         Screen::update(dt);
 
@@ -217,6 +280,21 @@ namespace Screen {
         this->progressbox->setValue(this->progressValue);
         if (this->progressValue >= 100) {
             this->progressbox->close();
+
+            if (this->job == Job::Export) {
+                this->setupGenericMessageOverlay("settings.importExport.exportSuccessful"_lang);
+
+            } else if (this->job == Job::Import) {
+                // Update delete button status
+                bool hasData = std::filesystem::exists("/switch/NX-Activity-Log/importedData.json");
+                this->optionDeleteImport->setTextColour(hasData ? this->app->theme()->text() : this->app->theme()->mutedLine());
+                this->optionDeleteImport->setSelectable(hasData);
+                this->optionDeleteImport->setTouchable(hasData);
+
+                this->setupGenericMessageOverlay("settings.importExport.importSuccessful"_lang);
+            }
+
+            this->job = Job::None;
         }
     }
 
@@ -409,6 +487,7 @@ namespace Screen {
         lb = new Aether::ListButton("settings.importExport.export"_lang, [this]() {
             this->showExportOverlay();
             this->app->exportToJSON(this->progressValue);
+            this->job = Job::Export;
         });
         lb->setLineColour(this->app->theme()->mutedLine());
         lb->setTextColour(this->app->theme()->text());
@@ -421,8 +500,14 @@ namespace Screen {
 
         // IMPORT
         lb = new Aether::ListButton("settings.importExport.import"_lang, [this]() {
+            if (!std::filesystem::exists("/switch/NX-Activity-Log/import.json")) {
+                this->setupGenericMessageOverlay("settings.importExport.noImportFile"_lang);
+                return;
+            }
+
             this->showImportOverlay();
             this->app->importFromJSON(this->progressValue);
+            this->job = Job::Import;
         });
         lb->setLineColour(this->app->theme()->mutedLine());
         lb->setTextColour(this->app->theme()->text());
@@ -432,17 +517,17 @@ namespace Screen {
         this->list->addElement(lc);
 
         // DELETE IMPORTED DATA
+        bool hasData = std::filesystem::exists("/switch/NX-Activity-Log/importedData.json");
         this->optionDeleteImport = new Aether::ListButton("settings.importExport.deleteImport"_lang, [this]() {
-            // TODO: show dialog box
+            this->showDeleteImportedOverlay();
         });
         this->optionDeleteImport->setLineColour(this->app->theme()->mutedLine());
-        this->optionDeleteImport->setTextColour(this->app->theme()->text());
-        // TODO: uncomment
-        // if (!this->app->playData->hasImportedData()) {
-        //     // Disable if no imported data
-        //     this->optionDeleteImport->setSelectable(false);
-        //     this->optionDeleteImport->setTouchable(false);
-        // }
+        this->optionDeleteImport->setTextColour(hasData ? this->app->theme()->text() : this->app->theme()->mutedText());
+        if (!hasData) {
+            // Disable if no imported data
+            this->optionDeleteImport->setSelectable(false);
+            this->optionDeleteImport->setTouchable(false);
+        }
         this->list->addElement(this->optionDeleteImport);
         lc = new Aether::ListComment("settings.importExport.deleteImportHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
@@ -499,14 +584,7 @@ namespace Screen {
 
         this->addElement(this->list);
 
-        // Create base message box
-        this->msgbox = new Aether::MessageBox();
-        this->msgbox->addTopButton("common.buttonHint.ok"_lang, [this](){
-            this->msgbox->close();
-        });
-        this->msgbox->setLineColour(this->app->theme()->mutedLine());
-        this->msgbox->setRectangleColour(this->app->theme()->altBG());
-        this->msgbox->setTextColour(this->app->theme()->accent());
+        this->msgbox = nullptr;
 
         // Create base progress box
         this->progressValue = 0;
@@ -539,6 +617,7 @@ namespace Screen {
         }
 
         this->createReason = ScreenCreate::Normal;
+        this->job = Job::None;
     }
 
     void Settings::onUnload() {
