@@ -348,8 +348,8 @@ namespace NX {
         std::vector<PlayEvent *> merged = one;
 
         for (PlayEvent * event : two) {
-            std::vector<PlayEvent *>::iterator it = std::find_if(one.begin(), one.end(), [event](PlayEvent * pot) {
-                return (event->type == pot->type && event->userID == pot->userID && event->titleID == pot->titleID &&
+            std::vector<PlayEvent *>::iterator it = std::find_if(one.begin(), one.end(), [&file, event](PlayEvent * pot) {
+                return (event->type == pot->type && event->titleID == pot->titleID &&
                         event->eventType == pot->eventType && event->clockTimestamp == pot->clockTimestamp && event->steadyTimestamp == pot->steadyTimestamp);
             });
 
