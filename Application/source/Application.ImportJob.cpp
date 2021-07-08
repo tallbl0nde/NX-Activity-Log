@@ -76,11 +76,12 @@ namespace Main {
             }
 
             // We have a matching user, so now create an entry for them
+            NX::User * u = (*it);
             nlohmann::json uJson;
             std::string id = user["id"].get<std::string>();
             uJson["id"] = nlohmann::json::array();
-            uJson["id"].push_back(toU64(id.substr(0, 8)));
-            uJson["id"].push_back(toU64(id.substr(8, 8)));
+            uJson["id"].push_back(u->ID().uid[0]);
+            uJson["id"].push_back(u->ID().uid[1]);
             uJson["titles"] = nlohmann::json::array();
 
             // Iterate over each title, copying all metadata + events

@@ -1,4 +1,8 @@
 #include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <future>
+#include "nlohmann/json.hpp"
 #include "nx/PlayData.hpp"
 #include "utils/NX.hpp"
 #include "utils/Time.hpp"
@@ -159,7 +163,9 @@ namespace NX {
         return stats;
     }
 
-    PlayData::PlayData() {
+    PlayEventsAndSummaries PlayData::readPlayDataFromPdm() {
+        PlayEventsAndSummaries ret;
+
         // Position of first event to read
         s32 offset = 0;
         // Total events read in iteration
@@ -249,31 +255,117 @@ namespace NX {
                     event->steadyTimestamp = pEvents[i].timestampSteady;
 
                     // Add PlayEvent to vector
-                    this->events.push_back(event);
+                    ret.first.push_back(event);
                 }
             }
         }
 
         // Free memory allocated to array
         delete[] pEvents;
+
+        return ret;
     }
 
-    std::vector<TitleID> PlayData::getLoggedTitleIDs() {
-        std::vector<TitleID> ids;
-        for (size_t i = 0; i < this->events.size(); i++) {
-            if (this->events[i]->type == PlayEvent_Applet) {
-                // Exclude this title (I dunno what it is but it causes crashes)
-                if (this->events[i]->titleID == 0x0100000000001012) {
-                    continue;
+    PlayEventsAndSummaries PlayData::readPlayDataFromImport() {
+        PlayEventsAndSummaries ret;
+
+        // Abort if no file
+        if (!std::filesystem::exists("/switch/NX-Activity-Log/importedData.json")) {
+            return ret;
+        }
+
+        // Read in file
+        std::ifstream file("/switch/NX-Activity-Log/importedData.json");
+        nlohmann::json json = nlohmann::json::parse(file);
+        if (json["users"] == nullptr || json["importTimestamp"] == nullptr) {
+            return ret;
+        }
+
+        this->importTimestamp = json["importTimestamp"];
+
+        // Iterate over each user
+        for (nlohmann::json user : json["users"]) {
+            if (user["titles"] == nullptr) {
+                continue;
+            }
+
+            // Iterate over each title
+            for (nlohmann::json title : user["titles"]) {
+                // Create events for title
+                if (title["events"] != nullptr) {
+                    for (nlohmann::json event : title["events"]) {
+                        if (event["clockTimestamp"] != nullptr && event["steadyTimestamp"] != nullptr && event["type"] != nullptr) {
+                            EventType type = static_cast<EventType>(event["type"]);
+
+                            PlayEvent * evt = new PlayEvent;
+                            evt->type = (type == Account_Active || type == Account_Inactive ? PlayEvent_Account : PlayEvent_Applet);
+                            evt->userID = {user["id"][0], user["id"][1]};
+                            evt->titleID = title["id"];
+                            evt->eventType = type;
+                            evt->clockTimestamp = event["clockTimestamp"];
+                            evt->steadyTimestamp = event["steadyTimestamp"];
+
+                            ret.first.push_back(evt);
+                        }
+                    }
                 }
 
-                if (std::find(ids.begin(), ids.end(), this->events[i]->titleID) == ids.end()) {
-                    ids.push_back(this->events[i]->titleID);
+                // Create summary for title
+                if (title["summary"] != nullptr) {
+                    nlohmann::json summary = title["summary"];
+                    if (summary["firstPlayed"] != nullptr && summary["lastPlayed"] != nullptr && summary["playtime"] != nullptr && summary["launches"] != nullptr) {
+                        PlayStatistics * stats = new PlayStatistics;
+                        stats->titleID = title["id"];
+                        stats->firstPlayed = summary["firstPlayed"];
+                        stats->lastPlayed = summary["lastPlayed"];
+                        stats->playtime = summary["playtime"];
+                        stats->launches = summary["launches"];
+
+                        ret.second.push_back(stats);
+                    }
                 }
             }
         }
 
-        return ids;
+        return ret;
+    }
+
+    std::vector<PlayEvent *> PlayData::mergePlayEvents(std::vector<PlayEvent *> & one, std::vector<PlayEvent *> & two) {
+        std::vector<PlayEvent *> merged = one;
+
+        for (PlayEvent * event : two) {
+            std::vector<PlayEvent *>::iterator it = std::find_if(one.begin(), one.end(), [event](PlayEvent * pot) {
+                return (event->type == pot->type && event->userID == pot->userID && event->titleID == pot->titleID &&
+                        event->eventType == pot->eventType && event->clockTimestamp == pot->clockTimestamp && event->steadyTimestamp == pot->steadyTimestamp);
+            });
+
+            // Copy event or delete if duplicate
+            if (it == one.end()) {
+                merged.push_back(event);
+            } else {
+                delete event;
+            }
+        }
+
+        one.clear();
+        two.clear();
+        return merged;
+    }
+
+    PlayData::PlayData() {
+        // Read in all data simultaneously
+        std::future<PlayEventsAndSummaries> pdmThread = std::async(std::launch::async, [this]() -> PlayEventsAndSummaries {
+            return this->readPlayDataFromPdm();
+        });
+        std::future<PlayEventsAndSummaries> impThread = std::async(std::launch::async, [this]() -> PlayEventsAndSummaries {
+            return this->readPlayDataFromImport();
+        });
+
+        PlayEventsAndSummaries pdmData = pdmThread.get();
+        PlayEventsAndSummaries impData = impThread.get();
+
+        this->events = this->mergePlayEvents(pdmData.first, impData.first);
+        this->summaries = impData.second;
     }
 
     std::vector<PlayEvent> PlayData::getPlayEvents(u64 start, u64 end, TitleID titleID, AccountUid userID) {
@@ -373,9 +465,11 @@ namespace NX {
     }
 
     PlayData::~PlayData() {
-        while (this->events.size() > 0) {
-            delete this->events[0];
-            this->events.erase(this->events.begin());
+        for (PlayEvent * event : this->events) {
+            delete event;
+        }
+        for (PlayStatistics * stats : this->summaries) {
+            delete stats;
         }
     }
 };

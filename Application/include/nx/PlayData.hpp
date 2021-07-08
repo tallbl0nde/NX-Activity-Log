@@ -63,6 +63,9 @@ namespace NX {
         size_t num;     // Number of events for this session
     };
 
+    // Pair of play events and summaries
+    typedef std::pair<std::vector<PlayEvent *>, std::vector<PlayStatistics *>> PlayEventsAndSummaries;
+
     // PlayData stores PlayEvents which are created from processing PlayEvent.dat using pdm.
     // The data can then be queried across a period of time, with the summation of these
     // statistics being returned. It also offers wrappers for some pdm functions.
@@ -72,6 +75,14 @@ namespace NX {
             // Should be in chronological order (ie. as read from pdm)
             std::vector<PlayEvent *> events;
 
+            // Vector containing all read summaries
+            // Not in any specific order
+            std::vector<PlayStatistics *> summaries;
+
+            // Timestamp indicating when summaries were imported
+            // Used to "merge" with system stats
+            uint64_t importTimestamp;
+
             // Return vector of PD_Sessions for given title/user IDs + time range
             // Give a titleID of zero to include all titles
             std::vector<PD_Session> getPDSessions(TitleID, AccountUid, u64, u64);
@@ -80,12 +91,18 @@ namespace NX {
             // TitleID in returned struct is zero
             RecentPlayStatistics * countPlaytime(std::vector<PD_Session>, u64, u64);
 
+            // Reads and parses data using pdm
+            PlayEventsAndSummaries readPlayDataFromPdm();
+
+            // Reads and parses data from imported file
+            PlayEventsAndSummaries readPlayDataFromImport();
+
+            // Merges the data within the two passed vectors by only keeping unique PlayEvents
+            std::vector<PlayEvent *> mergePlayEvents(std::vector<PlayEvent *> &, std::vector<PlayEvent *> &);
+
         public:
             // The constructor prepares + creates PlayEvents
             PlayData();
-
-            // Returns all titleIDs found within the play log (some may no longer be valid?)
-            std::vector<TitleID> getLoggedTitleIDs();
 
             // Returns vector containing PlayEvents between the given times
             // Start time, end time, titleID, userID
