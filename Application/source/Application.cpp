@@ -9,6 +9,7 @@
 #include "ui/screen/AllActivity.hpp"
 #include "ui/screen/CustomTheme.hpp"
 #include "ui/screen/Details.hpp"
+#include "ui/screen/HideTitles.hpp"
 #include "ui/screen/RecentActivity.hpp"
 #include "ui/screen/Settings.hpp"
 #include "ui/screen/Update.hpp"
@@ -126,6 +127,7 @@ namespace Main {
         this->scAllActivity = new Screen::AllActivity(this);
         this->scCustomTheme = new Screen::CustomTheme(this);
         this->scDetails = new Screen::Details(this);
+        this->scHideTitles = new Screen::HideTitles(this);
         this->scRecentActivity = new Screen::RecentActivity(this);
         this->scSettings = new Screen::Settings(this, this->createReason);
         this->scUpdate = new Screen::Update(this);
@@ -142,6 +144,7 @@ namespace Main {
         delete this->scAllActivity;
         delete this->scCustomTheme;
         delete this->scDetails;
+        delete this->scHideTitles;
         delete this->scRecentActivity;
         delete this->scSettings;
         delete this->scUpdate;
@@ -164,6 +167,11 @@ namespace Main {
             case AllActivity:
                 this->window->showScreen(this->scAllActivity);
                 this->screen = AllActivity;
+                break;
+
+            case HideTitles:
+                this->window->showScreen(this->scHideTitles);
+                this->screen = HideTitles;
                 break;
 
             case CustomTheme:

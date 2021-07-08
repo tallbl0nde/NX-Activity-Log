@@ -14,6 +14,7 @@ namespace Screen {
     class AllActivity;
     class CustomTheme;
     class Details;
+    class HideTitles;
     class RecentActivity;
     class Settings;
     class Update;
@@ -42,6 +43,7 @@ namespace Main {
             Screen::AllActivity * scAllActivity;
             Screen::CustomTheme * scCustomTheme;
             Screen::Details * scDetails;
+            Screen::HideTitles * scHideTitles;
             Screen::RecentActivity * scRecentActivity;
             Screen::Settings * scSettings;
             Screen::Update * scUpdate;

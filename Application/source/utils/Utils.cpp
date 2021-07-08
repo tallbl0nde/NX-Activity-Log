@@ -1,5 +1,6 @@
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 #include "utils/Lang.hpp"
 #include <regex>
 #include "utils/Utils.hpp"
@@ -28,6 +29,13 @@ namespace Utils {
 
     std::string formatHeading(std::string name) {
         return std::regex_replace("common.heading"_lang, std::regex("\\$\\[name]"), name);
+    }
+
+    // Converts the provided 64bit number to a hex string
+    std::string formatHexString(const uint64_t value) {
+        std::stringstream ss;
+        ss << std::uppercase << std::setfill('0') << std::setw(16) << std::hex << value;
+        return ss.str();
     }
 
     // Add commas to a number (only does one but shhh)

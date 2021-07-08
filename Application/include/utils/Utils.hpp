@@ -17,6 +17,9 @@ namespace Utils {
     // Add commas to provided number
     std::string formatNumberComma(unsigned int);
 
+    // Converts passed number to a hexadecimal string
+    std::string formatHexString(const uint64_t);
+
     // Insert given version into string (replacing $[v]) (string, ver)
     std::string insertVersionInString(std::string, std::string);
 

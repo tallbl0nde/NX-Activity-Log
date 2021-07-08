@@ -120,10 +120,7 @@ namespace Screen {
         std::vector<NX::Title *> t = this->app->titleVector();
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
-            // Skip over deleted titles based on config value
-            if (!(t[i]->isInstalled()) && this->app->config()->hDeleted()) {
-                continue;
-            }
+            // TODO: Hide requested games
 
             NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
             totalSecs += ps->playtime;

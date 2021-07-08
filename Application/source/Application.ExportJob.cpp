@@ -1,14 +1,7 @@
 #include "Application.ExportJob.hpp"
 #include <fstream>
-#include <iomanip>
 #include "nlohmann/json.hpp"
-
-// Converts the provided 64bit number to a hex string
-static std::string toHexString(const uint64_t value) {
-    std::stringstream ss;
-    ss << std::setfill('0') << std::setw(16) << std::hex << value;
-    return ss.str();
-}
+#include "utils/Utils.hpp"
 
 namespace Main {
     Application::ExportJob::ExportJob(Application * app, std::atomic<double> & percent) : Aether::ThreadPool::Job(), percent(percent) {
@@ -34,7 +27,7 @@ namespace Main {
 
             // Add user metadata
             uJson["name"] = user->username();
-            uJson["id"] = toHexString(user->ID().uid[0]) + toHexString(user->ID().uid[1]);
+            uJson["id"] = Utils::formatHexString(user->ID().uid[0]) + Utils::formatHexString(user->ID().uid[1]);
             uJson["titles"] = nlohmann::json::array();
 
             // Iterate over user's played titles
@@ -49,7 +42,7 @@ namespace Main {
 
                 // Add title metadata
                 tJson["name"] = title->name();
-                tJson["id"] = toHexString(title->titleID());
+                tJson["id"] = Utils::formatHexString(title->titleID());
 
                 // Get all title events
                 std::vector<NX::PlayEvent> events = this->app->playdata_->getPlayEvents(std::numeric_limits<u64>::min(), std::numeric_limits<u64>::max(), title->titleID(), user->ID());

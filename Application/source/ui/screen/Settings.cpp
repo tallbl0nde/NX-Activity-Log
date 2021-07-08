@@ -252,7 +252,7 @@ namespace Screen {
             this->optionDeleteImport->setTextColour(this->app->theme()->mutedLine());
             this->optionDeleteImport->setSelectable(false);
             this->optionDeleteImport->setTouchable(false);
-            this->list->setFocused(this->optionDeleted);
+            this->list->setFocused(this->optionHide);
 
             this->msgbox->close();
             this->setupGenericMessageOverlay("settings.importExport.deleteSuccessful"_lang);
@@ -543,18 +543,15 @@ namespace Screen {
 
         this->list->addElement(new Aether::ListSeparator(20));
 
-        // HIDE DELETED
-        str = (this->app->config()->hDeleted() ? "common.yes"_lang : "common.no"_lang);
-        this->optionDeleted = new Aether::ListOption("settings.other.hideDeleted"_lang, str, [this](){
-            this->app->config()->setHDeleted(!this->app->config()->hDeleted());
-            this->optionDeleted->setValue((this->app->config()->hDeleted() ? "common.yes"_lang : "common.no"_lang));
-            this->optionDeleted->setValueColour((this->app->config()->hDeleted() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
+        // HIDE TITLES
+        this->optionHide = new Aether::ListButton("settings.other.hide"_lang, [this](){
+            this->app->pushScreen();
+            this->app->setScreen(ScreenID::HideTitles);
         });
-        this->optionDeleted->setHintColour(this->app->theme()->text());
-        this->optionDeleted->setValueColour((this->app->config()->hDeleted() ? this->app->theme()->accent() : this->app->theme()->mutedText()));
-        this->optionDeleted->setLineColour(this->app->theme()->mutedLine());
-        this->list->addElement(this->optionDeleted);
-        lc = new Aether::ListComment("settings.other.hideDeletedHint"_lang);
+        this->optionHide->setLineColour(this->app->theme()->mutedLine());
+        this->optionHide->setTextColour(this->app->theme()->text());
+        this->list->addElement(this->optionHide);
+        lc = new Aether::ListComment("settings.other.hideHint"_lang);
         lc->setTextColour(this->app->theme()->mutedText());
         this->list->addElement(lc);
 
