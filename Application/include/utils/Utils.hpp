@@ -20,6 +20,9 @@ namespace Utils {
     // Converts passed number to a hexadecimal string
     std::string formatHexString(const uint64_t);
 
+    // Converts the provided hex string to a 64bit number
+    uint64_t stringToU64(const std::string &);
+
     // Insert given version into string (replacing $[v]) (string, ver)
     std::string insertVersionInString(std::string, std::string);
 

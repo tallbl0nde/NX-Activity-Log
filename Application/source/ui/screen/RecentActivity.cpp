@@ -309,8 +309,13 @@ namespace Screen {
         // Get stats
         unsigned int totalSecs = 0;
         std::vector<std::pair<NX::RecentPlayStatistics *, unsigned int> > stats;
+        std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
         for (size_t i = 0; i < this->app->titleVector().size(); i++) {
-            // TODO: Hide if requested
+            // Skip over hidden games
+            if (std::find(hidden.begin(), hidden.end(), this->app->titleVector()[i]->titleID()) != hidden.end()) {
+                continue;
+            }
+
             std::pair<NX::RecentPlayStatistics *, unsigned int> stat;
             stat.first = this->app->playdata()->getRecentStatisticsForTitleAndUser(this->app->titleVector()[i]->titleID(), s, e, this->app->activeUser()->ID());
             stat.second = i;

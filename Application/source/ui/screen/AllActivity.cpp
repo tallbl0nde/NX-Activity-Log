@@ -118,9 +118,13 @@ namespace Screen {
 
         // Populate list + count total time
         std::vector<NX::Title *> t = this->app->titleVector();
+        std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
         unsigned int totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
-            // TODO: Hide requested games
+            // Skip over hidden games
+            if (std::find(hidden.begin(), hidden.end(), t[i]->titleID()) != hidden.end()) {
+                continue;
+            }
 
             NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
             totalSecs += ps->playtime;

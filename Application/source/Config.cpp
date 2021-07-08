@@ -1,9 +1,12 @@
 #include "Config.hpp"
 #include <filesystem>
+#include <fstream>
+#include "utils/Utils.hpp"
 
 namespace Main {
     Config::Config() {
         this->ini = nullptr;
+        this->hidden.clear();
     }
 
     Config::~Config() {
@@ -105,20 +108,24 @@ namespace Main {
             this->lView_ = ViewPeriod::Day;
         }
 
-        sec = ini->findOrCreateSection("hidden");
-        option = sec->findOrCreateFirstOption("deleted", "false");
-        if (option->value == "true") {
-            this->hDeleted_ = true;
-        } else {
-            this->hDeleted_ = false;
-        }
-
         sec = ini->findOrCreateSection("theme");
         option = sec->findOrCreateFirstOption("image", "false");
         if (option->value == "true") {
             this->tImage_ = true;
         } else {
             this->tImage_ = false;
+        }
+
+        // Read in hidden titles
+        if (!std::filesystem::exists("/config/NX-Activity-Log/hidden.conf")) {
+            std::ofstream file("/config/NX-Activity-Log/hidden.conf");
+            file.close();
+        }
+
+        std::ifstream file("/config/NX-Activity-Log/hidden.conf");
+        std::string line;
+        while (file >> line) {
+            this->hidden.push_back(Utils::stringToU64(line));
         }
     }
 
@@ -180,13 +187,6 @@ namespace Main {
             option->value = "Custom";
         }
 
-        option = ini->findSection("hidden")->findFirstOption("deleted");
-        if (this->hDeleted_ == true) {
-            option->value = "true";
-        } else if (this->hDeleted_ == false) {
-            option->value = "false";
-        }
-
         option = ini->findSection("general")->findFirstOption("screen");
         if (this->lScreen_ == ScreenID::AllActivity) {
             option->value = "AllActivity";
@@ -230,6 +230,10 @@ namespace Main {
         ini->writeToFile("/config/NX-Activity-Log/config.ini");
     }
 
+    std::vector<uint64_t> Config::hiddenTitles() {
+        return this->hidden;
+    }
+
     bool Config::gGraph() {
         return this->gGraph_;
     }
@@ -246,10 +250,6 @@ namespace Main {
         return this->gTheme_;
     }
 
-    bool Config::hDeleted() {
-        return this->hDeleted_;
-    }
-
     ScreenID Config::lScreen() {
         return this->lScreen_;
     }
@@ -264,6 +264,17 @@ namespace Main {
 
     bool Config::tImage() {
         return this->tImage_;
+    }
+
+    bool Config::setHiddenTitles(const std::vector<uint64_t> & titles) {
+        this->hidden = titles;
+
+        std::ofstream file("/config/NX-Activity-Log/hidden.conf");
+        for (uint64_t titleID : this->hidden) {
+            file << Utils::formatHexString(titleID) << std::endl;
+        }
+
+        return true;
     }
 
     void Config::setGGraph(bool b) {
@@ -283,11 +294,6 @@ namespace Main {
 
     void Config::setGTheme(ThemeType v) {
         this->gTheme_ = v;
-        this->writeConfig();
-    }
-
-    void Config::setHDeleted(bool v) {
-        this->hDeleted_ = v;
         this->writeConfig();
     }
 

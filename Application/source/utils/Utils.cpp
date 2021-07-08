@@ -47,6 +47,14 @@ namespace Utils {
         return s;
     }
 
+    uint64_t stringToU64(const std::string & str) {
+        uint64_t val;
+        std::stringstream ss;
+        ss << std::hex << str;
+        ss >> val;
+        return val;
+    }
+
     std::string insertVersionInString(std::string str, std::string ver) {
         return std::regex_replace(str, std::regex("\\$\\[v]"), ver);
     }

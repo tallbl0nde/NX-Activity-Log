@@ -18,9 +18,9 @@ namespace Screen {
             Aether::List * list;
 
             // Titles hidden in sidebar
-            size_t hiddenCount;
             Aether::Text * hiddenCountText;
             Aether::TextBlock * hiddenSubText;
+            std::vector<uint64_t> hiddenIDs;
 
             // Update the titles hidden counter
             void updateHiddenCounter();

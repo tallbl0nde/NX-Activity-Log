@@ -3,19 +3,11 @@
 #include <fstream>
 #include <iomanip>
 #include "nlohmann/json.hpp"
+#include "utils/Utils.hpp"
 
 // Converts a POSIX timestamp to Pdm format
 static inline uint32_t posixTimestampToPdm(uint64_t timestamp) {
     return static_cast<uint32_t>((timestamp - 946598400)/60);
-}
-
-// Converts the provided hex string to a 64bit number
-static uint64_t toU64(const std::string & str) {
-    uint64_t val;
-    std::stringstream ss;
-    ss << std::hex << str;
-    ss >> val;
-    return val;
 }
 
 namespace Main {
@@ -95,7 +87,7 @@ namespace Main {
                 }
 
                 nlohmann::json tJson;
-                tJson["id"] = toU64(title["id"].get<std::string>());
+                tJson["id"] = Utils::stringToU64(title["id"].get<std::string>());
                 tJson["name"] = title["name"];
                 tJson["events"] = nlohmann::json::array();
 

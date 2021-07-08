@@ -43,7 +43,7 @@ namespace Screen {
         this->addElement(this->hiddenSubText);
 
         Aether::FilledButton * b = new Aether::FilledButton(980, 500, 180, 60, "hideTitles.save"_lang, 22, [this]() {
-            // TODO: save config
+            this->app->config()->setHiddenTitles(this->hiddenIDs);
             this->app->popScreen();
         });
         b->setFillColour(this->app->theme()->accent());
@@ -71,9 +71,9 @@ namespace Screen {
     }
 
     void HideTitles::updateHiddenCounter() {
-        this->hiddenCountText->setString(std::to_string(this->hiddenCount));
+        this->hiddenCountText->setString(std::to_string(this->hiddenIDs.size()));
         this->hiddenCountText->setX(1070 - this->hiddenCountText->w()/2);
-        this->hiddenSubText->setString(this->hiddenCount == 1 ? "hideTitles.titleHidden"_lang : "hideTitles.titlesHidden"_lang);
+        this->hiddenSubText->setString(this->hiddenIDs.size() == 1 ? "hideTitles.titleHidden"_lang : "hideTitles.titlesHidden"_lang);
         this->hiddenSubText->setX(1070 - this->hiddenSubText->w()/2);
     }
 
@@ -83,6 +83,7 @@ namespace Screen {
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
         // Populate list with all titles
+        this->hiddenIDs = this->app->config()->hiddenTitles();
         std::vector<NX::Title *> titles = this->app->titleVector();
         std::sort(titles.begin(), titles.end(), [](NX::Title * lhs, NX::Title * rhs) {
             return (lhs->name() < rhs->name());
@@ -96,26 +97,25 @@ namespace Screen {
             l->setTitleColour(this->app->theme()->text());
             l->setTickBackgroundColour(this->app->theme()->accent());
             l->setTickForegroundColour(this->app->theme()->mutedLine());
-            l->onPress([this, l]() {
+            l->onPress([this, title, l]() {
                 if (l->isTicked()) {
-                    this->hiddenCount--;
                     l->setTicked(false);
+                    this->hiddenIDs.erase(std::remove(this->hiddenIDs.begin(), this->hiddenIDs.end(), title->titleID()), this->hiddenIDs.end());
+
                 } else {
-                    this->hiddenCount++;
                     l->setTicked(true);
+                    this->hiddenIDs.push_back(title->titleID());
                 }
                 this->updateHiddenCounter();
             });
-            l->setTicked(false);
+            bool hidden = std::find(this->hiddenIDs.begin(), this->hiddenIDs.end(), title->titleID()) != this->hiddenIDs.end();
+            l->setTicked(hidden);
 
             this->list->addElement(l);
         }
 
         this->addElement(this->list);
         this->setFocused(this->list);
-
-        // TODO: update based on config
-        this->hiddenCount = 0;
         this->updateHiddenCounter();
     }
 
