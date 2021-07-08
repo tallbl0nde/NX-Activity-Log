@@ -1,6 +1,7 @@
 #ifndef PLAYDATA_HPP
 #define PLAYDATA_HPP
 
+#include "nx/Title.hpp"
 #include "Types.hpp"
 #include <vector>
 
@@ -79,6 +80,9 @@ namespace NX {
             // Not in any specific order
             std::vector<PlayStatistics *> summaries;
 
+            // Vector of titles in imported data
+            std::vector<std::pair<u64, std::string>> titles;
+
             // Timestamp indicating when summaries were imported
             // Used to "merge" with system stats
             uint64_t importTimestamp;
@@ -103,6 +107,9 @@ namespace NX {
         public:
             // The constructor prepares + creates PlayEvents
             PlayData();
+
+            // Returns title objects that are not present in the given vector
+            std::vector<Title *> getMissingTitles(std::vector<Title *>);
 
             // Returns vector containing PlayEvents between the given times
             // Start time, end time, titleID, userID

@@ -20,6 +20,9 @@ namespace NX {
             // The constructor derives all relevant info from given titleID
             Title(TitleID, bool);
 
+            // Creates title with no icon as it is not installed
+            Title(const TitleID, const std::string &);
+
             // These functions return Title's data
             TitleID titleID();
             bool isInstalled();

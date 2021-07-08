@@ -1,4 +1,5 @@
 #include <cstring>
+#include <fstream>
 #include "nx/Title.hpp"
 
 namespace NX {
@@ -24,6 +25,27 @@ namespace NX {
             this->size = nacp_size - sizeof(data.nacp);
             this->ptr = (u8 *) malloc(this->size);
             memcpy(this->ptr, data.icon, this->size);
+        }
+    }
+
+    Title::Title(const TitleID titleID, const std::string & name) {
+        this->titleID_ = titleID;
+        this->is_installed = false;
+        this->name_ = name;
+
+        // Load in image
+        std::ifstream file("romfs:/icon/no_icon.jpg", std::ios::binary);
+        file.unsetf(std::ios::skipws);
+        file.seekg(0, std::ios::end);
+        this->size = file.tellg();
+        file.seekg(0, std::ios::beg);
+
+        this->ptr = static_cast<u8 *>(malloc(this->size));
+        u8 byte;
+        size_t pos = 0;
+        while (file >> byte && pos < this->size) {
+            this->ptr[pos] = byte;
+            pos++;
         }
     }
 

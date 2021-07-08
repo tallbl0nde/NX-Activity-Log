@@ -291,6 +291,8 @@ namespace NX {
 
             // Iterate over each title
             for (nlohmann::json title : user["titles"]) {
+                bool hasEntry = false;
+
                 // Create events for title
                 if (title["events"] != nullptr) {
                     for (nlohmann::json event : title["events"]) {
@@ -305,6 +307,7 @@ namespace NX {
                             evt->clockTimestamp = event["clockTimestamp"];
                             evt->steadyTimestamp = event["steadyTimestamp"];
 
+                            hasEntry = true;
                             ret.first.push_back(evt);
                         }
                     }
@@ -321,7 +324,18 @@ namespace NX {
                         stats->playtime = summary["playtime"];
                         stats->launches = summary["launches"];
 
+                        hasEntry = true;
                         ret.second.push_back(stats);
+                    }
+                }
+
+                // Store data if entry added
+                if (hasEntry) {
+                    std::vector<std::pair<u64, std::string>>::iterator it = std::find_if(this->titles.begin(), this->titles.end(), [title](std::pair<u64, std::string> entry) {
+                        return (title["id"] == entry.first);
+                    });
+                    if (it == this->titles.end()) {
+                        this->titles.push_back(std::make_pair(title["id"], title["name"]));
                     }
                 }
             }
@@ -366,6 +380,23 @@ namespace NX {
 
         this->events = this->mergePlayEvents(pdmData.first, impData.first);
         this->summaries = impData.second;
+    }
+
+    std::vector<Title *> PlayData::getMissingTitles(std::vector<Title *> passed) {
+        // Iterate over events and summaries, creating title objects for
+        // titles not present in passed vector
+        std::vector <Title *> missing;
+
+        for (std::pair<u64, std::string> title : this->titles) {
+            std::vector<Title *>::iterator it = std::find_if(passed.begin(), passed.end(), [title](Title * t) {
+                return (title.first == t->titleID());
+            });
+            if (it == passed.end()) {
+                missing.push_back(new Title(title.first, title.second));
+            }
+        }
+
+        return missing;
     }
 
     std::vector<PlayEvent> PlayData::getPlayEvents(u64 start, u64 end, TitleID titleID, AccountUid userID) {

@@ -74,6 +74,10 @@ namespace Main {
 
         // Populate titles vector
         this->titles = Utils::NX::getTitleObjects(this->users);
+        std::vector<NX::Title *> missing = this->playdata_->getMissingTitles(this->titles);
+        for (NX::Title * title : missing) {
+            this->titles.push_back(title);
+        }
         this->titleIdx = 0;
 
         // Create Aether instance (ignore log messages for now)
