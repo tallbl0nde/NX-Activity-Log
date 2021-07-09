@@ -1,8 +1,15 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
+#include <switch.h>
 #include "SimpleIniParser.hpp"
 #include "Types.hpp"
+
+struct AdjustmentValue {
+    uint64_t titleID;
+    AccountUid userID;
+    int value;
+};
 
 namespace Main {
     // Reads/writes and stores config of application
@@ -10,6 +17,9 @@ namespace Main {
         private:
             // Ini object to read/write to/from file
             simpleIniParser::Ini * ini;
+
+            // Vector of adjustments for each title ID
+            std::vector<AdjustmentValue> adjustments;
 
             // Vector of hidden title IDs
             std::vector<uint64_t> hidden;
@@ -35,6 +45,7 @@ namespace Main {
             void writeConfig();
 
             // Getters + setters for all settings'
+            std::vector<AdjustmentValue> adjustmentValues();
             std::vector<uint64_t> hiddenTitles();
             bool gGraph();
             bool gIs24H();
@@ -45,6 +56,7 @@ namespace Main {
             ViewPeriod lView();
             bool tImage();
 
+            bool setAdjustmentValues(const std::vector<AdjustmentValue> &);
             bool setHiddenTitles(const std::vector<uint64_t> &);
             void setGGraph(bool);
             void setGIs24H(bool);

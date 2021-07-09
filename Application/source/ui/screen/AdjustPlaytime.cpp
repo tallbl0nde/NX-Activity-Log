@@ -23,13 +23,14 @@ namespace Screen {
         Aether::ControlBar * c = new Aether::ControlBar();
         c->addControl(Aether::Button::A, "common.buttonHint.ok"_lang);
         c->addControl(Aether::Button::B, "common.buttonHint.back"_lang);
+        c->addControl(Aether::Button::X, "adjustPlaytime.save"_lang);
         c->setDisabledColour(this->app->theme()->text());
         c->setEnabledColour(this->app->theme()->text());
         this->addElement(c);
 
         // Save on X
         this->onButtonPress(Aether::Button::X, [this]() {
-            // TODO: save
+            this->app->config()->setAdjustmentValues(this->adjustments);
             this->app->popScreen();
         });
         // Quit without saving on B
@@ -58,8 +59,8 @@ namespace Screen {
 
     void AdjustPlaytime::setupPlaytimePicker(const std::string & title, size_t idx, CustomElm::ListAdjust * l) {
         delete this->picker;
-        this->picker = new CustomOvl::PlaytimePicker(title, this->adjustments[idx].second, [this, idx, l](int val) {
-            this->adjustments[idx].second = val;
+        this->picker = new CustomOvl::PlaytimePicker(title, this->adjustments[idx].value, [this, idx, l](int val) {
+            this->adjustments[idx].value = val;
             l->setAdjustedTime(this->getValueString(val));
         });
         this->picker->setBackLabel("common.buttonHint.back"_lang);
@@ -98,7 +99,7 @@ namespace Screen {
             return (lhs->name() < rhs->name());
         });
 
-        this->adjustments.clear();
+        this->adjustments = this->app->config()->adjustmentValues();
         std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
         for (NX::Title * title : titles) {
             // Skip over hidden games
@@ -106,11 +107,18 @@ namespace Screen {
                 continue;
             }
 
-            this->adjustments.push_back(std::make_pair(title->titleID(), 0));
-            size_t idx = this->adjustments.size()-1;
+            // Find adjustment value or create if one doesn't exist
+            std::vector<AdjustmentValue>::iterator it = std::find_if(this->adjustments.begin(), this->adjustments.end(), [this, title](AdjustmentValue val) {
+                return (val.titleID == title->titleID() && val.userID == this->app->activeUser()->ID());
+            });
+            if (it == this->adjustments.end()) {
+                this->adjustments.push_back(AdjustmentValue{title->titleID(), this->app->activeUser()->ID(), 0});
+                it = (this->adjustments.end() - 1);
+            }
 
+            size_t idx = std::distance(this->adjustments.begin(), it);
             NX::PlayStatistics * stats = this->app->playdata()->getStatisticsForUser(title->titleID(), this->app->activeUser()->ID());
-            CustomElm::ListAdjust * l = new CustomElm::ListAdjust(title->name(), Utils::playtimeToPlayedForString(stats->playtime), this->getValueString(this->adjustments[idx].second));
+            CustomElm::ListAdjust * l = new CustomElm::ListAdjust(title->name(), Utils::playtimeToPlayedForString(stats->playtime), this->getValueString(this->adjustments[idx].value));
             delete stats;
 
             l->setImage(title->imgPtr(), title->imgSize());

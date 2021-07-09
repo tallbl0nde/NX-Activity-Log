@@ -39,7 +39,7 @@ namespace Screen {
             void setupPlaytimePicker(const std::string &, size_t, CustomElm::ListAdjust *);
 
             // Vector of title IDs and their adjustment value
-            std::vector<std::pair<uint64_t, int>> adjustments;
+            std::vector<AdjustmentValue> adjustments;
 
         public:
             // Constructs the screen

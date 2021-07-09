@@ -4,11 +4,7 @@
 #include <iomanip>
 #include "nlohmann/json.hpp"
 #include "utils/Utils.hpp"
-
-// Converts a POSIX timestamp to Pdm format
-static inline uint32_t posixTimestampToPdm(uint64_t timestamp) {
-    return static_cast<uint32_t>((timestamp - 946598400)/60);
-}
+#include "utils/Time.hpp"
 
 namespace Main {
     Application::ImportJob::ImportJob(Application * app, std::atomic<double> & percent) : Aether::ThreadPool::Job(), percent(percent) {
@@ -136,8 +132,8 @@ namespace Main {
                     nlohmann::json s = title["summary"];
                     if (s["firstPlayed"] != nullptr && s["lastPlayed"] != nullptr && s["playtime"] != nullptr && s["launches"] != nullptr) {
                         tJson["summary"] = nlohmann::json();
-                        tJson["summary"]["firstPlayed"] = posixTimestampToPdm(s["firstPlayed"].get<uint64_t>());
-                        tJson["summary"]["lastPlayed"] = posixTimestampToPdm(s["lastPlayed"].get<uint64_t>());
+                        tJson["summary"]["firstPlayed"] = Utils::Time::posixTimestampToPdm(s["firstPlayed"].get<uint64_t>());
+                        tJson["summary"]["lastPlayed"] = Utils::Time::posixTimestampToPdm(s["lastPlayed"].get<uint64_t>());
                         tJson["summary"]["playtime"] = s["playtime"];
                         tJson["summary"]["launches"] = s["launches"];
                     }

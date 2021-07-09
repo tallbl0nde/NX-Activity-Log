@@ -674,8 +674,23 @@ namespace Screen {
         this->updateActivity();
         this->setFocussed(this->list);
 
-        // Add side stats
+        // Get statistics and append adjustment if needed
+        std::vector<AdjustmentValue> adjustments = this->app->config()->adjustmentValues();
         NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(this->app->activeTitle()->titleID(), this->app->activeUser()->ID());
+        std::vector<AdjustmentValue>::iterator it = std::find_if(adjustments.begin(), adjustments.end(), [this](AdjustmentValue val) {
+            return (val.titleID == this->app->activeTitle()->titleID() && val.userID == this->app->activeUser()->ID());
+        });
+        if (it != adjustments.end()) {
+            ps->playtime += (*it).value;
+        }
+
+        if (ps->launches == 0) {
+            // Add in dummy data if not launched before (due to adjustment)
+            ps->firstPlayed = Utils::Time::posixTimestampToPdm(Utils::Time::getTimeT(Utils::Time::getTmForCurrentTime()));
+            ps->lastPlayed = ps->firstPlayed;
+            ps->launches = 1;
+        }
+
         this->playtime = new Aether::Text(1070, 220, Utils::playtimeToString(ps->playtime), 20);
         this->playtime->setColour(this->app->theme()->accent());
         this->playtime->setX(this->playtime->x() - this->playtime->w()/2);

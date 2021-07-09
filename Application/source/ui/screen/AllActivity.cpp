@@ -2,6 +2,7 @@
 #include "Application.hpp"
 #include "utils/Lang.hpp"
 #include "utils/Utils.hpp"
+#include "utils/Time.hpp"
 
 namespace Screen {
     AllActivity::AllActivity(Main::Application * a) {
@@ -117,6 +118,7 @@ namespace Screen {
         this->list->setScrollBarColour(this->app->theme()->mutedLine());
 
         // Populate list + count total time
+        std::vector<AdjustmentValue> adjustments = this->app->config()->adjustmentValues();
         std::vector<NX::Title *> t = this->app->titleVector();
         std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
         unsigned int totalSecs = 0;
@@ -126,12 +128,27 @@ namespace Screen {
                 continue;
             }
 
+            // Get statistics and append adjustment if needed
             NX::PlayStatistics * ps = this->app->playdata()->getStatisticsForUser(t[i]->titleID(), this->app->activeUser()->ID());
+            std::vector<AdjustmentValue>::iterator it = std::find_if(adjustments.begin(), adjustments.end(), [this, t, i](AdjustmentValue val) {
+                return (val.titleID == t[i]->titleID() && val.userID == this->app->activeUser()->ID());
+            });
+            if (it != adjustments.end()) {
+                ps->playtime += (*it).value;
+            }
+
+            // Skip unplayed titles
             totalSecs += ps->playtime;
             if (ps->launches == 0) {
-                // Skip unplayed titles
-                delete ps;
-                continue;
+                // Add in dummy data if not launched before (due to adjustment)
+                ps->firstPlayed = Utils::Time::posixTimestampToPdm(Utils::Time::getTimeT(Utils::Time::getTmForCurrentTime()));
+                ps->lastPlayed = ps->firstPlayed;
+                ps->launches = 1;
+
+                if (ps->playtime == 0) {
+                    delete ps;
+                    continue;
+                }
             }
 
             // "Convert" PlayStatistics to SortInfo

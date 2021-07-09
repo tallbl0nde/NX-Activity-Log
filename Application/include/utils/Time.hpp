@@ -27,6 +27,9 @@ namespace Utils::Time {
     // Get time struct for given value
     struct tm getTm(time_t);
 
+    // Converts a POSIX timestamp to Pdm format
+    uint32_t posixTimestampToPdm(uint64_t);
+
     // Return number of days in tm's month
     int tmGetDaysInMonth(struct tm);
 

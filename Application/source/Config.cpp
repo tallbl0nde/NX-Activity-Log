@@ -127,6 +127,32 @@ namespace Main {
         while (file >> line) {
             this->hidden.push_back(Utils::stringToU64(line));
         }
+
+        // Read in adjustment values
+        if (!std::filesystem::exists("/config/NX-Activity-Log/adjustments.conf")) {
+            std::ofstream file("/config/NX-Activity-Log/adjustments.conf");
+            file.close();
+        }
+
+        std::ifstream file2("/config/NX-Activity-Log/adjustments.conf");
+        std::string token;
+        while (file2 >> line) {
+            // Break apart line
+            std::stringstream ss(line);
+            std::vector<std::string> tokens;
+            while (std::getline(ss, token, ':')) {
+                tokens.push_back(token);
+            }
+
+            if (tokens.size() != 3 || tokens[0].length() != 16 || tokens[1].length() != 32) {
+                continue;
+            }
+
+            AccountUid uid;
+            uid.uid[0] = Utils::stringToU64(tokens[1].substr(0, 16));
+            uid.uid[1] = Utils::stringToU64(tokens[1].substr(16, 16));
+            this->adjustments.push_back(AdjustmentValue{Utils::stringToU64(tokens[0]), uid, std::stoi(tokens[2])});
+        }
     }
 
     void Config::writeConfig() {
@@ -230,6 +256,10 @@ namespace Main {
         ini->writeToFile("/config/NX-Activity-Log/config.ini");
     }
 
+    std::vector<AdjustmentValue> Config::adjustmentValues() {
+        return this->adjustments;
+    }
+
     std::vector<uint64_t> Config::hiddenTitles() {
         return this->hidden;
     }
@@ -264,6 +294,19 @@ namespace Main {
 
     bool Config::tImage() {
         return this->tImage_;
+    }
+
+    bool Config::setAdjustmentValues(const std::vector<AdjustmentValue> & values) {
+        this->adjustments = values;
+
+        std::ofstream file("/config/NX-Activity-Log/adjustments.conf");
+        for (AdjustmentValue value : values) {
+            file << Utils::formatHexString(value.titleID) << ":";
+            file << Utils::formatHexString(value.userID.uid[0]) << Utils::formatHexString(value.userID.uid[1]) << ":";
+            file << value.value << std::endl;
+        }
+
+        return true;
     }
 
     bool Config::setHiddenTitles(const std::vector<uint64_t> & titles) {

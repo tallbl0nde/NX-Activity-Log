@@ -101,6 +101,10 @@ namespace Utils::Time {
         return *(std::localtime(&t));
     }
 
+    uint32_t posixTimestampToPdm(uint64_t timestamp) {
+        return static_cast<uint32_t>((timestamp - 946598400)/60);
+    }
+
     int tmGetDaysInMonth(struct tm t) {
         switch (t.tm_mon) {
             // Except February alone...
