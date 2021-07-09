@@ -38,6 +38,7 @@ enum ScreenID {
     AllActivity,
     RecentActivity,
     Settings,
+    AdjustPlaytime,
     HideTitles,
     Details,
     Update,

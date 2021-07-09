@@ -6,6 +6,7 @@
 #include "utils/UpdateUtils.hpp"
 #include "utils/Utils.hpp"
 
+#include "ui/screen/AdjustPlaytime.hpp"
 #include "ui/screen/AllActivity.hpp"
 #include "ui/screen/CustomTheme.hpp"
 #include "ui/screen/Details.hpp"
@@ -124,6 +125,7 @@ namespace Main {
     }
 
     void Application::createScreens() {
+        this->scAdjustPlaytime = new Screen::AdjustPlaytime(this);
         this->scAllActivity = new Screen::AllActivity(this);
         this->scCustomTheme = new Screen::CustomTheme(this);
         this->scDetails = new Screen::Details(this);
@@ -141,6 +143,7 @@ namespace Main {
     }
 
     void Application::deleteScreens() {
+        delete this->scAdjustPlaytime;
         delete this->scAllActivity;
         delete this->scCustomTheme;
         delete this->scDetails;
@@ -164,6 +167,11 @@ namespace Main {
 
     void Application::setScreen(ScreenID s) {
         switch (s) {
+            case AdjustPlaytime:
+                this->window->showScreen(this->scAdjustPlaytime);
+                this->screen = AdjustPlaytime;
+                break;
+
             case AllActivity:
                 this->window->showScreen(this->scAllActivity);
                 this->screen = AllActivity;

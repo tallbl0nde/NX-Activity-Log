@@ -543,6 +543,18 @@ namespace Screen {
 
         this->list->addElement(new Aether::ListSeparator(20));
 
+        // ADJUST PLAYTIME
+        this->optionAdjust = new Aether::ListButton("settings.other.adjust"_lang, [this]() {
+            this->app->pushScreen();
+            this->app->setScreen(ScreenID::AdjustPlaytime);
+        });
+        this->optionAdjust->setLineColour(this->app->theme()->mutedLine());
+        this->optionAdjust->setTextColour(this->app->theme()->text());
+        this->list->addElement(this->optionAdjust);
+        lc = new Aether::ListComment("settings.other.adjustHint"_lang);
+        lc->setTextColour(this->app->theme()->mutedText());
+        this->list->addElement(lc);
+
         // HIDE TITLES
         this->optionHide = new Aether::ListButton("settings.other.hide"_lang, [this](){
             this->app->pushScreen();

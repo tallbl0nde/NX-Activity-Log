@@ -11,6 +11,7 @@
 #include "utils/Time.hpp"
 
 namespace Screen {
+    class AdjustPlaytime;
     class AllActivity;
     class CustomTheme;
     class Details;
@@ -40,6 +41,7 @@ namespace Main {
             Aether::Window * window;
 
             // Screens of the app
+            Screen::AdjustPlaytime * scAdjustPlaytime;
             Screen::AllActivity * scAllActivity;
             Screen::CustomTheme * scCustomTheme;
             Screen::Details * scDetails;
