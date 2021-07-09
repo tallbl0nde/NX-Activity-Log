@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include "utils/Lang.hpp"
 #include "ui/element/ListAdjust.hpp"
+#include "ui/overlay/PlaytimePicker.hpp"
 #include "ui/screen/AdjustPlaytime.hpp"
 #include "utils/Utils.hpp"
 
@@ -51,6 +52,29 @@ namespace Screen {
         });
     }
 
+    std::string AdjustPlaytime::getValueString(int val) {
+        return (val < 0 ? "- " : "+ ") + Utils::playtimeToString(std::abs(val));
+    }
+
+    void AdjustPlaytime::setupPlaytimePicker(const std::string & title, size_t idx, CustomElm::ListAdjust * l) {
+        delete this->picker;
+        this->picker = new CustomOvl::PlaytimePicker(title, this->adjustments[idx].second, [this, idx, l](int val) {
+            this->adjustments[idx].second = val;
+            l->setAdjustedTime(this->getValueString(val));
+        });
+        this->picker->setBackLabel("common.buttonHint.back"_lang);
+        this->picker->setOKLabel("common.buttonHint.ok"_lang);
+        this->picker->setTipText("customTheme.picker.tip"_lang);
+        this->picker->setHourHint("adjustPlaytime.picker.hour"_lang);
+        this->picker->setMinuteHint("adjustPlaytime.picker.minute"_lang);
+        this->picker->setSecondHint("adjustPlaytime.picker.second"_lang);
+        this->picker->setBackgroundColour(this->app->theme()->altBG());
+        this->picker->setHighlightColour(this->app->theme()->accent());
+        this->picker->setInactiveColour(this->app->theme()->mutedText());
+        this->picker->setTextColour(this->app->theme()->text());
+        this->app->addOverlay(this->picker);
+    }
+
     void AdjustPlaytime::onLoad() {
         // Render user's image
         this->userimage = new Aether::Image(1155, 14, this->app->activeUser()->imgPtr(), this->app->activeUser()->imgSize(), Aether::Render::Wait);
@@ -74,10 +98,19 @@ namespace Screen {
             return (lhs->name() < rhs->name());
         });
 
+        this->adjustments.clear();
+        std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
         for (NX::Title * title : titles) {
+            // Skip over hidden games
+            if (std::find(hidden.begin(), hidden.end(), title->titleID()) != hidden.end()) {
+                continue;
+            }
+
+            this->adjustments.push_back(std::make_pair(title->titleID(), 0));
+            size_t idx = this->adjustments.size()-1;
+
             NX::PlayStatistics * stats = this->app->playdata()->getStatisticsForUser(title->titleID(), this->app->activeUser()->ID());
-            int adjustTime = 0;
-            CustomElm::ListAdjust * l = new CustomElm::ListAdjust(title->name(), Utils::playtimeToPlayedForString(stats->playtime), (adjustTime < 0 ? "- " : "+ ") + Utils::playtimeToString(std::abs(adjustTime)));
+            CustomElm::ListAdjust * l = new CustomElm::ListAdjust(title->name(), Utils::playtimeToPlayedForString(stats->playtime), this->getValueString(this->adjustments[idx].second));
             delete stats;
 
             l->setImage(title->imgPtr(), title->imgSize());
@@ -85,17 +118,19 @@ namespace Screen {
             l->setLineColour(this->app->theme()->mutedLine());
             l->setRecordColour(this->app->theme()->mutedText());
             l->setTitleColour(this->app->theme()->text());
-            l->onPress([this]() {
-
+            l->onPress([this, title, idx, l]() {
+                this->setupPlaytimePicker(title->name(), idx, l);
             });
 
             this->list->addElement(l);
         }
 
         this->addElement(this->list);
+        this->picker = nullptr;
     }
 
     void AdjustPlaytime::onUnload() {
+        delete this->picker;
         this->removeElement(this->userimage);
         this->removeElement(this->username);
         this->removeElement(this->list);

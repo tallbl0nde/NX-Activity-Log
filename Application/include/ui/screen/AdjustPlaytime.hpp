@@ -7,6 +7,14 @@ namespace Main {
     class Application;
 };
 
+namespace CustomElm {
+    class ListAdjust;
+};
+
+namespace CustomOvl {
+    class PlaytimePicker;
+};
+
 namespace Screen {
     // Screen allowing user to adjust the playtime displayed in All Activity.
     class AdjustPlaytime : public Aether::Screen {
@@ -20,6 +28,18 @@ namespace Screen {
             // User
             Aether::Image * userimage;
             Aether::Text * username;
+
+            // Adjustment picker
+            CustomOvl::PlaytimePicker * picker;
+
+            // Helper to get value string
+            std::string getValueString(int);
+
+            // Create and show the adjustment overlay
+            void setupPlaytimePicker(const std::string &, size_t, CustomElm::ListAdjust *);
+
+            // Vector of title IDs and their adjustment value
+            std::vector<std::pair<uint64_t, int>> adjustments;
 
         public:
             // Constructs the screen
