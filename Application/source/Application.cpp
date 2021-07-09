@@ -86,7 +86,7 @@ namespace Main {
         this->window = new Aether::Window("NX-Activity-Log", 1280, 720, [](const std::string message, const bool important) {
 
         });
-        this->window->showDebugInfo(true);
+        // this->window->showDebugInfo(true);
 
         // Create overlays
         this->dtpicker = nullptr;
