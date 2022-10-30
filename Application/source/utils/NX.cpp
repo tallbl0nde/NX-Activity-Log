@@ -151,16 +151,17 @@ namespace Utils::NX {
         for (unsigned short i = 0; i < u.size(); i++) {
             s32 playedTotal = 0;
             TitleID tmpID = 0;
-            PdmAccountPlayEvent *events = new PdmAccountPlayEvent[MAX_TITLES];;
-            rc = pdmqryQueryAccountPlayEvent(0, u[i]->ID(), events, MAX_TITLES, &playedTotal);
+            PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[MAX_TITLES];
+            rc = pdmqryQueryAccountPlayEvent(0, u[i]->ID(), userPlayEvents, MAX_TITLES, &playedTotal);
             if (R_FAILED(rc) || playedTotal == 0) {
+                delete[] userPlayEvents;
                 continue;
             }
 
             // Push back ID if not already in the vector
             for (s32 j = 0; j < playedTotal; j++) {
                 bool found = false;
-                tmpID = (static_cast<TitleID>(events[j].application_id[0]) << 32) | events[j].application_id[1];
+                tmpID = (static_cast<TitleID>(userPlayEvents[j].application_id[0]) << 32) | userPlayEvents[j].application_id[1];
                 for (size_t k = 0; k < playedIDs.size(); k++) {
                     if (playedIDs[k] == tmpID) {
                         found = true;
@@ -172,7 +173,7 @@ namespace Utils::NX {
                     playedIDs.push_back(tmpID);
                 }
             }
-            delete[] events;
+            delete[] userPlayEvents;
         }
 
         // Get IDs of all installed titles
