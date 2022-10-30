@@ -150,24 +150,26 @@ namespace Utils::NX {
         std::vector<TitleID> playedIDs;
         for (unsigned short i = 0; i < u.size(); i++) {
             s32 playedTotal = 0;
-            TitleID * tmpIDs = new TitleID[MAX_TITLES];
-            pdmqryQueryRecentlyPlayedApplication(u[i]->ID(), false, tmpIDs, MAX_TITLES, &playedTotal);
+            TitleID tmpID = 0;
+            PdmAccountPlayEvent *events = new PdmAccountPlayEvent[MAX_TITLES];;
+            rc = pdmqryQueryAccountPlayEvent(0, u[i]->ID(), events, MAX_TITLES, &playedTotal);
 
             // Push back ID if not already in the vector
             for (s32 j = 0; j < playedTotal; j++) {
                 bool found = false;
+                tmpID = (static_cast<TitleID>(events[j].application_id[0]) << 32) | events[j].application_id[1];
                 for (size_t k = 0; k < playedIDs.size(); k++) {
-                    if (playedIDs[k] == tmpIDs[j]) {
+                    if (playedIDs[k] == tmpID) {
                         found = true;
                         break;
                     }
                 }
 
                 if (!found) {
-                    playedIDs.push_back(tmpIDs[j]);
+                    playedIDs.push_back(tmpID);
                 }
             }
-            delete[] tmpIDs;
+            delete[] events;
         }
 
         // Get IDs of all installed titles
