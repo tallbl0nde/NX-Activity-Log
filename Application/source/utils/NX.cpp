@@ -154,7 +154,7 @@ namespace Utils::NX {
             PdmAccountPlayEvent *events = new PdmAccountPlayEvent[MAX_TITLES];;
             rc = pdmqryQueryAccountPlayEvent(0, u[i]->ID(), events, MAX_TITLES, &playedTotal);
             if (R_FAILED(rc) || playedTotal == 0) {
-                break;
+                continue;
             }
 
             // Push back ID if not already in the vector
