@@ -1,8 +1,5 @@
 #include "utils/NX.hpp"
 
-// Maximum number of titles to read using pdm
-#define MAX_TITLES 2000
-
 // Comparison of AccountUids
 bool operator == (const AccountUid &a, const AccountUid &b) {
     if (a.uid[0] == b.uid[0] && a.uid[1] == b.uid[1]) {
@@ -148,12 +145,19 @@ namespace Utils::NX {
         // Get ALL played titles for ALL users
         // (this doesn't include installed games that haven't been played)
         std::vector<TitleID> playedIDs;
+        s32 total_entries = -1;
         for (unsigned short i = 0; i < u.size(); i++) {
-            s32 playedTotal = 0;
             TitleID tmpID = 0;
-            PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[MAX_TITLES];
-            rc = pdmqryQueryAccountPlayEvent(0, u[i]->ID(), userPlayEvents, MAX_TITLES, &playedTotal);
-            if (R_FAILED(rc) || playedTotal == 0) {
+            s32 start_entry_index = -1;
+            s32 end_entry_index = -1;
+            s32 playedTotal = -1;
+            rc = pdmqryGetAvailableAccountPlayEventRange(u[i]->ID(), &total_entries, &start_entry_index, &end_entry_index);
+            if (R_FAILED(rc) || !total_entries)
+                continue;
+
+            PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[total_entries];
+            rc = pdmqryQueryAccountPlayEvent(start_entry_index, u[i]->ID(), userPlayEvents, total_entries, &playedTotal);
+            if (R_FAILED(rc) || !playedTotal) {
                 delete[] userPlayEvents;
                 continue;
             }
@@ -178,21 +182,23 @@ namespace Utils::NX {
 
         // Get IDs of all installed titles
         std::vector<TitleID> installedIDs;
-        NsApplicationRecord * records = new NsApplicationRecord[MAX_TITLES];
-        s32 count = 0;
-        s32 out = 0;
-        while (true) {
-            rc = nsListApplicationRecord(records, MAX_TITLES, count, &out);
-            // Break if at the end or no titles
-            if (R_FAILED(rc) || out == 0){
-                break;
+        if (total_entries) {
+            NsApplicationRecord * records = new NsApplicationRecord[total_entries];
+            s32 count = 0;
+            s32 out = 0;
+            while (true) {
+                rc = nsListApplicationRecord(records, total_entries, count, &out);
+                // Break if at the end or no titles
+                if (R_FAILED(rc) || out == 0){
+                    break;
+                }
+                for (s32 i = 0; i < out; i++) {
+                    installedIDs.push_back((records + i)->application_id);
+                }
+                count += out;
             }
-            for (s32 i = 0; i < out; i++) {
-                installedIDs.push_back((records + i)->application_id);
-            }
-            count += out;
+            delete[] records;
         }
-        delete[] records;
 
         // Create Title objects from IDs
         std::vector<::NX::Title *> titles;
