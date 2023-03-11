@@ -18,29 +18,29 @@ namespace Utils {
     std::string formatNumberComma(unsigned int);
 
     // Converts passed number to a hexadecimal string
-    std::string formatHexString(const uint64_t);
+    std::string formatHexString(const u64);
 
     // Converts the provided hex string to a 64bit number
-    uint64_t stringToU64(const std::string &);
+    u64 stringToU64(const std::string &);
 
     // Insert given version into string (replacing $[v]) (string, ver)
     std::string insertVersionInString(std::string, std::string);
 
     // Format the given timestamp as 'last played' string
-    std::string lastPlayedToString(unsigned int);
+    std::string lastPlayedToString(u64);
 
     // Format the given number of launches into a string
     std::string launchesToString(unsigned int);
     std::string launchesToPlayedString(unsigned int);
 
     // Format the given playtime (in seconds) into hours and minutes
-    std::string playtimeToString(unsigned int);
+    std::string playtimeToString(u64);
 
     // Format the given playtime (in seconds) into 'played for' string
-    std::string playtimeToPlayedForString(unsigned int);
+    std::string playtimeToPlayedForString(u64);
 
     // Format the given playtime (in seconds) into 'total playtime' string
-    std::string playtimeToTotalPlaytimeString(unsigned int);
+    std::string playtimeToTotalPlaytimeString(u64);
 
     // Merges two vectors into one (for sorting)
     // Vector to merge into, two vectors to merge
