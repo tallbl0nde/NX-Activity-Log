@@ -32,7 +32,7 @@ namespace Utils {
     }
 
     // Converts the provided 64bit number to a hex string
-    std::string formatHexString(const uint64_t value) {
+    std::string formatHexString(const u64 value) {
         std::stringstream ss;
         ss << std::uppercase << std::setfill('0') << std::setw(16) << std::hex << value;
         return ss.str();
@@ -47,8 +47,8 @@ namespace Utils {
         return s;
     }
 
-    uint64_t stringToU64(const std::string & str) {
-        uint64_t val;
+    u64 stringToU64(const std::string & str) {
+        u64 val;
         std::stringstream ss;
         ss << std::hex << str;
         ss >> val;
@@ -59,7 +59,7 @@ namespace Utils {
         return std::regex_replace(str, std::regex("\\$\\[v]"), ver);
     }
 
-    std::string lastPlayedToString(unsigned int t) {
+    std::string lastPlayedToString(u64 t) {
         struct tm now = Utils::Time::getTmForCurrentTime();
         struct tm ts = Utils::Time::getTm(t);
         int diff = Utils::Time::getTimeT(now) - Utils::Time::getTimeT(ts);
@@ -105,7 +105,7 @@ namespace Utils {
         std::string str;
         // Show year if not within the same year
         if (now.tm_year != ts.tm_year) {
-            str = std::regex_replace("common.lastPlayed.dateYear"_lang, std::regex("\\$\\[y]"), Utils::Time::tmToString(ts, "%Y", 4));
+            str = std::regex_replace("common.lastPlayed.dateYear"_lang, std::regex("\\$\\[y]"), Utils::Time::tmToString(ts, "%Y", 4) + "common.yearSuffix"_lang);
         } else {
             str = "common.lastPlayed.date"_lang;
         }
@@ -130,7 +130,7 @@ namespace Utils {
         return "common.timesPlayed.once"_lang;
     }
 
-    std::string playtimeToString(unsigned int s) {
+    std::string playtimeToString(u64 s) {
         if (s == 0) {
             return "common.playtime.0sec"_lang;
         } else if (s == 1) {
@@ -182,7 +182,7 @@ namespace Utils {
         return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
     }
 
-    std::string playtimeToPlayedForString(unsigned int s) {
+    std::string playtimeToPlayedForString(u64 s) {
         if (s < 60) {
             return "common.playedFor.0min"_lang;
         }
@@ -230,7 +230,7 @@ namespace Utils {
         return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
     }
 
-    std::string playtimeToTotalPlaytimeString(unsigned int s) {
+    std::string playtimeToTotalPlaytimeString(u64 s) {
         if (s == 0) {
             return "common.totalPlaytime.0sec"_lang;
         } else if (s < 60) {

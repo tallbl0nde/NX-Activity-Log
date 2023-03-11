@@ -36,7 +36,7 @@ namespace NX {
     // and end timestamps and playtime for convenience. Note that (end-start) != playtime
     // due to time when the game may not have been focussed.
     struct PlaySession {
-        u32 playtime;           // Total playtime in seconds
+        u64 playtime;           // Total playtime in seconds
         u64 startTimestamp;     // Time of launch
         u64 endTimestamp;       // Time of exit
     };
@@ -44,9 +44,9 @@ namespace NX {
     // PdmPlayStatistics but only the necessary things
     struct PlayStatistics {
         TitleID titleID;        // TitleID of these stats
-        u32 firstPlayed;        // Timestamp of first launch
-        u32 lastPlayed;         // Timestamp of last play (exit)
-        u32 playtime;           // Total playtime in seconds
+        u64 firstPlayed;        // Timestamp of first launch
+        u64 lastPlayed;         // Timestamp of last play (exit)
+        u64 playtime;           // Total playtime in seconds
         u32 launches;           // Total launches
     };
 
@@ -54,7 +54,7 @@ namespace NX {
     // only contains recent values
     struct RecentPlayStatistics {
         TitleID titleID;        // TitleID of these statistics
-        u32 playtime;           // Total playtime in seconds
+        u64 playtime;           // Total playtime in seconds
         u32 launches;           // Total launches
     };
 
@@ -85,7 +85,7 @@ namespace NX {
 
             // Timestamp indicating when summaries were imported
             // Used to "merge" with system stats
-            uint64_t importTimestamp;
+            u64 importTimestamp;
 
             // Return vector of PD_Sessions for given title/user IDs + time range
             // Give a titleID of zero to include all titles

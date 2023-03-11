@@ -165,7 +165,7 @@ namespace Screen {
             la->setImage(t[i]->imgPtr(), t[i]->imgSize());
             la->setTitle(t[i]->name());
             la->setPlaytime(Utils::playtimeToPlayedForString(ps->playtime));
-            la->setLeftMuted(Utils::lastPlayedToString(pdmPlayTimestampToPosix(ps->lastPlayed)));
+            la->setLeftMuted(Utils::lastPlayedToString(ps->lastPlayed));
             la->setRightMuted(Utils::launchesToPlayedString(ps->launches));
             la->onPress([this, i](){
                 this->app->setActiveTitle(i);
