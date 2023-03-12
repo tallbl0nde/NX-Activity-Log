@@ -1,7 +1,9 @@
 #include "utils/NX.hpp"
+#include <algorithm>
+#include <iterator>
 
 // Maximum number of titles to read using pdm
-#define MAX_TITLES 2000
+#define MAX_TITLES_PER_TIME 100
 
 // Comparison of AccountUids
 bool operator == (const AccountUid &a, const AccountUid &b) {
@@ -148,65 +150,58 @@ namespace Utils::NX {
         // Get ALL played titles for ALL users
         // (this doesn't include installed games that haven't been played)
         std::vector<TitleID> playedIDs;
-        for (unsigned short i = 0; i < u.size(); i++) {
-            s32 playedTotal = 0;
+        for (auto user : u) {
             TitleID tmpID = 0;
-            PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[MAX_TITLES];
-            rc = pdmqryQueryAccountPlayEvent(0, u[i]->ID(), userPlayEvents, MAX_TITLES, &playedTotal);
-            if (R_FAILED(rc) || playedTotal == 0) {
+            s32 startEntryIndex = -1;
+            s32 endEntryIndex = -1;
+            s32 playedTotal = -1;
+            s32 totalEntries = -1;
+            rc = pdmqryGetAvailableAccountPlayEventRange(user->ID(), &totalEntries, &startEntryIndex, &endEntryIndex);
+            if (R_FAILED(rc) || !totalEntries)
+                continue;
+
+            PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[totalEntries];
+            rc = pdmqryQueryAccountPlayEvent(startEntryIndex, user->ID(), userPlayEvents, totalEntries, &playedTotal);
+            if (R_FAILED(rc) || !playedTotal) {
                 delete[] userPlayEvents;
                 continue;
             }
 
-            // Push back ID if not already in the vector
             for (s32 j = 0; j < playedTotal; j++) {
-                bool found = false;
                 tmpID = (static_cast<TitleID>(userPlayEvents[j].application_id[0]) << 32) | userPlayEvents[j].application_id[1];
-                for (size_t k = 0; k < playedIDs.size(); k++) {
-                    if (playedIDs[k] == tmpID) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
+                if(std::find_if(playedIDs.begin(), playedIDs.end(), [tmpID](auto id){ return id == tmpID;}) == playedIDs.end()) {
                     playedIDs.push_back(tmpID);
                 }
             }
             delete[] userPlayEvents;
         }
 
-        // Get IDs of all installed titles
         std::vector<TitleID> installedIDs;
-        NsApplicationRecord * records = new NsApplicationRecord[MAX_TITLES];
+        // Get IDs of all installed titles
         s32 count = 0;
         s32 out = 0;
         while (true) {
-            rc = nsListApplicationRecord(records, MAX_TITLES, count, &out);
-            // Break if at the end or no titles
-            if (R_FAILED(rc) || out == 0){
+            NsApplicationRecord *records = new NsApplicationRecord[MAX_TITLES_PER_TIME];
+            rc = nsListApplicationRecord(records, MAX_TITLES_PER_TIME, count, &out);
+            if (R_FAILED(rc) || out == 0) {
+                delete[] records;
                 break;
             }
             for (s32 i = 0; i < out; i++) {
                 installedIDs.push_back((records + i)->application_id);
             }
             count += out;
+            delete[] records;
         }
-        delete[] records;
 
         // Create Title objects from IDs
         std::vector<::NX::Title *> titles;
-        for (size_t i = 0; i < playedIDs.size(); i++) {
-            // Loop over installed titles to determine if installed or not
-            bool installed = false;
-            for (size_t j = 0; j < installedIDs.size(); j++) {
-                if (installedIDs[j] == playedIDs[i]) {
-                    installed = true;
-                    break;
-                }
+        for (auto playedID : playedIDs) {
+            if(std::find_if(installedIDs.begin(), installedIDs.end(), [playedID](auto id){ return id == playedID;}) != installedIDs.end()) {
+                titles.push_back(new ::NX::Title(playedID, true));
+            } else {
+                titles.push_back(new ::NX::Title(playedID, false));
             }
-
-            titles.push_back(new ::NX::Title(playedIDs[i], installed));
         }
 
         return titles;

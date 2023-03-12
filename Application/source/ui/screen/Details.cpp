@@ -212,7 +212,7 @@ namespace Screen {
 
         // Read playtime and set graph values
         struct tm t = tm;
-        unsigned int totalSecs = 0;
+        uint64_t totalSecs = 0;
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day: {
                 t.tm_min = 0;
@@ -240,7 +240,7 @@ namespace Screen {
                 e.tm_hour = 23;
                 e.tm_min = 59;
                 e.tm_sec = 59;
-                unsigned int max = 0;
+                uint64_t max = 0;
                 for (size_t i = 0; i < this->graph->entries(); i++) {
                     t.tm_mday = i + 1;
                     e.tm_mday = i + 1;
@@ -274,7 +274,7 @@ namespace Screen {
                 e.tm_hour = 23;
                 e.tm_min = 59;
                 e.tm_sec = 59;
-                unsigned int max = 0;
+                uint64_t max = 0;
                 for (size_t i = 0; i < this->graph->entries(); i++) {
                     t.tm_mon = i;
                     e.tm_mon = i;
@@ -351,9 +351,9 @@ namespace Screen {
             default:
                 break;
         }
-        unsigned int s = Utils::Time::getTimeT(this->app->time());
+        uint64_t s = Utils::Time::getTimeT(this->app->time());
         // Minus one second so end time is 11:59pm and not 12:00am next day
-        unsigned int e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
+        uint64_t e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
 
         // Add sessions to list
         for (size_t i = 0; i < stats.size(); i++) {
@@ -370,7 +370,7 @@ namespace Screen {
             });
 
             // Defaults for a session within the range
-            unsigned int playtime = stats[i].playtime;
+            uint64_t playtime = stats[i].playtime;
             struct tm sTm = Utils::Time::getTm(stats[i].startTimestamp);
             struct tm eTm = Utils::Time::getTm(stats[i].endTimestamp);
 
@@ -434,7 +434,7 @@ namespace Screen {
 
             // Add percentage of total playtime
             std::string str;
-            double percent = 100 * ((double)playtime / ((ps->playtime == 0) ? playtime : ps->playtime));
+            double percent = 100 * ((double)playtime / ((ps->playtime == 0 || ps->playtime < playtime) ? playtime : ps->playtime));
             percent = Utils::roundToDecimalPlace(percent, 2);
             if (percent < 0.01) {
                 str = "< 0.01%";
@@ -706,12 +706,12 @@ namespace Screen {
         this->timeplayed->setX(this->timeplayed->x() - this->timeplayed->w()/2);
         this->addElement(this->timeplayed);
 
-        this->firstplayed = new Aether::Text(1070, 490, Utils::Time::timestampToString(pdmPlayTimestampToPosix(ps->firstPlayed)), 20);
+        this->firstplayed = new Aether::Text(1070, 490, Utils::Time::timestampToString(ps->firstPlayed), 20);
         this->firstplayed->setColour(this->app->theme()->accent());
         this->firstplayed->setX(this->firstplayed->x() - this->firstplayed->w()/2);
         this->addElement(this->firstplayed);
 
-        this->lastplayed = new Aether::Text(1070, 580, Utils::Time::timestampToString(pdmPlayTimestampToPosix(ps->lastPlayed)), 20);
+        this->lastplayed = new Aether::Text(1070, 580, Utils::Time::timestampToString(ps->lastPlayed), 20);
         this->lastplayed->setColour(this->app->theme()->accent());
         this->lastplayed->setX(this->lastplayed->x() - this->lastplayed->w()/2);
         this->addElement(this->lastplayed);

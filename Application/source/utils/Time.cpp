@@ -141,7 +141,7 @@ namespace Utils::Time {
     std::string tmToDate(struct tm t, bool b) {
         std::string str;
         if (b) {
-            str = std::regex_replace("common.dateFormatYear"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+            str = std::regex_replace("common.dateFormatYear"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4) + "common.yearSuffix"_lang);
         } else {
             str = "common.dateFormat"_lang;
         }
@@ -157,7 +157,7 @@ namespace Utils::Time {
             case ViewPeriod::Day: {
                 std::string str;
                 if (t.tm_year != getTmForCurrentTime().tm_year) {
-                    str = std::regex_replace("common.activityFor.dayYear"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+                    str = std::regex_replace("common.activityFor.dayYear"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4) + "common.yearSuffix"_lang);
                 } else {
                     str = "common.activityFor.day"_lang;
                 }
@@ -169,12 +169,12 @@ namespace Utils::Time {
 
             case ViewPeriod::Month: {
                 std::string str = std::regex_replace("common.activityFor.month"_lang, std::regex("\\$\\[m]"), getMonthString(t.tm_mon));
-                return std::regex_replace(str, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+                return std::regex_replace(str, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4) + "common.yearSuffix"_lang);
                 break;
             }
 
             case ViewPeriod::Year:
-                return std::regex_replace("common.activityFor.year"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4));
+                return std::regex_replace("common.activityFor.year"_lang, std::regex("\\$\\[y]"), tmToString(t, "%Y", 4) + "common.yearSuffix"_lang);
                 break;
 
             default:

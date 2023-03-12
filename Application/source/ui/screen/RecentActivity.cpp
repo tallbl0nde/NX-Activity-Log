@@ -307,7 +307,7 @@ namespace Screen {
         unsigned int e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
 
         // Get stats
-        unsigned int totalSecs = 0;
+        uint64_t totalSecs = 0;
         std::vector<std::pair<NX::RecentPlayStatistics *, unsigned int> > stats;
         std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
         for (size_t i = 0; i < this->app->titleVector().size(); i++) {
