@@ -197,11 +197,8 @@ namespace Utils::NX {
         // Create Title objects from IDs
         std::vector<::NX::Title *> titles;
         for (auto playedID : playedIDs) {
-            if(std::find_if(installedIDs.begin(), installedIDs.end(), [playedID](auto id){ return id == playedID;}) != installedIDs.end()) {
-                titles.push_back(new ::NX::Title(playedID, true));
-            } else {
-                titles.push_back(new ::NX::Title(playedID, false));
-            }
+            bool installed = std::find_if(installedIDs.begin(), installedIDs.end(), [playedID](auto id){ return id == playedID;}) != installedIDs.end();
+            titles.push_back(new ::NX::Title(playedID, installed));
         }
 
         return titles;
