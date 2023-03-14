@@ -182,7 +182,7 @@ namespace Screen {
 
         // Read playtime and set graph values
         struct tm t = tm;
-        unsigned int totalSecs = 0;
+        uint64_t totalSecs = 0;
         switch (this->app->viewPeriod()) {
             case ViewPeriod::Day: {
                 t.tm_min = 0;
@@ -210,7 +210,7 @@ namespace Screen {
                 e.tm_hour = 23;
                 e.tm_min = 59;
                 e.tm_sec = 59;
-                unsigned int max = 0;
+                uint64_t max = 0;
                 for (size_t i = 0; i < this->graph->entries(); i++) {
                     t.tm_mday = i + 1;
                     e.tm_mday = i + 1;
@@ -244,7 +244,7 @@ namespace Screen {
                 e.tm_hour = 23;
                 e.tm_min = 59;
                 e.tm_sec = 59;
-                unsigned int max = 0;
+                uint64_t max = 0;
                 for (size_t i = 0; i < this->graph->entries(); i++) {
                     t.tm_mon = i;
                     e.tm_mon = i;
@@ -302,9 +302,9 @@ namespace Screen {
             default:
                 break;
         }
-        unsigned int s = Utils::Time::getTimeT(this->app->time());
+        uint64_t s = Utils::Time::getTimeT(this->app->time());
         // Minus one second so end time is 11:59pm and not 12:00am next day
-        unsigned int e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
+        uint64_t e = Utils::Time::getTimeT(Utils::Time::increaseTm(this->app->time(), c)) - 1;
 
         // Get stats
         uint64_t totalSecs = 0;
