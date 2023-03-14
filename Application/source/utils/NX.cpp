@@ -154,35 +154,38 @@ namespace Utils::NX {
             TitleID tmpID = 0;
             s32 startEntryIndex = -1;
             s32 endEntryIndex = -1;
-            s32 playedTotal = -1;
             s32 totalEntries = -1;
             rc = pdmqryGetAvailableAccountPlayEventRange(user->ID(), &totalEntries, &startEntryIndex, &endEntryIndex);
             if (R_FAILED(rc) || !totalEntries)
                 continue;
 
-            PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[totalEntries];
-            rc = pdmqryQueryAccountPlayEvent(startEntryIndex, user->ID(), userPlayEvents, totalEntries, &playedTotal);
-            if (R_FAILED(rc) || !playedTotal) {
-                delete[] userPlayEvents;
-                continue;
-            }
-
-            for (s32 j = 0; j < playedTotal; j++) {
-                tmpID = (static_cast<TitleID>(userPlayEvents[j].application_id[0]) << 32) | userPlayEvents[j].application_id[1];
-                if(std::find_if(playedIDs.begin(), playedIDs.end(), [tmpID](auto id){ return id == tmpID;}) == playedIDs.end()) {
-                    playedIDs.push_back(tmpID);
+            s32 count = totalEntries;
+            s32 offset = startEntryIndex;
+            while (count) {
+                s32 total_read = -1;
+                PdmAccountPlayEvent *userPlayEvents = new PdmAccountPlayEvent[MAX_TITLES_PER_TIME];
+                rc = pdmqryQueryAccountPlayEvent(offset, user->ID(), userPlayEvents, MAX_TITLES_PER_TIME, &total_read);
+                if (R_SUCCEEDED(rc)) {
+                    offset += total_read;
+                    count -= total_read;
+                    for (s32 j = 0; j < total_read; j++) {
+                        tmpID = (static_cast<TitleID>(userPlayEvents[j].application_id[0]) << 32) | userPlayEvents[j].application_id[1];
+                        if(std::find_if(playedIDs.begin(), playedIDs.end(), [tmpID](auto id){ return id == tmpID;}) == playedIDs.end()) {
+                            playedIDs.push_back(tmpID);
+                        }
+                    }
                 }
+                delete[] userPlayEvents;
             }
-            delete[] userPlayEvents;
         }
 
         std::vector<TitleID> installedIDs;
         // Get IDs of all installed titles
-        s32 count = 0;
+        s32 start_offset = 0;
         s32 out = 0;
         while (true) {
             NsApplicationRecord *records = new NsApplicationRecord[MAX_TITLES_PER_TIME];
-            rc = nsListApplicationRecord(records, MAX_TITLES_PER_TIME, count, &out);
+            rc = nsListApplicationRecord(records, MAX_TITLES_PER_TIME, start_offset, &out);
             if (R_FAILED(rc) || out == 0) {
                 delete[] records;
                 break;
@@ -190,7 +193,7 @@ namespace Utils::NX {
             for (s32 i = 0; i < out; i++) {
                 installedIDs.push_back((records + i)->application_id);
             }
-            count += out;
+            start_offset += out;
             delete[] records;
         }
 
