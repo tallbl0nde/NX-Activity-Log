@@ -344,7 +344,9 @@ namespace NX {
                         return (title["id"] == entry.first);
                     });
                     if (it == this->titles.end()) {
-                        this->titles.push_back(std::make_pair(title["id"], title["name"]));
+                        if (title["id"] != 0) {
+                            this->titles.push_back(std::make_pair(title["id"], title["name"]));
+                        }
                     }
                 }
             }
