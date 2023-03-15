@@ -132,7 +132,6 @@ namespace Screen {
         body->addElement(tb);
         this->msgbox->setBodySize(bw, tb->y() + tb->h() + 40);
         this->msgbox->setBody(body);
-        this->app->addOverlay(this->msgbox);
     }
 
     void Settings::setupLangOverlay() {
