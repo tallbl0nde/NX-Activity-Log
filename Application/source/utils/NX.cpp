@@ -171,7 +171,9 @@ namespace Utils::NX {
                     for (s32 j = 0; j < total_read; j++) {
                         tmpID = (static_cast<TitleID>(userPlayEvents[j].application_id[0]) << 32) | userPlayEvents[j].application_id[1];
                         if(std::find_if(playedIDs.begin(), playedIDs.end(), [tmpID](auto id){ return id == tmpID;}) == playedIDs.end()) {
-                            playedIDs.push_back(tmpID);
+                            if (tmpID != 0) {
+                                playedIDs.push_back(tmpID);
+                            }
                         }
                     }
                 }
