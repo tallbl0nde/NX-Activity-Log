@@ -59,10 +59,10 @@ namespace Utils {
         return std::regex_replace(str, std::regex("\\$\\[v]"), ver);
     }
 
-    std::string lastPlayedToString(unsigned int t) {
+    std::string lastPlayedToString(uint64_t t) {
         struct tm now = Utils::Time::getTmForCurrentTime();
         struct tm ts = Utils::Time::getTm(t);
-        int diff = Utils::Time::getTimeT(now) - Utils::Time::getTimeT(ts);
+        int64_t diff = Utils::Time::getTimeT(now) - Utils::Time::getTimeT(ts);
 
         // In the future
         if (diff < 0) {
@@ -105,7 +105,7 @@ namespace Utils {
         std::string str;
         // Show year if not within the same year
         if (now.tm_year != ts.tm_year) {
-            str = std::regex_replace("common.lastPlayed.dateYear"_lang, std::regex("\\$\\[y]"), Utils::Time::tmToString(ts, "%Y", 4));
+            str = std::regex_replace("common.lastPlayed.dateYear"_lang, std::regex("\\$\\[y]"), Utils::Time::tmToString(ts, "%Y", 4) + "common.yearSuffix"_lang);
         } else {
             str = "common.lastPlayed.date"_lang;
         }
@@ -130,7 +130,7 @@ namespace Utils {
         return "common.timesPlayed.once"_lang;
     }
 
-    std::string playtimeToString(unsigned int s) {
+    std::string playtimeToString(uint64_t s) {
         if (s == 0) {
             return "common.playtime.0sec"_lang;
         } else if (s == 1) {
@@ -139,7 +139,7 @@ namespace Utils {
             return std::regex_replace("common.playtime.secs"_lang, std::regex("\\$\\[s]"), std::to_string(s));
         }
 
-        unsigned int h = s/3600;
+        uint64_t h = s/3600;
         unsigned int m = (s/60)%60;
         s = s%60;
 
@@ -182,12 +182,12 @@ namespace Utils {
         return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
     }
 
-    std::string playtimeToPlayedForString(unsigned int s) {
+    std::string playtimeToPlayedForString(uint64_t s) {
         if (s < 60) {
             return "common.playedFor.0min"_lang;
         }
 
-        unsigned int h = s/3600;
+        uint64_t h = s/3600;
         unsigned int m = (s/60)%60;
         s = s%60;
 
@@ -230,14 +230,14 @@ namespace Utils {
         return std::regex_replace(str, std::regex("\\$\\[m]"), std::to_string(m));
     }
 
-    std::string playtimeToTotalPlaytimeString(unsigned int s) {
+    std::string playtimeToTotalPlaytimeString(uint64_t s) {
         if (s == 0) {
             return "common.totalPlaytime.0sec"_lang;
         } else if (s < 60) {
             return "common.totalPlaytime.0min"_lang;
         }
 
-        unsigned int h = s/3600;
+        uint64_t h = s/3600;
         unsigned int m = (s/60)%60;
         s = s%60;
 

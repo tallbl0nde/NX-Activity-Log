@@ -27,20 +27,20 @@ namespace Utils {
     std::string insertVersionInString(std::string, std::string);
 
     // Format the given timestamp as 'last played' string
-    std::string lastPlayedToString(unsigned int);
+    std::string lastPlayedToString(uint64_t);
 
     // Format the given number of launches into a string
     std::string launchesToString(unsigned int);
     std::string launchesToPlayedString(unsigned int);
 
     // Format the given playtime (in seconds) into hours and minutes
-    std::string playtimeToString(unsigned int);
+    std::string playtimeToString(uint64_t);
 
     // Format the given playtime (in seconds) into 'played for' string
-    std::string playtimeToPlayedForString(unsigned int);
+    std::string playtimeToPlayedForString(uint64_t);
 
     // Format the given playtime (in seconds) into 'total playtime' string
-    std::string playtimeToTotalPlaytimeString(unsigned int);
+    std::string playtimeToTotalPlaytimeString(uint64_t);
 
     // Merges two vectors into one (for sorting)
     // Vector to merge into, two vectors to merge

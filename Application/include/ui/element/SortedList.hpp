@@ -8,11 +8,11 @@
 // Struct storing information about entry used for sorting
 struct SortInfo {
     std::string name;                // Name of title
-    unsigned long long int titleID;  // Title's ID
-    unsigned int firstPlayed;        // Timestamp of first launch
-    unsigned int lastPlayed;         // Timestamp of last play
-    unsigned int playtime;           // Total playtime in seconds
-    unsigned int launches;           // Total launches
+    u64 titleID;  // Title's ID
+    u64 firstPlayed;        // Timestamp of first launch
+    u64 lastPlayed;         // Timestamp of last play
+    u64 playtime;           // Total playtime in seconds
+    u32 launches;           // Total launches
 };
 
 namespace CustomElm {

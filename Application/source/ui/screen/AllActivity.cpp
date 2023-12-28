@@ -121,7 +121,7 @@ namespace Screen {
         std::vector<AdjustmentValue> adjustments = this->app->config()->adjustmentValues();
         std::vector<NX::Title *> t = this->app->titleVector();
         std::vector<uint64_t> hidden = this->app->config()->hiddenTitles();
-        unsigned int totalSecs = 0;
+        uint64_t totalSecs = 0;
         for (size_t i = 0; i < t.size(); i++) {
             // Skip over hidden games
             if (std::find(hidden.begin(), hidden.end(), t[i]->titleID()) != hidden.end()) {
@@ -165,7 +165,7 @@ namespace Screen {
             la->setImage(t[i]->imgPtr(), t[i]->imgSize());
             la->setTitle(t[i]->name());
             la->setPlaytime(Utils::playtimeToPlayedForString(ps->playtime));
-            la->setLeftMuted(Utils::lastPlayedToString(pdmPlayTimestampToPosix(ps->lastPlayed)));
+            la->setLeftMuted(Utils::lastPlayedToString(ps->lastPlayed));
             la->setRightMuted(Utils::launchesToPlayedString(ps->launches));
             la->onPress([this, i](){
                 this->app->setActiveTitle(i);
